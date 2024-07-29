@@ -1,0 +1,58 @@
+
+version: '3.8'
+services:
+  databse-tax:
+    image: postgres:14.1-alpine
+    restart: always
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+      - POSTGRES_DB=postgres
+    ports:
+      - '5434:5432'
+    volumes:
+      - databse-tax:/var/lib/postgresql/data
+  bull-queue:
+    image: redis:latest
+    restart: always
+    container_name: bull-queue
+    ports:
+     - '6379:6379'
+    command: redis-server --save 20 1 --loglevel warning --requirepass pass
+    volumes:
+      - bull-queue:/pgdata
+    logging:
+      driver: "none"
+
+  chrome:
+    image: seleniarm/node-chromium:latest
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  firefox:
+    image: seleniarm/node-firefox:latest
+    shm_size: 2gb
+    depends_on:
+      - selenium-hub
+    environment:
+      - SE_EVENT_BUS_HOST=selenium-hub
+      - SE_EVENT_BUS_PUBLISH_PORT=4442
+      - SE_EVENT_BUS_SUBSCRIBE_PORT=4443
+
+  selenium-hub:
+    image: seleniarm/hub:latest
+    container_name: selenium-hub
+    ports:
+      - "4442:4442"
+      - "4443:4443"
+      - "4444:4444"
+volumes:
+  databse-tax:
+    driver: local
+  bull-queue:
+    driver: local

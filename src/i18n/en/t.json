@@ -1,0 +1,21 @@
+{
+	"home": {
+		"tax": "📝 Taxes",
+		"welcome": "Welcome to the main page!\n\nThis bot will help you automate the process of accounting for taxes and filing declarations.",
+		"prices": "💸 Prices",
+		"fillData": "📊 Fill in the data"
+	},
+	"tax": {
+		"main": "ОПИСАНИЕ НАЛОГОВ\n\nтекст",
+		"welcome": "Please select the tax you want to automate:",
+		"socialSecurity": "Social Security",
+		"iva": "IVA",
+		"irs": "IRS"
+	},
+	"poll": {
+		"welcome": "Please, answer the following questions we need to setup your tax automation:"
+	},
+	"prices": {
+		"main": "ОПИСАНИЕ ЦЕНЫ\n\nтекст"
+	}
+}
