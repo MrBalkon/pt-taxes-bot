@@ -18,6 +18,7 @@ export enum FieldLifeSpanType {
 
 export enum FieldValueType {
 	TEXT="text",
+	FLOAT="FLOAT",
 	OPTIONS="options",
 }
 

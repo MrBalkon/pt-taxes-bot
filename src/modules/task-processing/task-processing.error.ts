@@ -4,3 +4,16 @@ export class TaskProcessingError extends Error {
 		this.name = 'TaskProcessingError';
 	}
 }
+
+export class WrongCredentialsError extends Error {
+	constructor() {
+		super('Wrong credentials')
+	}
+}
+
+export class ServiceUnavailableError extends Error {
+	constructor(serviceName: string) {
+		super(`${serviceName} is unavailable`);
+		this.name = 'TaskProcessingError';
+	}
+}

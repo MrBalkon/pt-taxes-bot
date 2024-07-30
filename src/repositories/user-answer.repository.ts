@@ -47,10 +47,42 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .execute();
 	}
 
+	async getAnswersByUserIdAndTaskId(userId: number, systemName: string) {
+		return this.defaultSelector()
+		  .leftJoin('field.taskFields', 'tf')
+		  .where('answer.userId = :userId', { userId })
+		  .andWhere('tf.system_name = :systemName', { systemName })
+		  .execute();
+	}
+
+	async setAnswerError(userId: number, fieldsSystemName: number, error: string) {
+		return this.createQueryBuilder()
+		  .update(UserAnswer)
+		  .set({ error })
+		  .where('userId = :userId', { userId })
+		  .andWhere('field.system_name = :fieldsSystemName', { fieldsSystemName })
+		  .execute();
+	}
+
+	async deleteAnswer(userId: number, fieldsSystemName: string) {
+		const answers = await this.defaultSelector()
+		  .where('answer.userId = :userId', { userId })
+		  .andWhere('field.system_name = :fieldsSystemName', { fieldsSystemName })
+		  .execute();
+
+		if (!answers.length) {
+			return;
+		}
+
+		return this.delete(
+			answers[0].id,
+		);
+	}
+
 	private prepareAnswerSaveData(data: DeepPartial<UserAnswer>) {
 		const userValues: Record<string, any> = {
 			...data,
-			fieldValue: () => `PGP_SYM_ENCRYPT(:metaDataValue,:encryptKey)`,
+			fieldValue: () => `PGP_SYM_ENCRYPT(:fieldValue,:encryptKey)`,
 		}
 
 		const parameters: Record<string, any> = {
@@ -68,12 +100,13 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .select(
 			`
 				answer.id,
-				field.name as "fieldName",
-				answer.fieldId as "fieldId",
-				answer.userId as "userId",
+				field.field_name as "fieldName",
+				field.system_name as "fieldSystemName",
+				answer.field_id as "fieldId",
+				answer.user_id as "userId",
 				answer.year,
 				answer.month,
-			  	PGP_SYM_DECRYPT(answer.fieldValue, :encryptKey) as "fieldValue"
+			  	PGP_SYM_DECRYPT(answer.field_value, :encryptKey) as "fieldValue"
 			`,
 		  )
 		  .setParameter('encryptKey', this.encryptKey);

@@ -1,11 +1,20 @@
 
 Todo:
+  ☐ Make questions available to fill with income
+  ☐ Add cron for handling periodic tasks
   ☐ Social Security calculation
-  ☐ Add payment system
   ☐ IVA calculation
   ☐ IRS calculation
   ☐ Handle exceptions from gov site
-  ☐ Add cron for handling periodic tasks
+  ☐ Add payment system
+  ☐ 
+  ☐ 
+  ☐ 
+  ☐ 
+  ☐ 
+  ☐ Fix Redis connection ro Redis on prod
+  ☐ Deploy service
+  ☐ Handle non arm on prod
   ✔ Add user system @done(24-07-26 23:30)
   ✔ Add worker for executing Selenium scenarios @done(24-07-26 21:20)
   ✔ Add Selenium integraion @done(24-07-26 21:19)
@@ -14,7 +23,3 @@ Todo:
   ✔ Add different languages support @done(24-07-26 01:17)
   ✔ Switch session storage to Postgres @done(24-07-26 16:03)
   ✔ Move Selenium server to env variable @done(24-07-26 23:30)
-  ☐ 
-  ☐ Fix Redis connection ro Redis on prod
-  ☐ Deploy service
-  ☐ Handle non arm on prod

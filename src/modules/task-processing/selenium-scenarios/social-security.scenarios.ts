@@ -1,11 +1,11 @@
 import { By, Key, WebDriver, until } from "selenium-webdriver"
-import { TaskProcessingError } from "../task-processing.error"
+import { ServiceUnavailableError, TaskProcessingError } from "../task-processing.error"
 
 export const socialSecuriyGoMainPage = async (driver: WebDriver) => {
 	try {
 		await driver.get('https://app.seg-social.pt/ptss/')
 	} catch (error) {
-		throw new TaskProcessingError('Failed to go to Seg Social main page')
+		throw new ServiceUnavailableError('Seg Social')
 	}
 }
 

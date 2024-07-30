@@ -22,7 +22,7 @@ export class UserAnswer {
 	@Column('varchar', { name: 'user_id' })
 	userId: number;
 
-	@Column('varchar', { name: 'field_value' })
+	@Column('bytea', { name: 'field_value', nullable: true })
 	fieldValue: string;
 
 	@Column('int', { name: 'year', nullable: true })

@@ -7,6 +7,7 @@ import { ConfigModule } from '../config/config.module';
 import { ConfigService } from '../config/config.service';
 import { TelegramModule } from '../telegram/telegram.module';
 import { TelegramService } from './telegram.service';
+import { QuestionModule } from '../question/question.module';
 
 const store = (config: ConfigService) => {
     return Postgres<PostgresAdapter>({
@@ -23,6 +24,7 @@ const store = (config: ConfigService) => {
 
 @Module({
 	imports:[
+		QuestionModule,
 		TelegrafModule.forRootAsync({
 			imports: [ConfigModule],
 			inject: [ConfigService],
