@@ -1,4 +1,5 @@
 import { Task } from "src/entities/task.entity";
+import { UserAnswer } from "src/entities/user-answer.entity";
 import { User } from "src/entities/user.entity";
 
 export interface UserUpdate {

@@ -35,20 +35,27 @@ export class CheckCredentialsTask implements Task {
 
 	async runInSelenium(driver: WebDriver, user: UserWithMetaFields, task: TaskProcessingPayload): Promise<void> {
 		try {
-			// TODO separate error handling
+			const incorrectFields = []
 			if (user.tasksMap[SocialSecurityFillDeclarationTask.name]) {
-				await this.checkSegSocialCredentials(user, driver)
+				incorrectFields.push(...await this.checkSegSocialCredentialsErrors(user, driver))
 			}
 
 			if (user.tasksMap[IVAFillDeclarationTask.name]) {
-				await this.checkFinancasCredentials(user, driver)
+				incorrectFields.push(...await this.checkFinancasCredentialsErrors(user, driver))
+			}
+
+			if (incorrectFields.length) {
+				const messageText = "You've put wrong credentials for the following fields: " + incorrectFields.join(', ')
+				await this.telegramService.sendMessage(user.telegramId, messageText, {
+					reply_markup: {
+						inline_keyboard: [
+							[await this.telegramService.fillDataAction(user.id)],
+						],
+					},
+					parse_mode: 'HTML'
+				})
 			}
 		} catch (e) {
-			if (e instanceof ServiceUnavailableError) {
-				// TODO add retry job after some time
-				await this.telegramService.sendMessage(user.telegramId, `${e.message}, please try again later.`)
-				return
-			}
 			if (e instanceof WrongCredentialsError) {
 				await this.telegramService.sendMessage(user.telegramId, "You've put wrong credentials!", {
 					reply_markup: {
@@ -65,41 +72,43 @@ export class CheckCredentialsTask implements Task {
 		}
 	}
 
-	async checkSegSocialCredentials(user: UserWithMetaFields, driver: WebDriver): Promise<void> {
+	async checkSegSocialCredentialsErrors(user: UserWithMetaFields, driver: WebDriver): Promise<string[]> {
 		const { niss, segSocialPassword } = user.metaFields
 
 		try {
 			await this.telegramService.sendMessage(user.telegramId, "We're trying to login to Seg Social with your credentials...")
 			await socialSecuriyGoMainPage(driver)
-			await socialSecurityLogin(driver, { niss, password: segSocialPassword })
+			await socialSecurityLogin(driver, { niss: niss.fieldValue, password: segSocialPassword.fieldValue })
 
 			await this.telegramService.sendMessage(user.telegramId, 'All data filled correctly!')
+			return []
 		} catch (e) {
 			if (e instanceof ServiceUnavailableError) {
-				throw e
+				// TODO add retry job after some time
+				await this.telegramService.sendMessage(user.telegramId, `${e.message}, please try again later.`)
+				return []
 			}
-			await this.questionService.deleteAnswer(user.id, 'niss')
-			await this.questionService.deleteAnswer(user.id, 'segSocialPassword')
-			throw new WrongCredentialsError()
+			await this.questionService.deleteAnswerBulk(user.id, [niss.fieldSystemName, segSocialPassword.fieldSystemName])
+			return [niss.fieldName, segSocialPassword.fieldName]
 		}
 	}
 
-	async checkFinancasCredentials(user: UserWithMetaFields, driver: WebDriver): Promise<void> {
+	async checkFinancasCredentialsErrors(user: UserWithMetaFields, driver: WebDriver): Promise<string[]> {
 		const { nif, password } = user.metaFields
 
 		try {
 			await this.telegramService.sendMessage(user.telegramId, "We're trying to login to Finanças with your credentials...")
 			await financaisGoMainPage(driver)
-			await financaisLogin(driver, { nif, password })
+			await financaisLogin(driver, { nif: nif.fieldValue, password: password.fieldValue })
 
 			await this.telegramService.sendMessage(user.telegramId, 'All data filled correctly!')
 		} catch (e) {
 			if (e instanceof ServiceUnavailableError) {
-				throw e
+				await this.telegramService.sendMessage(user.telegramId, `${e.message}, please try again later.`)
+				return
 			}
 			await this.questionService.deleteAnswer(user.id, 'nif')
 			await this.questionService.deleteAnswer(user.id, 'password')
-			throw new WrongCredentialsError()
 		}
 	}
 }

@@ -1,5 +1,5 @@
 import { By, Key, WebDriver, until } from "selenium-webdriver"
-import { ServiceUnavailableError, TaskProcessingError } from "../task-processing.error"
+import { ServiceUnavailableError, TaskProcessingError, WrongCredentialsError } from "../task-processing.error"
 
 export const socialSecuriyGoMainPage = async (driver: WebDriver) => {
 	try {
@@ -21,7 +21,7 @@ export const socialSecurityLogin = async (driver: WebDriver, { niss, password })
 		// if not, it means that login failed
 		await driver.findElement(By.xpath("//span[contains(text(), 'Sair')]"))
 	} catch (error) {
-		throw new TaskProcessingError('Failed to login to Seg Social')
+		throw new WrongCredentialsError('Failed to login to Seg Social')
 	}
 }
 

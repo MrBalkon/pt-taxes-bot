@@ -5,9 +5,9 @@ export class TaskProcessingError extends Error {
 	}
 }
 
-export class WrongCredentialsError extends Error {
-	constructor() {
-		super('Wrong credentials')
+export class WrongCredentialsError extends TaskProcessingError {
+	constructor(message) {
+		super(message)
 	}
 }
 

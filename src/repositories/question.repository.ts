@@ -4,25 +4,26 @@ import { Feature, Repository } from "typeorm";
 import { FeaturesRepository } from "./features.repository";
 import { FieldOption } from "src/entities/user-field.entity";
 import { InjectRepository } from "@nestjs/typeorm";
-
-export interface FindQuestionResult {
-	question: string;
-	description: string;
-	fieldId: number;
-	options?: FieldOption[];
-	type: QuestionType
-}
+import { QuestionCondition } from "src/entities/question-condition.entity";
+import { FindQuestionResult, GET_PRIORITY_QUESTIONS_QUERY } from "./queries/getPriorityQuestionQuery";
+import { ConfigService } from "src/modules/config/config.service";
 
 @Injectable()
 export class QuestionRepository {
+	private encryptKey = null;
 	constructor(
+		private readonly configService: ConfigService,
 		@InjectRepository(Question)
 		private repository: Repository<Question>
-	) {}
+	) {
+		this.encryptKey = this.configService.get('DB_ENCRYPT_KEY');
+	}
+
 
 	async getQuestions(userId: number) {
 		// return questions available for user's features's tasks
 		// add join to return only questions without answers
+		// consider question conditions
 		const response = await this.repository.query(`
 			SELECT
 				q.question,
@@ -60,24 +61,7 @@ export class QuestionRepository {
 	}
 
 	async getPriorityQuestion(userId: number) {
-		const response = await this.repository.query(`
-			SELECT
-				q.question,
-				q.description,
-				q.field_id AS "fieldId",
-				uf.OPTIONS,
-				q."rank",
-				uf.fields_value_type AS "type"
-			FROM questions q
-			JOIN "user-fields" uf ON q.field_id = uf.id
-			JOIN tasks_fields tf ON q.field_id = tf.field_id 
-			JOIN "features-tasks" ft ON ft.task_id = tf.task_id
-			JOIN "features-access" fa ON fa.feature_id = ft.feature_id
-			LEFT JOIN "user-answers" ua ON ua.field_id = q.field_id
-			WHERE fa.user_id = $1 AND ua.id IS NULL
-			ORDER BY q.RANK ASC
-			LIMIT 1
-		`, [userId]) as FindQuestionResult[];
+		const response = await this.repository.query(GET_PRIORITY_QUESTIONS_QUERY, [userId, this.encryptKey]) as FindQuestionResult[];
 
 		if (!response.length) {
 			return null;

@@ -10,7 +10,7 @@ import { FormError } from './form.errors';
 import { TaskProcessingQueueService } from 'src/modules/task-processing/services/task-processing.queue';
 import { TaskProcessingJobName } from 'src/modules/task-processing/task-processing.types';
 import { QuestionService } from 'src/modules/question/question.service';
-import { FindQuestionResult } from 'src/repositories/question.repository';
+import { FindQuestionResult } from 'src/repositories/queries/getPriorityQuestionQuery';
 
 export interface SceneState {
 	currentFieldId: number;
@@ -96,6 +96,10 @@ export class FormScene {
 	}
 
 	private async sendQuestion(ctx: SceneContext, question: FindQuestionResult) {
+		if (!question) {
+			// TODO handle end of questions
+			return
+		}
 		const questionText = this.prepareQuestionText(question)
 		switch (question.type) {
 			case QuestionType.TEXT:
@@ -109,6 +113,9 @@ export class FormScene {
 					},
 					parse_mode: 'HTML'
 				});
+				break;
+			default:
+				await ctx.reply(questionText, { parse_mode: 'HTML' });
 				break;
 		}
 		ctx.scene.state = {
@@ -138,6 +145,12 @@ export class FormScene {
 					throw new FormError("Please choose one of the options")
 				}
 				return value
+			default:
+				const textVal = (ctx.message as any).text
+				if (!textVal) {
+					throw new FormError("Please send a text message")
+				}
+				return textVal
 		}
 	}
 }

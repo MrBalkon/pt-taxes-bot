@@ -8,6 +8,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserField } from './user-field.entity';
+import { QuestionCondition } from './question-condition.entity';
 
 export enum QuestionType {
 	TEXT="text",
@@ -37,4 +38,7 @@ export class Question {
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
+
+	@OneToMany(() => QuestionCondition, condition => condition.question)
+	conditions: QuestionCondition[];
 }

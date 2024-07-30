@@ -41,7 +41,7 @@ export class QuestionService {
 		const answers = await this.answerRepository.getAnswersByUserIdAndTaskId(userId, systemName);
 
 		return answers.reduce((acc, answer) => {
-			acc[answer.fieldSystemName] = answer.fieldValue;
+			acc[answer.fieldSystemName] = answer;
 			return acc;
 		}, {});
 	}
@@ -52,5 +52,9 @@ export class QuestionService {
 
 	async deleteAnswer(userId: number, fieldsSystemName: string) {
 		return this.answerRepository.deleteAnswer(userId, fieldsSystemName);
+	}
+
+	async deleteAnswerBulk(userId: number, fieldsSystemNames: string[]) {
+		return this.answerRepository.deleteAnswerBulk(userId, fieldsSystemNames);
 	}
 }

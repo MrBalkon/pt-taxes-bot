@@ -18,7 +18,6 @@ export class TelegramService {
 	}
 
 	public async fillDataAction(userId: number) {
-		const questionsCount = await this.questionService.getQuestionsCount(userId);
-		return {text: `${this.i18n.t("t.home.fillData")} (${questionsCount})`, callback_data: 'fillDataAction'};
+		return {text: `${this.i18n.t("t.home.fillData")}`, callback_data: 'fillDataAction'};
 	}
 }
