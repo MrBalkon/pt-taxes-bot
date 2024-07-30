@@ -6,11 +6,15 @@ import { UserService } from './user.service';
 import { ConfigModule } from '../config/config.module';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { UserAnswer } from 'src/entities/user-answer.entity';
+import { QuestionModule } from '../question/question.module';
+import { TaskModule } from '../task/task.module';
 
 @Module({
 	imports: [
 		ConfigModule,
 		TypeOrmModule.forFeature([User, UserAnswer]),
+		QuestionModule,
+		TaskModule,
 	],
 	controllers: [UserController],
 	providers: [UserService, UserAnswerRepository],
