@@ -7,7 +7,11 @@ import { TelegramService } from "src/modules/telegram-config/telegram.service";
 import { TaskProcessingQueueService } from "../services/task-processing.queue";
 import { TaskService } from "src/modules/task/task.service";
 
-export type SplitTaskPayload = TaskProcessingPayloadTemplate<{ splitTaskId: number }>
+export interface SplitTaskData {
+	splitTaskId: number
+	data?: any
+}
+export type SplitTaskPayload = TaskProcessingPayloadTemplate<SplitTaskData>
 
 @Injectable()
 export class SplitTask implements Task {
@@ -23,7 +27,8 @@ export class SplitTask implements Task {
 	const tasksPayloads = userIds.map((userId) => ({
 		type: queueTask.systemName as TaskProcessingJobName,
 		data: {
-			userId
+			userId,
+			...(task.data?.data || {})
 		}
 	}))
 

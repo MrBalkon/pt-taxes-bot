@@ -1,8 +1,10 @@
 
 Todo:
   Active:
+    ✔ Add data parameter to split task @done(24-08-01 00:49)
+    ✔ Add one shot cron jobs @done(24-08-01 00:47)
     ☐ Add operations handling
-    ☐ Shedule failed tasks if gov service is down (Add one shot cron jobs)
+    ☐ Shedule failed tasks if gov service is down
     ☐ Social Security calculation
     ☐ IVA calculation
     ☐ IRS calculation
@@ -13,6 +15,7 @@ Todo:
     ☐ Add constraint on permanent fields
     ☐ Add different service modes
     ☐ Add public/system visibility to tasks
+    ☐ Handle start poll on no questions
     ☐ 
     ✔ Add cron for handling periodic tasks @done(24-07-31 23:57)
     ✔ Make questions conditional based on other questions @done(24-07-30 23:46)
@@ -28,11 +31,13 @@ Todo:
     ☐ Handle non arm on prod
     ☐ Handle options questions answer (edit telegram message)
     ☐ Add AI
+    ☐ Add UI
   Features:
     ☐ Add support module
     ☐ Add feedback module
     ☐ Post system (reuse one-shot cron)
-    
+    ☐ Store Selenium scenarios in db
+
   Probably never:
     ☐ think about conditional question for income as a compare
   ✔ Add user system @done(24-07-26 23:30)

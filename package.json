@@ -38,6 +38,7 @@
     "i18n-js": "^4.4.3",
     "ioredis": "^5.4.1",
     "kysely": "^0.27.4",
+    "luxon": "^3.4.4",
     "nestjs-dynamic-providers": "^0.3.4",
     "nestjs-i18n": "^10.4.5",
     "nestjs-telegraf": "^2.8.1",

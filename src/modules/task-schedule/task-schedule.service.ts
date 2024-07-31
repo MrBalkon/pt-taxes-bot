@@ -6,13 +6,14 @@ import { TaskShedule } from 'src/entities/task-schedule.entity';
 import { Repository } from 'typeorm';
 import { TaskProcessingQueueService } from '../task-processing/services/task-processing.queue';
 import { TaskProcessingJobName } from '../task-processing/task-processing.types';
+import { TaskSheduleRepository } from 'src/repositories/task-shedule.repository';
+import { DateTime } from 'luxon'
 
 @Injectable()
 export class TaskSheduleService implements OnModuleInit {
 	private logger = new Logger(TaskSheduleService.name);
 	constructor(
-		@InjectRepository(TaskShedule)
-		private readonly taskSheduleRepository: Repository<TaskShedule>,
+		private readonly taskSheduleRepository: TaskSheduleRepository,
 		private schedulerRegistry: SchedulerRegistry,
 		private taskProcessingQueueService: TaskProcessingQueueService
 	) {}
@@ -22,20 +23,59 @@ export class TaskSheduleService implements OnModuleInit {
 		await this.sheduleCronJobs();
 	}
 
+	@Cron(CronExpression.EVERY_10_SECONDS)
+	async checkOneShotTasks() {
+		await this.handleOneShotTasks();
+	}
+
 	async onModuleInit() {
-		await this.sheduleCronJobs()
+		await this.handleUpdates()
+	}
+
+	async handleUpdates() {
+		await this.sheduleCronJobs();
+		await this.handleOneShotTasks();
+	}
+
+	async handleOneShotTasks() {
+		this.logger.log('Checking for one shot task updates');
+		const taskShedules = await this.taskSheduleRepository.getOneShotTaskShedules();
+		const tasksToExecute = []
+
+		const now = DateTime.now();
+
+		for (const taskShedule of taskShedules) {
+			const taskTime = DateTime.fromJSDate(taskShedule.oneShotDate);
+
+			if (now > taskTime) {
+				tasksToExecute.push(taskShedule);
+				await this.addTaskToQueue(taskShedule);
+			}
+		}
+
+		if (!tasksToExecute.length) {
+			this.logger.log('No one shot tasks to execute');
+		} else {
+			await this.addTaskToQueueBulk(tasksToExecute);
+			const taskIds = tasksToExecute.map(task => task.id);
+			await this.taskSheduleRepository.deleteOneShotTasksByIds(taskIds);	
+		}
+
+		return tasksToExecute;
 	}
 
 	async sheduleCronJobs() {
-		this.logger.log('Checking for task updates');
-		const taskShedules = await this.taskSheduleRepository.find({ relations: ['task'] });
+		this.logger.log('Checking for cron task updates');
+		const taskShedules = await this.taskSheduleRepository.getRecurringTaskShedules();
 		const sheduledTasks = []
 
 		for (const taskShedule of taskShedules) {
-			const { id } = taskShedule;
-
 			const taskName = taskShedule.task.systemName;
 
+			try {
+				this.schedulerRegistry.getCronJob(taskName)
+				continue;
+			} catch (error) {}
 			// if (this.schedulerRegistry.getCronJob(taskName)) {
 			// 	continue;
 			// }
@@ -43,16 +83,7 @@ export class TaskSheduleService implements OnModuleInit {
 			const cronJob = new CronJob(taskShedule.cronExpression, async () => {
 				this.logger.log(`Cron job ${taskName} executed`);
 
-				const taskPayload = {
-					taskId: id,
-					data: taskShedule.taskPayload,
-					type: taskShedule.task.systemName as TaskProcessingJobName
-				}
-				try {
-					await this.taskProcessingQueueService.addQueueJob<any>(taskPayload);
-				} catch (error) {
-					this.logger.error(`Error while adding job to queue: ${error.message}`);
-				}
+				await this.addTaskToQueue(taskShedule);
 
 				this.logger.log(`Cron job ${taskName} added to queue`);
 			})
@@ -64,9 +95,34 @@ export class TaskSheduleService implements OnModuleInit {
 		}
 
 		if (!sheduledTasks.length) {
-			this.logger.log('No tasks to shedule');
+			this.logger.log('No cron tasks to shedule');
 		}
 
 		return sheduledTasks;
+	}
+
+	private async addTaskToQueueBulk(taskShedules: TaskShedule[]) {
+		const tasksPayloads = taskShedules.map(taskShedule => this.prepareTaskPayload(taskShedule))
+		try {
+			await this.taskProcessingQueueService.addQueueJobBulk<any>(tasksPayloads);
+		} catch (error) {
+			this.logger.error(`Error while adding jobs to queue: ${error.message}`);
+		}
+	}
+
+	private async addTaskToQueue(taskShedule: TaskShedule) {
+		const taskPayload = this.prepareTaskPayload(taskShedule);
+		try {
+			await this.taskProcessingQueueService.addQueueJob<any>(taskPayload);
+		} catch (error) {
+			this.logger.error(`Error while adding job to queue: ${error.message}`);
+		}
+	}
+
+	private prepareTaskPayload(taskShedule: TaskShedule) {
+		return {
+			data: taskShedule.taskPayload,
+			type: taskShedule.task.systemName as TaskProcessingJobName
+		}
 	}
 }

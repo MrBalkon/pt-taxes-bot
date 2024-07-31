@@ -32,6 +32,9 @@ export class Operation {
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
 
+	@Column('enum', { name: 'status', enum: OperationStatus, default: OperationStatus.IN_PROGRESS })
+	status: OperationStatus;
+
 	// relations
 	@ManyToOne(() => User, user => user.operations)
 	@JoinColumn({ name: 'user_id' })

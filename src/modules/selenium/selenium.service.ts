@@ -13,7 +13,7 @@ export class SeleniumService {
 		try {
 			await callback(driver)
 		} finally {
-			// await driver.quit()
+			await driver.quit()
 		}
 	}
 
