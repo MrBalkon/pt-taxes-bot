@@ -1,7 +1,6 @@
 
 Todo:
   Active:
-    ☐ Make questions available to fill with income
     ☐ Add cron for handling periodic tasks
     ☐ Shedule failed tasks if gov service is down
     ☐ Social Security calculation
@@ -15,6 +14,7 @@ Todo:
     ☐ 
     ✔ Make questions conditional based on other questions @done(24-07-30 23:46)
     ✔ Fix handling error on check credentials task @done(24-07-30 21:08)
+    ✔ Make questions available to fill with income @done(24-07-31 19:13)
   Later:
     ☐ Make cleaner texts
     ☐ Add monitoring system
@@ -23,7 +23,7 @@ Todo:
     ☐ Handle non arm on prod
     ☐ Handle options questions answer (edit telegram message)
   Probably never:
-    ☐ think about conditional question for income as a source
+    ☐ think about conditional question for income as a compare
   ✔ Add user system @done(24-07-26 23:30)
   ✔ Add worker for executing Selenium scenarios @done(24-07-26 21:20)
   ✔ Add Selenium integraion @done(24-07-26 21:19)

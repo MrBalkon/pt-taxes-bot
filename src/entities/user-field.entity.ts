@@ -2,14 +2,17 @@ import {
 	Column,
 	CreateDateColumn,
 	Entity,
+	JoinColumn,
 	JoinTable,
 	ManyToMany,
+	ManyToOne,
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Feature } from './feature.entity';
 import { Task } from './task.entity';
 import { UserAnswer } from './user-answer.entity';
+import { Question } from './question.entity';
 
 export enum FieldLifeSpanType {
 	PERMANENT = 'permanent',
@@ -65,4 +68,7 @@ export class UserField {
 	  inverseJoinColumn: { name: "task_id" }
 	})
 	taskFields: Task[];
+
+	@OneToMany(() => Question, question => question.field)
+	questions: Question[];
 }

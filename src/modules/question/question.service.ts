@@ -1,9 +1,11 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Question } from 'src/entities/question.entity';
+import { Question, QuestionPeriodTime } from 'src/entities/question.entity';
 import { UserAnswer } from 'src/entities/user-answer.entity';
+import { FindQuestionResult } from 'src/repositories/queries/getPriorityQuestionQuery';
 import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
+import { getPreviousQuarterMonths, getPreviousQuarterYear } from 'src/utils/date';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -29,12 +31,40 @@ export class QuestionService {
 		return this.questionRepository.getQuestionsCount(userId);
 	}
 
-	async saveAnswer(userId: number, fieldId: number, answer: string) {
-		return this.answerRepository.createAnswer({
-			userId,
-			fieldId,
-			fieldValue: answer,
-		});
+	async saveAnswer(userId: number, question: FindQuestionResult, answer: string | string[]) {
+		const answers = []
+
+		if (!question.periodTime) {
+			// check if answer is string
+			if (typeof answer !== 'string') {
+				throw new Error('Answer should be a string');
+			}
+			answers.push({
+				userId,
+				fieldId: question.fieldId,
+				fieldValue: answer,
+			});
+		}
+
+		if (question.periodTime === QuestionPeriodTime.PREVIOUS_QUARTER) {
+			if (!Array.isArray(answer)) {
+				throw new Error('Answer should be an array');
+			}
+			const previousQuarterMonths = getPreviousQuarterMonths()
+			const previousQuarterYear = getPreviousQuarterYear()
+
+			for (const previousQuarterMonth of previousQuarterMonths) {
+				answers.push({
+					userId,
+					fieldId: question.fieldId,
+					fieldValue: answer,
+					month: previousQuarterMonth,
+					year: previousQuarterYear,
+				});
+			}
+		}
+
+		return this.answerRepository.createAnswerBulk(answers);
 	}
 
 	async getUserMetaFields(userId: number, systemName: string) {

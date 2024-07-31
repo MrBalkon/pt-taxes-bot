@@ -36,8 +36,27 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .execute();
 	}
 
+	async createAnswerBulk(data: DeepPartial<UserAnswer>[]) {
+		let baseParameters = this.prepareEncryptKey();
+		const values = data.map((answer) => {
+			const { userValues, parameters } = this.prepareAnswerSaveData(answer);
+
+			baseParameters = { ...baseParameters, ...parameters };
+
+			return userValues;
+		});
+
+		return this.createQueryBuilder()
+		  .insert()
+		  .into(UserAnswer)
+		  .values(values)
+		  .setParameters(baseParameters)
+		  .execute();
+	}
+
 	async updateAnswer(id: number, data: DeepPartial<UserAnswer>) {
 		const { userValues, parameters } = this.prepareAnswerSaveData(data);
+		parameters.encryptKey = this.encryptKey;
 
 		return this.createQueryBuilder()
 		  .update(UserAnswer)
@@ -95,17 +114,23 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 	}
 
 	private prepareAnswerSaveData(data: DeepPartial<UserAnswer>) {
+		const valueId = `fieldValue${data.id}`
 		const userValues: Record<string, any> = {
 			...data,
-			fieldValue: () => `PGP_SYM_ENCRYPT(:fieldValue,:encryptKey)`,
+			fieldValue: () => `PGP_SYM_ENCRYPT(:${valueId},:encryptKey)`,
 		}
 
 		const parameters: Record<string, any> = {
-			encryptKey: this.encryptKey,
-			fieldValue: data.fieldValue,
+			[valueId]: data.fieldValue,
 		}
 
 		return { userValues, parameters };
+	}
+
+	private prepareEncryptKey() {
+		return {
+			encryptKey: this.encryptKey,
+		}
 	}
 
 	private defaultSelector() {

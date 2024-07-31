@@ -3,6 +3,7 @@ import {
 	CreateDateColumn,
 	Entity,
 	JoinColumn,
+	ManyToOne,
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
@@ -15,6 +16,11 @@ export enum QuestionType {
 	OPTIONS="options",
 }
 
+export enum QuestionPeriodTime {
+	PREVIOUS_QUARTER="previous_quarter",
+	CURRENT_QUARTER="current_quarter",
+}
+
 @Entity('questions')
 export class Question {
 	@PrimaryGeneratedColumn()
@@ -22,6 +28,9 @@ export class Question {
 
 	@Column('varchar', { name: 'question' })
 	question: string
+
+	@Column('varchar', { name: 'period_time', nullable: true })
+	periodTime: QuestionPeriodTime
 
 	@Column('varchar', { name: 'description', nullable: true })
 	description: string
@@ -32,7 +41,7 @@ export class Question {
 	@Column('varchar', { name: 'field_id' })
 	fieldId: number;
 
-	@OneToOne(() => UserField)
+	@ManyToOne(() => UserField, field => field.questions)
 	@JoinColumn({ name: 'field_id' })
 	field: UserField;
 

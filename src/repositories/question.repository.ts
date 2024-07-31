@@ -5,8 +5,9 @@ import { FeaturesRepository } from "./features.repository";
 import { FieldOption } from "src/entities/user-field.entity";
 import { InjectRepository } from "@nestjs/typeorm";
 import { QuestionCondition } from "src/entities/question-condition.entity";
-import { FindQuestionResult, GET_PRIORITY_QUESTIONS_QUERY } from "./queries/getPriorityQuestionQuery";
+import { FindQuestionResult, GET_PRIORITY_QUESTIONS_QUERY, GET_QUESTIONS_QUERY } from "./queries/getPriorityQuestionQuery";
 import { ConfigService } from "src/modules/config/config.service";
+import { getCurrentQuarter, getCurrentYear, getPreviousQuarter, getPreviousQuarterYear, getQuarterMonths } from "src/utils/date";
 
 @Injectable()
 export class QuestionRepository {
@@ -24,20 +25,7 @@ export class QuestionRepository {
 		// return questions available for user's features's tasks
 		// add join to return only questions without answers
 		// consider question conditions
-		const response = await this.repository.query(`
-			SELECT
-				q.question,
-				q.description,
-				uf.options,
-    			q.field_id AS "fieldId"
-			FROM questions q
-			JOIN "user-fields" uf ON q.field_id = uf.id
-			JOIN tasks_fields tf ON q.field_id = tf.field_id 
-			JOIN "features-tasks" ft ON ft.task_id = tf.task_id
-			JOIN "features-access" fa ON fa.feature_id = ft.feature_id
-			LEFT JOIN "user-answers" ua ON ua.field_id = q.field_id 
-			WHERE fa.user_id = $1 AND ua.id IS NULL
-		`, [userId])
+		const response = await this.repository.query(GET_QUESTIONS_QUERY, [userId, this.encryptKey])
 
 		return response as FindQuestionResult[];
 	}
@@ -61,7 +49,18 @@ export class QuestionRepository {
 	}
 
 	async getPriorityQuestion(userId: number) {
-		const response = await this.repository.query(GET_PRIORITY_QUESTIONS_QUERY, [userId, this.encryptKey]) as FindQuestionResult[];
+		const currentYear = getPreviousQuarterYear();
+		const previousQuarter = getPreviousQuarter();
+		const previousQuarterMonths = getQuarterMonths(previousQuarter);
+		const response = await this.repository.query(
+			GET_PRIORITY_QUESTIONS_QUERY,
+			[
+				userId,
+				this.encryptKey,
+				currentYear,
+				previousQuarterMonths,
+			]
+		) as FindQuestionResult[];
 
 		if (!response.length) {
 			return null;
@@ -78,6 +77,7 @@ export class QuestionRepository {
 				q.field_id AS "fieldId",
 				uf.OPTIONS,
 				q."rank",
+				q.period_time as "periodTime",
 				uf.fields_value_type AS "type"
 			FROM questions q
 			JOIN "user-fields" uf ON q.field_id = uf.id
