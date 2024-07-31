@@ -23,7 +23,7 @@ export class FeatureTasks {
 	// specify the name of the column that will be used to reference the user
 	@ManyToOne(() => Task, (task) => task.featureTasks)
 	@JoinColumn({ name: "task_id" })
-    Task: Task
+    task: Task
 
 	@ManyToOne(() => Feature, (feature) => feature.featureTasks)
 	@JoinColumn({ name: "feature_id" })

@@ -106,7 +106,7 @@ export class FormScene {
 
 	private async endPoll(ctx: SceneContext) {
 		delete (ctx.scene.state as SceneState).currentFieldId;
-		await this.taskProcessingQueueService.addJob<null>(ctx.from.id, {
+		await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
 			type: TaskProcessingJobName.CHECK_CRENDENTIALS,
 			data: null
 		})

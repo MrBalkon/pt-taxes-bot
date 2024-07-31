@@ -9,6 +9,11 @@ export class TaskService {
 		@InjectDataSource() private connection: DataSource,
 	) {}
 
+	async getTaskById(taskId: number, manager: EntityManager = this.connection.manager) {
+		return manager.getRepository(Task)
+			.findOneBy({id: taskId});
+	}
+
 	async getTasksByUserId(userId: number, manager: EntityManager = this.connection.manager) {
 		return manager.getRepository(Task)
 			.createQueryBuilder('task')

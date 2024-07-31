@@ -11,6 +11,8 @@ import {
 } from 'typeorm';
 import { UserAnswer } from './user-answer.entity';
 import { FeatureAccess } from './feature-access.entity';
+import { TaskShedule } from './task-schedule.entity';
+import { Operation } from './operation.entity';
 
 @Entity('users')
 export class User {
@@ -28,4 +30,10 @@ export class User {
 
 	@OneToMany(() => FeatureAccess, featureAccess => featureAccess.user)
 	featureAccesses: FeatureAccess[];
+
+	@OneToMany(() => TaskShedule, schedule => schedule.user)
+	taskSchedules: TaskShedule[];
+
+	@OneToMany(() => Operation, operation => operation.user)
+	operations: Operation[];
 }

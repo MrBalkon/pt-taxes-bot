@@ -5,6 +5,7 @@ import { TelegramNotifyTask } from '../tasks/telegram-notify.task';
 import { CheckCredentialsTask } from '../tasks/check-credentials.task';
 import { SocialSecurityFillDeclarationTask } from '../tasks/social-security-fill-declaration.task';
 import { ModuleRef } from '@nestjs/core';
+import { SplitTask } from '../tasks/split.task';
 
 @Injectable()
 export class TaskProcessingService {
@@ -14,6 +15,7 @@ export class TaskProcessingService {
 		private readonly telegramnotifytask: TelegramNotifyTask,
 		private readonly checkcredentialstask: CheckCredentialsTask,
 		private readonly socialsecurityfilldeclarationtask: SocialSecurityFillDeclarationTask,
+		private readonly splittask: SplitTask,
 	) {}
 
 	async processTask(task: TaskProcessingPayload): Promise<void> {

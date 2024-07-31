@@ -11,11 +11,11 @@ export enum TaskProcessingJobName {
 export interface TaskProcessingPayloadCall<T> {
 	type: TaskProcessingJobName;
 	data: T
+	userId?: number;
 }
 
 export interface TaskProcessingPayloadTemplate<T> extends TaskProcessingPayloadCall<T> {
 	taskUid: string;
-	userId: number;
 }
 
 export type TaskProcessingPayload = TaskProcessingPayloadTemplate<null>

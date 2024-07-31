@@ -10,6 +10,7 @@ import { BullConfigModule } from './modules/bull-config/bull-config.module';
 import { TaskProcessingModule } from './modules/task-processing/task-processing.module';
 import { UserModule } from './modules/user/user.module';
 import { SeleniumModule } from './modules/selenium/selenium.module';
+import { TaskSheduleModule } from './modules/task-schedule/task-schedule.module';
 
 @Module({
   imports: [
@@ -19,6 +20,7 @@ import { SeleniumModule } from './modules/selenium/selenium.module';
     TaskProcessingModule,
     UserModule,
     SeleniumModule,
+    TaskSheduleModule,
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       loaderOptions: {

@@ -7,20 +7,16 @@ import { UserUpdate, UserWithMetaFields } from './user.types';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { QuestionService } from '../question/question.service';
 import { TaskService } from '../task/task.service';
+import { UserRepository } from 'src/repositories/user.repository';
 
 @Injectable()
 export class UserService {
-	private encryptKey = null;
 	constructor(
-		@InjectRepository(User)
-		private readonly userRepository: Repository<User>,
-		private readonly configService: ConfigService,
+		private readonly userRepository: UserRepository,
 		@InjectDataSource() private connection: DataSource,
 		private questionService: QuestionService,
 		private taskService: TaskService,
-	) {
-		this.encryptKey = this.configService.get('DB_ENCRYPT_KEY');
-	}
+	) {}
 
 	async getFullUserMetaById(id: number, taskSystemName: string, manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
 		const user = await this.getUserById(id, manager);
@@ -56,5 +52,9 @@ export class UserService {
 		const user = await this.getUserByTelegramId(telegramId);
 
 		return this.updateUserById(user.id, data);
+	}
+
+	async getUserIdsByTaskId(taskId: number) {
+		return this.userRepository.getUserIdsByTaskId(taskId);
 	}
 }

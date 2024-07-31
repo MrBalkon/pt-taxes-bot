@@ -12,6 +12,8 @@ import { UserAnswer } from './user-answer.entity';
 import { Feature } from './feature.entity';
 import { UserField } from './user-field.entity';
 import { FeatureTasks } from './feature-tasks.entity';
+import { TaskShedule } from './task-schedule.entity';
+import { Operation } from './operation.entity';
 
 @Entity('tasks')
 export class Task {
@@ -30,9 +32,6 @@ export class Task {
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
 
-	@ManyToMany(() => Feature, feature => feature.tasks)
-	features: Feature[];
-
 	@ManyToMany(() => UserField, "taskFields")
 	@JoinTable({
 	  name: "tasks_fields",
@@ -43,4 +42,10 @@ export class Task {
 
 	@OneToMany(() => FeatureTasks, featureAccess => featureAccess.feature)
 	featureTasks: FeatureTasks[];
+
+	@OneToMany(() => TaskShedule, schedule => schedule.task)
+	taskSchedules: TaskShedule[];
+
+	@OneToMany(() => Operation, operation => operation.task)
+	operations: Operation[];
 }

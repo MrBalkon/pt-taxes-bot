@@ -8,6 +8,7 @@ import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { UserAnswer } from 'src/entities/user-answer.entity';
 import { QuestionModule } from '../question/question.module';
 import { TaskModule } from '../task/task.module';
+import { UserRepository } from 'src/repositories/user.repository';
 
 @Module({
 	imports: [
@@ -17,7 +18,7 @@ import { TaskModule } from '../task/task.module';
 		TaskModule,
 	],
 	controllers: [UserController],
-	providers: [UserService, UserAnswerRepository],
+	providers: [UserService, UserAnswerRepository, UserRepository],
 	exports: [UserService],
 })
 export class UserModule {};

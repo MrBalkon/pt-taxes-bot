@@ -1,27 +1,38 @@
 
 Todo:
   Active:
-    ☐ Add cron for handling periodic tasks
-    ☐ Shedule failed tasks if gov service is down
+    ☐ Add operations handling
+    ☐ Shedule failed tasks if gov service is down (Add one shot cron jobs)
     ☐ Social Security calculation
     ☐ IVA calculation
     ☐ IRS calculation
+    ☐ IRS previous year declaration parsing
     ☐ Handle exceptions from gov site
     ☐ Add payment system
     ☐ Add Database seeding via migraiton
     ☐ Add constraint on permanent fields
+    ☐ Add different service modes
+    ☐ Add public/system visibility to tasks
     ☐ 
-    ☐ 
+    ✔ Add cron for handling periodic tasks @done(24-07-31 23:57)
     ✔ Make questions conditional based on other questions @done(24-07-30 23:46)
     ✔ Fix handling error on check credentials task @done(24-07-30 21:08)
     ✔ Make questions available to fill with income @done(24-07-31 19:13)
   Later:
+    ☐ Add validation for user input and fixate (add editable field)
+    ☐ Add edit fields module
     ☐ Make cleaner texts
     ☐ Add monitoring system
     ☐ Fix Redis connection ro Redis on prod
     ☐ Deploy service
     ☐ Handle non arm on prod
     ☐ Handle options questions answer (edit telegram message)
+    ☐ Add AI
+  Features:
+    ☐ Add support module
+    ☐ Add feedback module
+    ☐ Post system (reuse one-shot cron)
+    
   Probably never:
     ☐ think about conditional question for income as a compare
   ✔ Add user system @done(24-07-26 23:30)

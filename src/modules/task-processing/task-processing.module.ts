@@ -12,6 +12,7 @@ import { TelegramNotifyTask } from './tasks/telegram-notify.task';
 import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
 import { InjectDynamicProviders } from 'nestjs-dynamic-providers';
 import { QuestionModule } from '../question/question.module';
+import { TaskModule } from '../task/task.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
@@ -21,6 +22,7 @@ import { QuestionModule } from '../question/question.module';
 		SeleniumModule,
 		TelegamConfigModule,
 		QuestionModule,
+		TaskModule,
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],

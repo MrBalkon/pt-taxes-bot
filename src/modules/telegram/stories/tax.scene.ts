@@ -33,15 +33,15 @@ export class TaxScene {
    async onAnswerSocialSecurity(
 	 @Ctx() ctx: SceneContext
    ) {
-	   await this.taskProcessingQueueService.addJob<null>(ctx.from.id, {
+	   await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
 		   type: TaskProcessingJobName.SOCIAL_SECURITY_FILL_DECLARATION,
 		   data: null
 	   });
-	//    await this.taskProcessingQueueService.addJob<null>(ctx.from.id, {
+	//    await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
 	// 	   type: TaskProcessingJobName.GOOGLE_EXAMPLE_COM,
 	// 	   data: null
 	//    });
-	//    await this.taskProcessingQueueService.addJob<{ text: string }>(ctx.from.id, {
+	//    await this.taskProcessingQueueService.addJobByTelegramId<{ text: string }>(ctx.from.id, {
 	// 	   type: TaskProcessingJobName.TELEGRAM_NOTIFY,
 	// 	   data: {
 	// 		text: "notification!!!!"

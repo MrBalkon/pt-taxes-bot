@@ -15,11 +15,41 @@ export class TaskProcessingQueueService {
 	private userServices: UserService,
   ) {}
 
-  async addJob<T>(telegramId: number, payload: TaskProcessingPayloadCall<T>) {
+  async addJobByTelegramId<T>(telegramId: number, payload: TaskProcessingPayloadCall<T>) {
 	const user = await this.userServices.getUserByTelegramId(String(telegramId));
-	const uuid = uuidV4();
+
+	if (!user) {
+	  throw new NotFoundException(`User with telegramId ${telegramId} not found`);
+	}
+
+	const jobData = {
+	  userId: user.id,
+	  ...payload
+	}
+
+	await this.addQueueJob(jobData);
+  }
+
+  async addQueueJobBulk<T>(tasksPayloads: TaskProcessingPayloadCall<T>[]) {
+	const tasks = tasksPayloads.map((task) => {
+		const taskUid = this.generateId();
+		const data = {
+			...task,
+			taskUid
+		}
+		return {
+			data,
+			jobId: taskUid,
+			removeOnComplete: true,
+		}
+	})
+	await this.queue.addBulk(tasks);
+  }
+
+  async addQueueJob<T>(jobData: TaskProcessingPayloadCall<T>) {
+	const uuid = this.generateId();
     this.logger.log(
-      `[${uuid}] Received task: ${payload.type}`,
+      `[${uuid}] Received task: ${jobData.type}`,
     );
 
     const job = await this.queue.getJob(uuid);
@@ -29,21 +59,17 @@ export class TaskProcessingQueueService {
         `[${uuid}] No existing job, creating new one`,
       );
 
-      await this.addQueueJob({
+	  const payload = {
 		taskUid: uuid,
-		userId: user.id,
-		...payload
+		...jobData
+	  }
+	  await this.queue.add(payload, {
+		jobId: payload.taskUid,
+		removeOnComplete: true,
 	  });
     } else if ((await job.getState()) === 'failed') {
       await job.retry();
     }
-  }
-
-  async addQueueJob<T>(jobData: TaskProcessingPayloadTemplate<T>) {
-    await this.queue.add(jobData, {
-      jobId: jobData.taskUid,
-      removeOnComplete: true,
-    });
   }
 
   async getJobsList() {
@@ -75,5 +101,9 @@ export class TaskProcessingQueueService {
 
   async deleteCompletedJobs(query: CleanJobsQuery) {
     await this.queue.clean(query.grace, query.status, query.limit);
+  }
+
+  private generateId() {
+	return uuidV4();
   }
 }

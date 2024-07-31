@@ -24,9 +24,6 @@ export class Feature {
 	@Column('varchar', { name: 'description' })
 	description: string;
 
-	@ManyToMany(() => Task, task => task.features)
-	tasks: Task[];
-
 	@OneToMany(() => FeatureAccess, featureAccess => featureAccess.feature)
 	featureAccesses: FeatureAccess[];
 
