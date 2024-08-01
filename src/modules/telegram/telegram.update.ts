@@ -23,9 +23,10 @@ import { UserService } from '../user/user.service';
 
 	@Start()
 	async start(@Ctx() ctx: SceneContext) {
-	  const existingUser = await this.userService.getUserByTelegramId(String(ctx.from.id));
+	  const existingUser = await this.userService.getAcessedUserByTelegramId(String(ctx.from.id));
 	  if (!existingUser) {
-		  await this.userService.createUser({ telegramId: String(ctx.from.id) });
+		await ctx.reply(this.i18n.t("t.access.restricted"));
+		return
 	  }
 	  await ctx.scene.enter('homeScene');
 	}

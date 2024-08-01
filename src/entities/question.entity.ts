@@ -13,10 +13,12 @@ import { QuestionCondition } from './question-condition.entity';
 
 export enum QuestionType {
 	TEXT="text",
+	FLOAT="float",
 	OPTIONS="options",
 }
 
 export enum QuestionPeriodTime {
+	PREVIOUS_QUARTER_MONTHS="previous_quarter_months",
 	PREVIOUS_QUARTER="previous_quarter",
 	CURRENT_QUARTER="current_quarter",
 }

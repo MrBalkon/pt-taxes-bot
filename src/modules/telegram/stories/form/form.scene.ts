@@ -5,13 +5,12 @@ import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { ActionContract } from 'src/decorators/action.decorator';
 import { UserService } from 'src/modules/user/user.service';
-import { QUESTIONS_AND_FIELDS, Question, QuestionType } from './questions';
 import { FormError } from './form.errors';
 import { TaskProcessingQueueService } from 'src/modules/task-processing/services/task-processing.queue';
 import { TaskProcessingJobName } from 'src/modules/task-processing/task-processing.types';
 import { QuestionService } from 'src/modules/question/question.service';
 import { FormQuestion } from './form.types';
-import { QuestionPeriodTime } from 'src/entities/question.entity';
+import { QuestionPeriodTime, QuestionType } from 'src/entities/question.entity';
 import { getMonthNameByNumber, getPreviousQuarterMonths, getPreviousQuarterMonthsNames, getPreviousQuarterYear } from 'src/utils/date';
 
 export interface SceneState {
@@ -156,7 +155,7 @@ export class FormScene {
 	}
 
 	private expandQuestion(question: FormQuestion) {
-		if (question?.periodTime == QuestionPeriodTime.PREVIOUS_QUARTER) {
+		if (question?.periodTime == QuestionPeriodTime.PREVIOUS_QUARTER_MONTHS) {
 			const previousQuarterMonths = getPreviousQuarterMonthsNames()
 			const questions = previousQuarterMonths.map(month => {
 				return {
@@ -191,6 +190,12 @@ export class FormScene {
 					throw new FormError("Please choose one of the options")
 				}
 				return value
+			case QuestionType.FLOAT:
+				const numberValue = Number((ctx.message as any).text)
+				if (isNaN(numberValue)) {
+					throw new FormError("Please send a number")
+				}
+				return numberValue
 			default:
 				const textVal = (ctx.message as any).text
 				if (!textVal) {

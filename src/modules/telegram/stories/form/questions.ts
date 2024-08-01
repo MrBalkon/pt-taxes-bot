@@ -1,4 +1,5 @@
 export enum QuestionType {
+	FLOAT="float",
 	TEXT="text",
 	OPTIONS="options",
 }

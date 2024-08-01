@@ -28,6 +28,8 @@ export class UserAnswer {
 	@Column('int', { name: 'year', nullable: true })
 	year: number;
 
+	// not only month, but also quarter
+	// TODO rename to date_parameter
 	@Column('int', { name: 'month', nullable: true })
 	month: number;
 

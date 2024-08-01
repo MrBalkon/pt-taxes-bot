@@ -25,6 +25,9 @@ export class User {
 	@OneToMany(() => UserAnswer, userAnswer => userAnswer.user)
 	answers: UserAnswer[];
 
+	@Column('bool', { name: 'has_contract', default: false })
+	hasContract: boolean;
+
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
 

@@ -74,6 +74,13 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .execute();
 	}
 
+	async getAnswersByUserIdAndFieldSystemNames(userId: number, fieldsSystemNames: string[]) {
+		return this.defaultSelector()
+		  .where('answer.userId = :userId', { userId })
+		  .andWhere('field.system_name IN (:...fieldsSystemNames)', { fieldsSystemNames })
+		  .execute();
+	}
+
 	async setAnswerError(userId: number, fieldsSystemName: number, error: string) {
 		return this.createQueryBuilder()
 		  .update(UserAnswer)
@@ -142,6 +149,7 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 				answer.id,
 				field.field_name as "fieldName",
 				field.system_name as "fieldSystemName",
+				field.field_life_span_type as "fieldLifeSpanType",
 				answer.field_id as "fieldId",
 				answer.user_id as "userId",
 				answer.year,

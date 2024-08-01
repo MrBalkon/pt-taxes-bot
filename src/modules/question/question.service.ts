@@ -2,10 +2,11 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question, QuestionPeriodTime } from 'src/entities/question.entity';
 import { UserAnswer } from 'src/entities/user-answer.entity';
+import { FieldLifeSpanType } from 'src/entities/user-field.entity';
 import { FindQuestionResult } from 'src/repositories/queries/getPriorityQuestionQuery';
 import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
-import { getPreviousQuarterMonths, getPreviousQuarterYear } from 'src/utils/date';
+import { getPreviousQuarter, getPreviousQuarterMonths, getPreviousQuarterYear } from 'src/utils/date';
 import { Repository } from 'typeorm';
 
 @Injectable()
@@ -46,31 +47,55 @@ export class QuestionService {
 			});
 		}
 
-		if (question.periodTime === QuestionPeriodTime.PREVIOUS_QUARTER) {
+		if (question.periodTime === QuestionPeriodTime.PREVIOUS_QUARTER_MONTHS) {
 			if (!Array.isArray(answer)) {
 				throw new Error('Answer should be an array');
 			}
 			const previousQuarterMonths = getPreviousQuarterMonths()
 			const previousQuarterYear = getPreviousQuarterYear()
 
-			for (const previousQuarterMonth of previousQuarterMonths) {
+			previousQuarterMonths.forEach((previousQuarterMonth, index) => {
 				answers.push({
 					userId,
 					fieldId: question.fieldId,
-					fieldValue: answer,
+					fieldValue: answer[index],
 					month: previousQuarterMonth,
 					year: previousQuarterYear,
 				});
-			}
+			})
+		}
+
+		if (question.periodTime === QuestionPeriodTime.PREVIOUS_QUARTER) {
+			const previousQuarter = getPreviousQuarter()
+			const previousQuarterYear = getPreviousQuarterYear()
+			answers.push({
+				userId,
+				fieldId: question.fieldId,
+				fieldValue: answer,
+				month: previousQuarter,
+				year: previousQuarterYear,
+			});
 		}
 
 		return this.answerRepository.createAnswerBulk(answers);
 	}
 
-	async getUserMetaFields(userId: number, systemName: string) {
-		const answers = await this.answerRepository.getAnswersByUserIdAndTaskId(userId, systemName);
+	async getUserMetaFields(userId: number, fieldSystemNames: string[]) {
+		const answers = await this.answerRepository.getAnswersByUserIdAndFieldSystemNames(userId, fieldSystemNames);
 
 		return answers.reduce((acc, answer) => {
+			if (answer.fieldLifeSpanType == FieldLifeSpanType.PERIODIC) {
+				if (!acc[answer.fieldSystemName]) {
+					acc[answer.fieldSystemName] = {};
+				}
+
+				if (!acc[answer.fieldSystemName][answer.year]) {
+					acc[answer.fieldSystemName][answer.year] = [];
+				}
+
+				acc[answer.fieldSystemName][answer.year][answer.month] = answer;
+				return acc;
+			}
 			acc[answer.fieldSystemName] = answer;
 			return acc;
 		}, {});

@@ -59,6 +59,7 @@ export class QuestionRepository {
 				this.encryptKey,
 				currentYear,
 				previousQuarterMonths,
+				previousQuarter,
 			]
 		) as FindQuestionResult[];
 

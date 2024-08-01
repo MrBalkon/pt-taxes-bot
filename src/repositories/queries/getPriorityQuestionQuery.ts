@@ -87,7 +87,15 @@ WITH questions AS (
         (
             CASE
                 WHEN qc.id IS NULL THEN TRUE
-                WHEN qc."condition" = '=' THEN qc.compare_value = PGP_SYM_DECRYPT(ua_temp.field_value, $2)
+                WHEN qc."condition" = '=' THEN 
+                    qc.compare_value = PGP_SYM_DECRYPT(ua_temp.field_value, $2)
+                    AND
+                    (
+                        CASE
+                            WHEN qd."periodTime" = 'previous_quarter_months' THEN ua_temp."year" = $3 AND ua_temp."month" = $5
+                            ELSE TRUE
+                        END
+                    )
             END
         )
     GROUP BY
@@ -143,7 +151,8 @@ WITH questions AS (
     HAVING
         (
             CASE
-                WHEN ur."periodTime" = 'previous_quarter' THEN NOT array_agg(ur."month") @> $4::integer[] 
+                WHEN ur."periodTime" = 'previous_quarter_months' THEN NOT array_agg(ur."month") @> $4::integer[] 
+                WHEN ur."periodTime" = 'previous_quarter' THEN NOT array_agg(ur."month") @> ARRAY[$5::integer] 
                 ELSE TRUE
             END
         )

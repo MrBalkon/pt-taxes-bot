@@ -18,10 +18,10 @@ export class UserService {
 		private taskService: TaskService,
 	) {}
 
-	async getFullUserMetaById(id: number, taskSystemName: string, manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
+	async getFullUserMetaById(id: number, fieldSystemNames: string[], manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
 		const user = await this.getUserById(id, manager);
 		const tasksMap = await this.taskService.getTasksMapByUserId(id, manager);
-		const metaFields = await this.questionService.getUserMetaFields(id, taskSystemName);
+		const metaFields = await this.questionService.getUserMetaFields(id, fieldSystemNames);
 
 		return {
 			...user,
@@ -32,6 +32,10 @@ export class UserService {
 
 	async getUserByTelegramId(telegramId: string, manager: EntityManager = this.connection.manager) {
 		return manager.findOneBy(User, { telegramId });
+	}
+
+	async getAcessedUserByTelegramId(telegramId: string, manager: EntityManager = this.connection.manager) {
+		return manager.findOneBy(User, { telegramId, hasContract: true });
 	}
 
 	async getUserById(id: number, manager: EntityManager = this.connection.manager) {
