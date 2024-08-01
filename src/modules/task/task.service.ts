@@ -1,6 +1,9 @@
 import { Inject, Injectable, OnModuleInit } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
+import { ExecutionStep } from 'src/entities/execution-step.entity';
 import { Task } from 'src/entities/task.entity';
+import { ExecutionStepRepository } from 'src/repositories/execution-step.repository';
+import { TaskRepository } from 'src/repositories/task.repository';
 import { DataSource, EntityManager, Repository } from 'typeorm';
 
 @Injectable()
@@ -8,6 +11,8 @@ export class TaskService implements OnModuleInit {
 	public tasksNameMap: Record<string, Task> = {};
 	constructor(
 		@InjectDataSource() private connection: DataSource,
+		private readonly taskRepository: TaskRepository,
+		private readonly executionStepRepository: ExecutionStepRepository,
 	) {}
 
 	async onModuleInit() {
@@ -49,6 +54,10 @@ export class TaskService implements OnModuleInit {
 			acc[task.systemName] = task;
 			return acc;
 		}, {});
+	}
+
+	async getTaskStepsBySystemName(taskSystemName: string, manager: EntityManager = this.connection.manager): Promise<ExecutionStep[]> {
+		return this.executionStepRepository.getExecutionStepsByTaskSystemName(taskSystemName, manager);
 	}
 
 	private async updateLocalTasksMap(manager: EntityManager = this.connection.manager) {

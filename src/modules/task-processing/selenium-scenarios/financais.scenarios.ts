@@ -1,5 +1,5 @@
 import { By, Key, WebDriver } from "selenium-webdriver"
-import { ServiceUnavailableError, TaskProcessingError, WrongCredentialsError } from "../task-processing.error"
+import { PageException, ServiceUnavailableError, TaskProcessingError, WrongCredentialsError } from "../task-processing.error"
 
 export const financaisGoMainPage = async (driver: WebDriver) => {
 	try {
@@ -21,4 +21,22 @@ export const financaisLogin = async (driver: WebDriver, { nif, password }) => {
 	} catch (error) {
 		throw new WrongCredentialsError('Failed to login to Seg Social')
 	}
+}
+
+export const gotToAtividadePage = async (driver: WebDriver) => {
+	try {
+		await driver.get('https://sitfiscal.portaldasfinancas.gov.pt/integrada/presentation?queryStringS=targetScreen%3DecraActividade%26hmac%3DNYiJFiu6j3kZKB2L7YDSHFj8GPM%3D')
+	} catch (error) {
+		throw new PageException('Failed to go to Atividade page')
+	}
+}
+
+export const retrieveAtividadeData = async (driver: WebDriver) => {
+
+}
+
+export const retrieveCategoryData = async (driver: WebDriver) => {
+	await gotToAtividadePage(driver)
+
+
 }

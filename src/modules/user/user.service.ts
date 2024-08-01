@@ -30,6 +30,16 @@ export class UserService {
 		}
 	}
 
+	async getFullUserById(id: number, taskSystemName: string,  manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
+		const user = await this.getUserById(id, manager);
+		const metaFields = await this.questionService.getUserMetaFieldsByTaskSystemName(id, taskSystemName);
+
+		return {
+			...user,
+			metaFields,
+		}
+	}
+
 	async getUserByTelegramId(telegramId: string, manager: EntityManager = this.connection.manager) {
 		return manager.findOneBy(User, { telegramId });
 	}

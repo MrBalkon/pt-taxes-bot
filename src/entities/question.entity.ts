@@ -14,6 +14,7 @@ import { QuestionCondition } from './question-condition.entity';
 export enum QuestionType {
 	TEXT="text",
 	FLOAT="float",
+	ARRAY="array",
 	OPTIONS="options",
 }
 

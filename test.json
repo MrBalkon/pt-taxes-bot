@@ -1,0 +1,13 @@
+{
+	"methodArgs": [
+		{
+			"value": "//a[contains(text(), 'Sair')]",
+			"executionPath": [
+				{
+					"executionMethod": "xpath",
+					"executionSource": "selenium.By"
+				}
+			]
+		}
+	]
+}

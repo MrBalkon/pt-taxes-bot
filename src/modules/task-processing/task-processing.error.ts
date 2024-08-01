@@ -17,3 +17,9 @@ export class ServiceUnavailableError extends Error {
 		this.name = 'TaskProcessingError';
 	}
 }
+
+export class PageException extends TaskProcessingError {
+	constructor(message) {
+		super(message)
+	}
+}

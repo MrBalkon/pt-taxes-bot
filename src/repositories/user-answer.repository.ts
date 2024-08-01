@@ -1,5 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { UserAnswer } from "src/entities/user-answer.entity";
+import { UserField } from "src/entities/user-field.entity";
 import { ConfigService } from "src/modules/config/config.service";
 import { DataSource, DeepPartial, Repository } from "typeorm";
 
@@ -36,6 +37,29 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .execute();
 	}
 
+	async createOrUpdateAnswerByFieldSystemName(userId: number, systemName: string, data: DeepPartial<UserAnswer>) {
+		const field = await this.dataSource.getRepository(UserField).findOneBy({ systemName });
+
+		return this.createOrUpdateAnswerByFieldId(userId, field.id, data);
+	}
+
+	async createOrUpdateAnswerByFieldId(userId: number, fieldId: number, data: DeepPartial<UserAnswer>) {
+		const answers = await this.defaultSelector()
+		  .where('answer.userId = :userId', { userId })
+		  .andWhere('field.id = :fieldId', { fieldId })
+		  .execute();
+
+		if (answers.length) {
+			return this.updateAnswer(answers[0].id, data);
+		}
+
+		return this.createAnswer({
+			...data,
+			userId,
+			fieldId,
+		});
+	}
+
 	async createAnswerBulk(data: DeepPartial<UserAnswer>[]) {
 		let baseParameters = this.prepareEncryptKey();
 		const values = data.map((answer) => {
@@ -66,7 +90,7 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .execute();
 	}
 
-	async getAnswersByUserIdAndTaskId(userId: number, systemName: string) {
+	async getAnswersByUserIdAndTaskSystemName(userId: number, systemName: string) {
 		return this.defaultSelector()
 		  .leftJoin('field.taskFields', 'tf')
 		  .where('answer.userId = :userId', { userId })

@@ -7,7 +7,7 @@ import { FindQuestionResult } from 'src/repositories/queries/getPriorityQuestion
 import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { getPreviousQuarter, getPreviousQuarterMonths, getPreviousQuarterYear } from 'src/utils/date';
-import { Repository } from 'typeorm';
+import { DeepPartial, Repository } from 'typeorm';
 
 @Injectable()
 export class QuestionService {
@@ -80,9 +80,19 @@ export class QuestionService {
 		return this.answerRepository.createAnswerBulk(answers);
 	}
 
+	async getUserMetaFieldsByTaskSystemName(userId: number, taskSystemName: string) {
+		const answers = await this.answerRepository.getAnswersByUserIdAndTaskSystemName(userId, taskSystemName);
+
+		return this.prepareAnswers(answers);
+	}
+
 	async getUserMetaFields(userId: number, fieldSystemNames: string[]) {
 		const answers = await this.answerRepository.getAnswersByUserIdAndFieldSystemNames(userId, fieldSystemNames);
 
+		return this.prepareAnswers(answers);
+	}
+
+	private prepareAnswers(answers: any[]) {
 		return answers.reduce((acc, answer) => {
 			if (answer.fieldLifeSpanType == FieldLifeSpanType.PERIODIC) {
 				if (!acc[answer.fieldSystemName]) {
@@ -111,5 +121,13 @@ export class QuestionService {
 
 	async deleteAnswerBulk(userId: number, fieldsSystemNames: string[]) {
 		return this.answerRepository.deleteAnswerBulk(userId, fieldsSystemNames);
+	}
+
+	async saveAnswerByFieldSystemName(userId: number, fieldSystemName: string, data: DeepPartial<UserAnswer>) {
+		return this.answerRepository.createOrUpdateAnswerByFieldSystemName(userId, fieldSystemName, data);
+	}
+
+	async createOrUpdateAnswerByFieldId(userId: number, fieldId: number, data: DeepPartial<UserAnswer>) {
+		return this.answerRepository.createOrUpdateAnswerByFieldId(userId, fieldId, data);
 	}
 }

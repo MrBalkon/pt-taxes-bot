@@ -8,5 +8,5 @@ export interface UserUpdate {
 
 export interface UserWithMetaFields extends User {
 	metaFields: Record<string, any>;
-	tasksMap: Record<string, Task>;
+	tasksMap?: Record<string, Task>;
 }

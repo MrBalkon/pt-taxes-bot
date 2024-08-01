@@ -14,6 +14,8 @@ import { InjectDynamicProviders } from 'nestjs-dynamic-providers';
 import { QuestionModule } from '../question/question.module';
 import { TaskModule } from '../task/task.module';
 import { OperationModule } from '../operation/operation.module';
+import { ExecutionScenarioModule } from '../execution-scenario/execution-scenario.module';
+import { ExecutionCommandModule } from '../execution-command/execution-command.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
@@ -25,6 +27,8 @@ import { OperationModule } from '../operation/operation.module';
 		QuestionModule,
 		TaskModule,
 		OperationModule,
+		ExecutionCommandModule,
+		ExecutionScenarioModule,
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],
