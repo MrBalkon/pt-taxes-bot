@@ -32,6 +32,7 @@ Todo:
     ☐ Handle options questions answer (edit telegram message)
     ☐ Add AI
     ☐ Add UI
+    ☐ Add Handling sensitive data in operation errors
   Features:
     ☐ Add support module
     ☐ Add feedback module

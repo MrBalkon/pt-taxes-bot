@@ -10,6 +10,7 @@ import { Task } from './task.entity';
 import { User } from './user.entity';
 
 export enum OperationStatus {
+	QUEUED='queued',
 	IN_PROGRESS='in_progress',
 	SUCCESS='success',
 	FAIL='fail'
@@ -17,8 +18,8 @@ export enum OperationStatus {
 
 @Entity('operations')
 export class Operation {
-	@PrimaryGeneratedColumn()
-	id: number;
+	@PrimaryGeneratedColumn("uuid")
+	id: string;
 
 	@Column('int', { name: 'task_id' })
 	taskId: number;
@@ -29,10 +30,13 @@ export class Operation {
 	@Column('varchar', { name: 'error', nullable: true })
 	error: string | null;
 
+	@Column('timestamp', { name: 'finished_at', nullable: true })
+	finishedAt: Date;
+
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
 
-	@Column('enum', { name: 'status', enum: OperationStatus, default: OperationStatus.IN_PROGRESS })
+	@Column('enum', { name: 'status', enum: OperationStatus, default: OperationStatus.QUEUED })
 	status: OperationStatus;
 
 	// relations

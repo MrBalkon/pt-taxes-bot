@@ -11,11 +11,16 @@ import { DoneCallback, Job } from 'bull';
 import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing.constants';
 import { TaskProcessingPayload } from '../task-processing.types';
 import { TaskProcessingService } from './task.processing.service';
+import { OperationService } from 'src/modules/operation/operation.service';
+import { OperationStatus } from 'src/entities/operation.entity';
 
 @Processor(TASK_PROCESSING_QUEUE_NAME)
 export class TaskProcessingQueueConsumer {
 	private logger = new Logger(TaskProcessingQueueConsumer.name);
-	constructor(@Inject(TaskProcessingService) private taskProcessingService: TaskProcessingService) { }
+	constructor(
+		@Inject(TaskProcessingService) private taskProcessingService: TaskProcessingService,
+		private readonly operationService: OperationService
+	) { }
 
 	@OnQueueEvent('completed')
 	onQueueCompleted(job: Job<TaskProcessingPayload>) {
@@ -52,10 +57,13 @@ export class TaskProcessingQueueConsumer {
 		);
 
 		try {
+			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.IN_PROGRESS);
 			await this.taskProcessingService.processTask(payload);
+			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.SUCCESS);
 			done();
 			return;
 		} catch (e) {
+			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.FAIL, e.message);
 			if (e instanceof HttpException) {
 				this.logger.warn(
 					`[${task.id}] Exception processing task: ${e.message}`,

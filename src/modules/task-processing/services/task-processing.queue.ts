@@ -5,6 +5,7 @@ import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing.constants';
 import { CleanJobsQuery, TaskProcessingPayload, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from '../task-processing.types';
 import { v4 as uuidV4 } from "uuid"
 import { UserService } from 'src/modules/user/user.service';
+import { OperationService } from 'src/modules/operation/operation.service';
 
 @Injectable()
 export class TaskProcessingQueueService {
@@ -13,6 +14,7 @@ export class TaskProcessingQueueService {
     @InjectQueue(TASK_PROCESSING_QUEUE_NAME)
     private queue: Queue<TaskProcessingPayloadTemplate<any>>,
 	private userServices: UserService,
+	private operationService: OperationService
   ) {}
 
   async addJobByTelegramId<T>(telegramId: number, payload: TaskProcessingPayloadCall<T>) {
@@ -63,10 +65,12 @@ export class TaskProcessingQueueService {
 		taskUid: uuid,
 		...jobData
 	  }
+
 	  await this.queue.add(payload, {
-		jobId: payload.taskUid,
-		removeOnComplete: true,
-	  });
+		  jobId: payload.taskUid,
+		  removeOnComplete: true,
+		});
+	  await this.operationService.createOperationByTaskSystemName(uuid, jobData.type, jobData?.userId);
     } else if ((await job.getState()) === 'failed') {
       await job.retry();
     }

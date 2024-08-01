@@ -13,6 +13,7 @@ import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
 import { InjectDynamicProviders } from 'nestjs-dynamic-providers';
 import { QuestionModule } from '../question/question.module';
 import { TaskModule } from '../task/task.module';
+import { OperationModule } from '../operation/operation.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
@@ -23,6 +24,7 @@ import { TaskModule } from '../task/task.module';
 		TelegamConfigModule,
 		QuestionModule,
 		TaskModule,
+		OperationModule,
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],
