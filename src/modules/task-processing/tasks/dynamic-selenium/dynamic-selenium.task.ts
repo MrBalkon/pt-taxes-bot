@@ -14,6 +14,7 @@ import { TaskService } from "src/modules/task/task.service";
 import { ExecutionCommandService } from "src/modules/execution-command/execution-command.service";
 import { ExecutionScenarioService } from "src/modules/execution-scenario/execution-scenario.service";
 import { UserWithMetaFields } from "src/modules/user/user.types";
+import { ScenarioTreeExecution } from "./scenario-tree-execution.task";
 
 
 @Injectable()
@@ -38,7 +39,7 @@ export class DynamicTask implements Task {
   }
 
   async runInSelenium(driver: WebDriver, user: UserWithMetaFields, task: TaskProcessingPayload): Promise<void> {
-	const scenarios = await this.executionScenarioService.getExecutionScenariosByTaskSystemName(task.type)
+	const scenarioTasks = await this.executionScenarioService.getExecutionMapTreeByTaskSystemName(task.type)
 	const commands = await this.executionCommandService.getExecutionCommandsByTaskSystemName(task.type)
 
 	const executionContext = new ExecutionContext(
@@ -48,27 +49,30 @@ export class DynamicTask implements Task {
 				"By": By,
 				"Key": Key,
 			},
-			userInputData: user.metaFields,
+			node: {
+				"Boolean": Boolean,
+			},
+			custom: {
+				"Not": (value: any) => !value,
+			},
+			questionService: this.questionService,
+			user: user,
 		}
 	)
 
-	for (const scenario of scenarios) {
-		const steps = scenario.scenarioSteps.map((scenarioStep) => scenarioStep.executionStep)
+	const logger = new Logger(`[${task.taskUid}]`)
 
-		const executionTask = new TaskExecution({
-			executionContext,
-			steps,
-			commands,
-		})
+	const executionTask = new ScenarioTreeExecution({
+		executionContext,
+		scenarioTasks,
+		commands,
+		logger,
+	})
 
-		try {
-			await executionTask.executeTask()
-		} catch (e) {
-			if (e instanceof StepExecutionError) {
-				this.logger.error(`Failed to execute task ${task.type} scenario ${scenario.name} step ${e.step.name} with error: ${e}`)
-			}
-			throw e
-		}
+	try {
+		await executionTask.executeTask()
+	} catch (e) {
+		throw e
 	}
   }
 }

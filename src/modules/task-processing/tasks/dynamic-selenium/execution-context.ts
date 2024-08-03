@@ -16,7 +16,8 @@ export class ExecutionContext {
 	constructor(initialState: ExecutionContextStoreArgs) {
 		this.store = {
 			...initialState,
-			store: this.store
+			store: this.store,
+			executionContext: this,
 		}
 	}
 

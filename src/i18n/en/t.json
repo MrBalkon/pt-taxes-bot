@@ -13,7 +13,8 @@
 		"welcome": "Please select the tax you want to automate:",
 		"socialSecurity": "Social Security",
 		"iva": "IVA",
-		"irs": "IRS"
+		"irs": "IRS",
+		"financaisFillData": "Fill data from financais"
 	},
 	"poll": {
 		"welcome": "Please, answer the following questions we need to setup your tax automation:"

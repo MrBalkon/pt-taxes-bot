@@ -1,10 +1,11 @@
 import { ExecutionPath, ExecutionStep } from "src/entities/execution-step.entity";
 import { ExecutionContext } from "./execution-context";
 import { ExecutionCommand } from "src/entities/execution-command.entity";
+import { Logger } from "@nestjs/common";
 
 export interface TaskExecutionArgs {
+	logger: Logger
 	executionContext: ExecutionContext
-	steps: ExecutionStep[]
 	commands: ExecutionCommand[]
 }
 
@@ -18,21 +19,28 @@ export class StepExecutionError extends Error {
 }
 
 export class TaskExecution {
-	private executionContext: ExecutionContext
-	private steps: ExecutionStep[]
+	protected executionContext: ExecutionContext
+	protected logger: Logger
 	private commandsMap: Record<string, ExecutionCommand>
 
 	constructor(args: TaskExecutionArgs) {
 		this.executionContext = args.executionContext
-		this.steps = args.steps
 		this.commandsMap = args.commands.reduce((acc, command) => {
 			acc[command.id] = command
 			return acc
 		}, {})
+		this.logger = args.logger
 	}
 
 	async executeTask(): Promise<void> {
-		for (const step of this.steps) {
+		throw new Error('Not implemented')
+	}
+
+	async executeTaskSteps(steps: ExecutionStep[]): Promise<void> {
+		for (const step of steps) {
+			if (this.executionContext.get(`execution.doSkip`)) {
+				continue
+			}
 			await this.executeStep(step)
 		}
 	}

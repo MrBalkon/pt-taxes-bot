@@ -22,6 +22,10 @@
     "typeorm:local": "node --require ts-node/register ./node_modules/typeorm/cli.js -f local-ormconfig.js",
     "typeorm": "node --require ts-node/register ./node_modules/typeorm/cli.js -d ./typeorm.config.ts"
   },
+  "resolutions": {
+    "string-width": "4.2.3",
+    "strip-ansi": "6.0.0"
+  },
   "dependencies": {
     "@nestjs/bull": "^10.1.1",
     "@nestjs/common": "^10.0.0",
@@ -31,9 +35,11 @@
     "@nestjs/typeorm": "^10.0.2",
     "@sentry/node": "^8.20.0",
     "@telegraf/session": "^2.0.0-beta.7",
+    "axios": "^1.7.3",
     "bull": "^4.15.1",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
+    "csv-parse": "^5.5.6",
     "dotenv": "^16.4.5",
     "i18n-js": "^4.4.3",
     "ioredis": "^5.4.1",
@@ -44,6 +50,7 @@
     "nestjs-dynamic-providers": "^0.3.4",
     "nestjs-i18n": "^10.4.5",
     "nestjs-telegraf": "^2.8.1",
+    "node-fetch": "2",
     "pg": "^8.12.0",
     "reflect-metadata": "^0.2.0",
     "rxjs": "^7.8.1",

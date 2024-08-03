@@ -8,10 +8,10 @@ export class SeleniumService {
 		private readonly configService: ConfigService,
 	) {}
 
-	async execute(callback: (driver: WebDriver) => Promise<void>) {
+	async execute<T>(callback: (driver: WebDriver) => Promise<T>) {
 		const driver = await this.prepareDriver()
 		try {
-			await callback(driver)
+			return await callback(driver)
 		} finally {
 			await driver.quit()
 		}

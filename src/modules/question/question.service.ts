@@ -8,12 +8,15 @@ import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { getPreviousQuarter, getPreviousQuarterMonths, getPreviousQuarterYear } from 'src/utils/date';
 import { DeepPartial, Repository } from 'typeorm';
+import { CreateOrUdpdateFieldAnswer } from './question.types';
+import { UserFieldRepository } from 'src/repositories/user-field.repository';
 
 @Injectable()
 export class QuestionService {
 	constructor(
 		private readonly questionRepository: QuestionRepository,
 		private readonly answerRepository: UserAnswerRepository,
+		private readonly userFieldRepository: UserFieldRepository
 	) {}
 
 	async getQuestions(userId: number) {
@@ -129,5 +132,26 @@ export class QuestionService {
 
 	async createOrUpdateAnswerByFieldId(userId: number, fieldId: number, data: DeepPartial<UserAnswer>) {
 		return this.answerRepository.createOrUpdateAnswerByFieldId(userId, fieldId, data);
+	}
+
+	async saveAnswersBulkByFieldSystemName(userId: number, data: CreateOrUdpdateFieldAnswer[]) {
+		const fields = await this.userFieldRepository.getUserFieldsBySystemNames(data.map((item) => item.fieldSystemName));
+
+		const fieldsMap = fields.reduce((acc, field) => {
+			acc[field.systemName] = field.id;
+			return acc;
+		}, {});
+
+		const answers = data.map((item) => {
+			return {
+				userId,
+				fieldId: fieldsMap[item.fieldSystemName],
+				fieldValue: item.fieldValue,
+				month: item.month,
+				year: item.year,
+			};
+		});
+
+		return this.answerRepository.createAnswerBulk(answers);
 	}
 }

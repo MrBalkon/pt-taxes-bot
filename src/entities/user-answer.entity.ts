@@ -7,11 +7,13 @@ import {
 	OneToMany,
 	OneToOne,
 	PrimaryGeneratedColumn,
+	Unique,
 } from 'typeorm';
 import { User } from './user.entity';
 import { UserField } from './user-field.entity';
 
 @Entity('user-answers')
+@Unique(['fieldId', 'userId', 'year', 'month'])
 export class UserAnswer {
 	@PrimaryGeneratedColumn()
 	id: number;

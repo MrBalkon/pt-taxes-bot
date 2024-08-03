@@ -1,15 +1,13 @@
 
 Todo:
   Active:
-    ✔ Store Selenium scenarios in db @done(24-08-02 00:36)
-    ☐ Handle scenario error
     ☐ Shedule failed tasks if gov service is down
     Social Security calculation:
       ☐ Check service availability
       ✔ Check credentials @done(24-08-01 01:44)
       ☐ Fill declaration
       ☐ Retrieve payment
-      ☐ Fill income data for Category B
+      ✔ Fill income data for Category B @done(24-08-03 02:13)
     Financais:
       ☐ Check service availability
       ☐ Check credentials
@@ -17,7 +15,7 @@ Todo:
         ☐ Fill declaration
         ☐ Retrieve payment
         ☐ Quarter Faturas processing
-        ☐ Fill income data for Category B
+        ✔ Fill income data for Category B @done(24-08-03 02:13)
       ☐ IRS calculation
         ☐ Fill declaration
         ☐ Retrieve payment
@@ -30,7 +28,7 @@ Todo:
     ☐ Add different service modes
     ☐ Add public/system visibility to tasks
     ☐ Handle start poll on no questions
-    ☐ 
+    ☐ Switch questions to tree with conditions
     ✔ Add data parameter to split task @done(24-08-01 00:49)
     ✔ Add one shot cron jobs @done(24-08-01 00:47)
     ✔ Add operations handling @done(24-08-01 01:43)
@@ -41,7 +39,12 @@ Todo:
     ✔ Get income in user meta fields @done(24-08-01 15:06)
     ✔ Add periodic time for previous_quarter @done(24-08-01 15:55)
     ✔ Restrict access to bot with has_contract @done(24-08-01 16:12)
+    ✔ Process scenarios tree @done(24-08-02 13:14)
+    ✔ Add Scenario conditions @done(24-08-02 13:14)
+    ✔ Handle scenario error @done(24-08-02 14:27)
+    ✔ Store Selenium scenarios in db @done(24-08-02 00:36)
   Later:
+    ☐ Replace custom code tasks with dynamic
     ☐ Add support for downloaded files?
     ☐ Add support for parsing downloaded files?
     ☐ Add test for get priority question
@@ -57,6 +60,7 @@ Todo:
     ☐ Add constraint on permanent fields
     ☐ Handle options questions answer (edit telegram message)
     ☐ Add parent_operation_id for split tasks
+    ☐ Handle array in scenario
   Features:
     ☐ Add payment system
     ☐ Add edit fields module

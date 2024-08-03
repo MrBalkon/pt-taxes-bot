@@ -18,7 +18,7 @@ export class ExecutionCommandRepository extends Repository<ExecutionCommand> {
 			.leftJoin('executionSteps.scenarioSteps', 'scenarioSteps')
 			.leftJoin('scenarioSteps.executionScenario', 'executionScenario')
 			.leftJoin('executionScenario.scenarioTasks', 'scenarioTasks')
-			.leftJoinAndSelect('scenarioTasks.task', 'task')
+			.leftJoin('scenarioTasks.task', 'task')
 			.where('task.systemName = :taskSystemName', { taskSystemName })
 			.getMany();
 	}

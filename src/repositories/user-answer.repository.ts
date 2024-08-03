@@ -28,6 +28,7 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 
 	async createAnswer(data: DeepPartial<UserAnswer>) {
 		const { userValues, parameters } = this.prepareAnswerSaveData(data);
+		parameters.encryptKey = this.encryptKey;
 
 		return this.createQueryBuilder()
 		  .insert()
@@ -44,10 +45,12 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 	}
 
 	async createOrUpdateAnswerByFieldId(userId: number, fieldId: number, data: DeepPartial<UserAnswer>) {
-		const answers = await this.defaultSelector()
-		  .where('answer.userId = :userId', { userId })
-		  .andWhere('field.id = :fieldId', { fieldId })
-		  .execute();
+		const answers = await this.findBy({
+			userId,
+			fieldId,
+			year: data.year,
+			month: data.month,
+		})
 
 		if (answers.length) {
 			return this.updateAnswer(answers[0].id, data);
@@ -62,8 +65,8 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 
 	async createAnswerBulk(data: DeepPartial<UserAnswer>[]) {
 		let baseParameters = this.prepareEncryptKey();
-		const values = data.map((answer) => {
-			const { userValues, parameters } = this.prepareAnswerSaveData(answer);
+		const values = data.map((answer, index) => {
+			const { userValues, parameters } = this.prepareAnswerSaveData(answer, String(index));
 
 			baseParameters = { ...baseParameters, ...parameters };
 
@@ -75,6 +78,7 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .into(UserAnswer)
 		  .values(values)
 		  .setParameters(baseParameters)
+		  .orUpdate({ conflict_target: ['field_id', 'user_id', 'year', 'month'], overwrite: ['field_value'] })
 		  .execute();
 	}
 
@@ -144,8 +148,8 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		);
 	}
 
-	private prepareAnswerSaveData(data: DeepPartial<UserAnswer>) {
-		const valueId = `fieldValue${data.id}`
+	private prepareAnswerSaveData(data: DeepPartial<UserAnswer>, uniqueString?: string) {
+		const valueId = `fieldValue${uniqueString || ''}`
 		const userValues: Record<string, any> = {
 			...data,
 			fieldValue: () => `PGP_SYM_ENCRYPT(:${valueId},:encryptKey)`,

@@ -6,7 +6,7 @@ import { ConfigService } from "src/modules/config/config.service";
 import { UserService } from "src/modules/user/user.service";
 import { SeleniumService } from "src/modules/selenium/selenium.service";
 import { TelegramService } from "src/modules/telegram-config/telegram.service";
-import { socialSecurityFillDeclaration, socialSecurityLogin, socialSecuriyGoMainPage } from "../selenium-scenarios/social-security.scenarios";
+import { socialSecurityLogin, socialSecuriyGoMainPage } from "../selenium-scenarios/seg-social/social-security.scenarios";
 import { I18nService } from "nestjs-i18n";
 import { User } from "src/entities/user.entity";
 
@@ -35,7 +35,7 @@ export class IVAFillDeclarationTask implements Task {
 		await socialSecuriyGoMainPage(driver)
 		await socialSecurityLogin(driver, { niss, password: segSocialPassword })
 
-		await socialSecurityFillDeclaration(driver)
+		// await socialSecurityFillDeclaration(driver)
 
 		await this.telegramService.sendMessage(user.telegramId, 'Successfully submitted you declaration!')
 	} catch (e) {

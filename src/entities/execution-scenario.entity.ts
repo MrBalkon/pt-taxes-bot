@@ -7,11 +7,10 @@ import {
 	OneToMany,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { ExecutionCommand } from './execution-command.entity';
-import { ExecutionStep } from './execution-step.entity';
-import { Task } from './task.entity';
 import { ExecutionScenarionStep } from './execution-scenario-steps.entity';
 import { ExecutionScenarionTask } from './execution-scenario-task.entity';
+
+export interface ExecutionScenarioParameters extends Record<string, any> {}
 
 @Entity('execution_scenarios')
 export class ExecutionScenario {
@@ -20,6 +19,12 @@ export class ExecutionScenario {
 
 	@Column('varchar', { name: 'name' })
 	name: string;
+
+	@Column('varchar', { name: 'error_produce', nullable: true })
+	errorProduce?: string | null;
+
+	@Column('jsonb', { name: 'parameters', default: {} })
+	parameters: ExecutionScenarioParameters
 
 	@OneToMany(() => ExecutionScenarionTask, executionScenarionTask => executionScenarionTask.executionScenario)
 	scenarioTasks: ExecutionScenarionTask[];

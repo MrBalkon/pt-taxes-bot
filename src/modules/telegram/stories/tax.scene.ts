@@ -22,11 +22,22 @@ export class TaxScene {
 				[{text: this.i18n.t("t.tax.socialSecurity"), callback_data: 'taxScene.socialSecurityAction'}],
 				[{text: this.i18n.t("t.tax.iva"), callback_data: 'taxScene.ivaAction'}],
 				[{text: this.i18n.t("t.tax.irs"), callback_data: 'taxScene.irsAction'}],
+				[{text: this.i18n.t("t.tax.financaisFillData"), callback_data: 'taxScene.financaisFillData'}],
 			   ]
            },
 		   parse_mode: 'HTML'
        });
 	//    ctx.scene.enter('formScene')
+   }
+
+   @Action('taxScene.financaisFillData')
+   async onAnswerfinancaisFillDatay(
+	 @Ctx() ctx: SceneContext
+   ) {
+	   await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
+		   type: TaskProcessingJobName.FINANCAIS_FILL_DATA,
+		   data: null
+	   });
    }
 
    @Action('taxScene.socialSecurityAction')

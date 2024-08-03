@@ -1,19 +1,20 @@
 import { Injectable } from "@nestjs/common";
-import { ExecutionScenario } from "src/entities/execution-scenario.entity";
+import { ExecutionScenarionTask } from "src/entities/execution-scenario-task.entity";
 import { DataSource, EntityManager, Repository } from "typeorm";
 
 @Injectable()
-export class ExecutionScenarioRepository extends Repository<ExecutionScenario> {
+export class ExecutionScenarioTaskRepository extends Repository<ExecutionScenarionTask> {
     constructor(
 		private dataSource: DataSource
 	)
     {
-        super(ExecutionScenario, dataSource.createEntityManager());
+        super(ExecutionScenarionTask, dataSource.createEntityManager());
     }
 
-	async getExecutionScenariosByTaskSystemName(taskSystemName: string, manager: EntityManager = this.manager) {
-		return manager.getRepository(ExecutionScenario)
-			.createQueryBuilder('scenario')
+	async getExecutionScenarioTasksByTaskSystemName(taskSystemName: string, manager: EntityManager = this.manager) {
+		return manager.getRepository(ExecutionScenarionTask)
+			.createQueryBuilder('scenarioTask')
+			.leftJoinAndSelect('scenarioTask.executionScenario', 'scenario')
 			.leftJoinAndSelect('scenario.scenarioSteps', 'scenarioSteps')
 			.leftJoinAndSelect('scenario.scenarioTasks', 'scenarioTasks')
 			.leftJoinAndSelect('scenarioSteps.executionStep', 'executionStep')

@@ -1,13 +1,8 @@
 {
 	"methodArgs": [
 		{
-			"value": "//a[contains(text(), 'Sair')]",
-			"executionPath": [
-				{
-					"executionMethod": "xpath",
-					"executionSource": "selenium.By"
-				}
-			]
+			"value": "user.metaFields.niss.fieldSystemName"
 		}
-	]
+	],
+	"resultNamePath": "credentialdFields[0]"
 }
