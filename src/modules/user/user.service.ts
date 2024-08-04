@@ -8,6 +8,7 @@ import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { QuestionService } from '../question/question.service';
 import { TaskService } from '../task/task.service';
 import { UserRepository } from 'src/repositories/user.repository';
+import { UserMetaFieldsRequest } from '../question/question.types';
 
 @Injectable()
 export class UserService {
@@ -18,7 +19,7 @@ export class UserService {
 		private taskService: TaskService,
 	) {}
 
-	async getFullUserMetaById(id: number, fieldSystemNames: string[], manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
+	async getFullUserMetaById(id: number, fieldSystemNames: UserMetaFieldsRequest[], manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
 		const user = await this.getUserById(id, manager);
 		const tasksMap = await this.taskService.getTasksMapByUserId(id, manager);
 		const metaFields = await this.questionService.getUserMetaFields(id, fieldSystemNames);

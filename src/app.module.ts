@@ -11,6 +11,7 @@ import { TaskProcessingModule } from './modules/task-processing/task-processing.
 import { UserModule } from './modules/user/user.module';
 import { SeleniumModule } from './modules/selenium/selenium.module';
 import { TaskSheduleModule } from './modules/task-schedule/task-schedule.module';
+import { FeatureModule } from './modules/feature/feature.module';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { TaskSheduleModule } from './modules/task-schedule/task-schedule.module'
     UserModule,
     SeleniumModule,
     TaskSheduleModule,
+    FeatureModule,
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       loaderOptions: {

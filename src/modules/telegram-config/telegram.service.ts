@@ -25,17 +25,21 @@ export class TelegramService implements NotificationServiceType {
 		await this.bot.telegram.sendMessage(chatId, message, extra);
 	}
 
-	public fillDataAction(userId: number) {
+	public fillDataAction() {
 		return {text: `${this.i18n.t("t.home.fillData")}`, callback_data: 'fillDataAction'};
 	}
 
+	public fillDataActionKeyboard() {
+		return {text: `📊 Fill in the data`, callback_data: 'fillDataAction'};
+	}
+
 	private getExtra(user: User, notificationBody?: NotificationExtra): ExtraReplyMessage | undefined {
-		switch (notificationBody.action) {
+		switch (notificationBody?.action) {
 			case NotificationAction.REQUEST_CREDENTIALS:
 				return {
 					reply_markup: {
 						inline_keyboard: [
-							[this.fillDataAction(user.id)],
+							[this.fillDataAction()],
 						],
 					},
 					parse_mode: 'HTML'

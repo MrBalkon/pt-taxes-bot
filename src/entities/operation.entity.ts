@@ -39,6 +39,9 @@ export class Operation {
 	@Column('enum', { name: 'status', enum: OperationStatus, default: OperationStatus.QUEUED })
 	status: OperationStatus;
 
+	@Column('varchar', { name: 'parent_operation_id', nullable: true })
+	parentOperationId: string;
+
 	// relations
 	@ManyToOne(() => User, user => user.operations)
 	@JoinColumn({ name: 'user_id' })

@@ -8,7 +8,6 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { UserField } from './user-field.entity';
 import { Question } from './question.entity';
 
 export enum QuestionConditionOperator {
@@ -26,8 +25,8 @@ export class QuestionCondition {
 	@Column('varchar', { name: 'condition' })
 	condition: QuestionConditionOperator
 
-	@Column('integer', { name: 'compare_question_id', nullable: true })
-	compareQuestionId: number
+	@Column('integer', { name: 'compare_field_id', nullable: true })
+	compareFieldId: number
 
 	@Column('varchar', { name: 'compare_value', nullable: true })
 	compareValue: string | null

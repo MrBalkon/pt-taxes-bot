@@ -12,6 +12,7 @@ import { QuestionService } from 'src/modules/question/question.service';
 import { FormQuestion } from './form.types';
 import { QuestionPeriodTime, QuestionType } from 'src/entities/question.entity';
 import { getMonthNameByNumber, getPreviousQuarterMonths, getPreviousQuarterMonthsNames, getPreviousQuarterYear } from 'src/utils/date';
+import { SubscriptionService } from 'src/modules/subscription/subscription.service';
 
 export interface SceneState {
 	currentFieldId?: number;
@@ -27,6 +28,7 @@ export class FormScene {
 		private readonly userService: UserService,
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
 		private readonly questionsService: QuestionService,
+		private readonly subscriptionService: SubscriptionService,
 	) { }
 	@SceneEnter()
 	async enter(@Ctx() ctx: SceneContext) {
@@ -34,6 +36,7 @@ export class FormScene {
 			reply_markup: {
 				inline_keyboard: [
 					[{ text: "Start poll", callback_data: 'formScene.startPoll' }],
+					// [{ text: "Cancel", callback_data: 'formScene.cancelPoll' }],
 				],
 			},
 			parse_mode: 'HTML'
@@ -48,11 +51,18 @@ export class FormScene {
 		await this.sendQuestion(ctx, question)
 	}
 
+	@Action('formScene.cancelPoll')
+	async onAnswerCancel(
+		@Ctx() ctx: SceneContext
+	) {
+		// await this.endPoll(ctx);
+	}
+
 	@Action(/formSceneQuestion:(.*)/)
 	@Hears(/(.*)/)
 	async hears(@Ctx() ctx: SceneContext) {
 		if (!this.getCtxState(ctx)?.currentFieldId) {
-			ctx.scene.enter('homeScene');
+			// ctx.scene.enter('homeScene');
 			return
 		}
 
@@ -105,9 +115,11 @@ export class FormScene {
 
 	private async endPoll(ctx: SceneContext) {
 		delete (ctx.scene.state as SceneState).currentFieldId;
+		await ctx.reply("You have successfully completed the poll")
 		await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
 			type: TaskProcessingJobName.CHECK_CRENDENTIALS,
-			data: null
+			data: null,
+			taskExecutionPath: [TaskProcessingJobName.FINANCAIS_FILL_DATA]
 		})
 		ctx.scene.enter('homeScene');
 	}

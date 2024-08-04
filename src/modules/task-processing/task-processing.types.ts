@@ -1,5 +1,6 @@
 import { JobStatusClean } from "bull";
 import { SocialSecurityTask } from "./tasks/social-security.task";
+import { User } from "src/entities/user.entity";
 
 export enum TaskProcessingJobName {
 	GOOGLE_EXAMPLE_COM = "SocialSecurityTask",
@@ -13,10 +14,14 @@ export interface TaskProcessingPayloadCall<T> {
 	type: TaskProcessingJobName;
 	data: T
 	userId?: number;
+	taskExecutionPath?: TaskProcessingJobName[];
+	parentOperationId?: string;
 }
 
 export interface TaskProcessingPayloadTemplate<T> extends TaskProcessingPayloadCall<T> {
+	systemTaskId: number;
 	taskUid: string;
+	user?: User;
 }
 
 export type TaskProcessingPayload = TaskProcessingPayloadTemplate<null>

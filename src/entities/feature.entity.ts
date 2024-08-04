@@ -12,6 +12,7 @@ import { UserField } from './user-field.entity';
 import { User } from './user.entity';
 import { FeatureAccess } from './feature-access.entity';
 import { FeatureTasks } from './feature-tasks.entity';
+import { SubscriptionPackageFeature } from './subscription-feature.entity';
 
 @Entity('features')
 export class Feature {
@@ -29,4 +30,7 @@ export class Feature {
 
 	@OneToMany(() => FeatureTasks, featureAccess => featureAccess.feature)
 	featureTasks: FeatureTasks[];
+
+	@OneToMany(() => SubscriptionPackageFeature, subscriptionPackageFeature => subscriptionPackageFeature.feature)
+	subscriptionPackageFeatures: SubscriptionPackageFeature[];
 }

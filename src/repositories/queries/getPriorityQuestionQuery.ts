@@ -81,8 +81,7 @@ WITH questions AS (
         count(qd.id) AS count_resolved
     FROM questions_with_conditions qd
     JOIN "questions-conditions" qc ON qd.id = qc.source_question_id
-    LEFT JOIN questions q_temp ON q_temp.id = qc.compare_question_id
-    LEFT JOIN "user-answers" ua_temp ON ua_temp.field_id = q_temp.field_id
+    LEFT JOIN "user-answers" ua_temp ON ua_temp.field_id = qc.compare_field_id
     WHERE 
         (
             CASE

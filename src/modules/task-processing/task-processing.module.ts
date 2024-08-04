@@ -16,6 +16,8 @@ import { TaskModule } from '../task/task.module';
 import { OperationModule } from '../operation/operation.module';
 import { ExecutionScenarioModule } from '../execution-scenario/execution-scenario.module';
 import { ExecutionCommandModule } from '../execution-command/execution-command.module';
+import { NotificationModule } from '../notification/notification.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
@@ -29,6 +31,8 @@ import { ExecutionCommandModule } from '../execution-command/execution-command.m
 		OperationModule,
 		ExecutionCommandModule,
 		ExecutionScenarioModule,
+		NotificationModule,
+		SubscriptionModule,
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],

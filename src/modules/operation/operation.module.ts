@@ -7,7 +7,6 @@ import { TaskModule } from '../task/task.module';
 
 @Module({
 	imports: [
-		TaskModule,
 		TypeOrmModule.forFeature([Operation])
 	],
 	controllers: [],

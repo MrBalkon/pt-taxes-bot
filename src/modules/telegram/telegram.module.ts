@@ -17,6 +17,9 @@ import { FormScene } from './stories/form/form.scene';
 import { TelegramService } from '../telegram-config/telegram.service';
 import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
 import { QuestionModule } from '../question/question.module';
+import { FeatureModule } from '../feature/feature.module';
+import { TaskModule } from '../task/task.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
 
 @Module({
 	imports: [
@@ -24,6 +27,9 @@ import { QuestionModule } from '../question/question.module';
 		UserModule,
 		QuestionModule,
 		TelegamConfigModule,
+		FeatureModule,
+		TaskModule,
+		SubscriptionModule,
 	],
 	controllers: [],
 	providers: [HomeScene, TaxScene, StoryScene, WizardScene, FormScene, TelegramUpdate, TelegramService],

@@ -37,6 +37,9 @@ export class Task {
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
 
+	// @Column('varchar', { name: 'task_type', nullable: true })
+	// taskDateRestriction: string;
+
 	@ManyToMany(() => UserField, "taskFields")
 	@JoinTable({
 	  name: "tasks_fields",

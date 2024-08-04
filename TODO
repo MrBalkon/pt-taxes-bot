@@ -1,7 +1,16 @@
 
 Todo:
   Active:
+    ☐ fill data about IVA/IRS Enquadramento
+    ✔ Add next task argument for every task @done(24-08-04 20:38)
+    ☐ Shedule missed tasks after subscription created
+    ☐ Make DB for faturas classification
+    ☐ Add user tax registered payments
+    ☐ Notify myself about errors in operations every day
+    ☐ Shedule public task for testing if gov site is up
     ☐ Shedule failed tasks if gov service is down
+    ☐ Add task conditions
+    ☐ Add fields fill trigger
     Social Security calculation:
       ☐ Check service availability
       ✔ Check credentials @done(24-08-01 01:44)

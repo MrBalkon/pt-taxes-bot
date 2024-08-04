@@ -11,7 +11,7 @@ export class NotificaitonService {
 	) {}
 
 	async sendNotification(user: User, 	message: string, notificationBody?: NotificationExtra) {
-		if (user.telegramId === null) {
+		if (user.telegramId !== null) {
 			await this.telegramService.sendNotification(user, message, notificationBody);
 		}
 	}

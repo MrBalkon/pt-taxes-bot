@@ -12,6 +12,8 @@ import { QuestionService } from "src/modules/question/question.service";
 import { DateTime } from "luxon";
 import { goFaturaVerdePage, retrieveFaturaVerdeIncome } from "../selenium-scenarios/financais/retrieve-fatura-verde.scenario";
 import { DownloadFinancaisFaturaTable, DownloadFinancaisFaturaTableCSituaca, DownloadFinancaisFaturaTableTipoRecibo } from "../selenium-scenarios/financais/download-financais";
+import { NotificaitonService } from "src/modules/notification/notification.service";
+import { User } from "src/entities/user.entity";
 
 @Injectable()
 export class FinancaisFillData implements Task {
@@ -19,25 +21,36 @@ export class FinancaisFillData implements Task {
 		private readonly userService: UserService,
 		private readonly seleniumService: SeleniumService,
 		private readonly telegramService: TelegramService,
+		private readonly notificaitonService: NotificaitonService,
 		private readonly questionService: QuestionService,
 		private readonly i18n: I18nService
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
-	const user = await this.userService.getFullUserMetaById(task.userId, [
-		"nif",
-		"financasPassword",
-		"incomeReciebaVerde",
-		"ivaFaturaRecieba",
-		"irsFaturaRecieba",
-	])
+	const user = task.user;
 
-	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, task))
+	const metaFields = await this.questionService.getUserMetaFields(task.userId,
+		[
+			{
+				systemName: "nif",
+				required: true,
+			},
+			{
+				systemName: "financasPassword",
+				required: true,
+			},
+			"incomeReciebaVerde",
+			"ivaFaturaRecieba",
+			"irsFaturaRecieba",
+		]
+	)
+
+	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields))
 
 	// await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
   }
 
-  async runInSelenium(driver: WebDriver, user: UserWithMetaFields, task: TaskProcessingPayload): Promise<void> {
-	const { nif, financasPassword } = user.metaFields
+  async runInSelenium(driver: WebDriver, user: User, metaFields: Record<string, any>): Promise<void> {
+	const { nif, financasPassword } = metaFields
 
 	try {
 		await financaisGoMainPage(driver)
@@ -79,9 +92,8 @@ export class FinancaisFillData implements Task {
 
 		const data = await retrieveFaturaVerdeIncome(driver, retrieveDataArgs)
 
-		console.log('result')
-
 		const fieldsToFill = ["incomeReciebaVerde", "ivaFaturaRecieba", "irsFaturaRecieba"]
+		// hasFilledInitialFinancasInfo
 		const answers = data.reduce((acc, item) => {
 			fieldsToFill.forEach((field) => {
 				if (!item[field]) {
@@ -99,14 +111,7 @@ export class FinancaisFillData implements Task {
 
 		await this.questionService.saveAnswersBulkByFieldSystemName(user.id, answers)
 	} catch (e) {
-		await this.telegramService.sendMessage(user.telegramId, "Something went wrong with your declaration", {
-			reply_markup: {
-				inline_keyboard: [
-					[{text: this.i18n.t("t.home.fillData"), callback_data: 'homeScene.fillDataAction'}],
-				],
-			},
-			parse_mode: 'HTML'
-		})
+		await this.notificaitonService.sendNotification(user, "Something went wrong with your declaration")
 		throw e
 	}
   }

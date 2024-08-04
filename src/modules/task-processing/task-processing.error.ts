@@ -1,3 +1,5 @@
+import { User } from "src/entities/user.entity";
+
 export class TaskProcessingError extends Error {
 	constructor(message) {
 		super(message);
@@ -6,7 +8,7 @@ export class TaskProcessingError extends Error {
 }
 
 export class WrongCredentialsError extends TaskProcessingError {
-	constructor(message) {
+	constructor(message, public fields?: string[]) {
 		super(message)
 	}
 }

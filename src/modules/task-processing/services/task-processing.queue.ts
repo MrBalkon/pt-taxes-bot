@@ -6,6 +6,7 @@ import { CleanJobsQuery, TaskProcessingPayload, TaskProcessingPayloadCall, TaskP
 import { v4 as uuidV4 } from "uuid"
 import { UserService } from 'src/modules/user/user.service';
 import { OperationService } from 'src/modules/operation/operation.service';
+import { TaskService } from 'src/modules/task/task.service';
 
 @Injectable()
 export class TaskProcessingQueueService {
@@ -13,43 +14,53 @@ export class TaskProcessingQueueService {
   constructor(
     @InjectQueue(TASK_PROCESSING_QUEUE_NAME)
     private queue: Queue<TaskProcessingPayloadTemplate<any>>,
-	private userServices: UserService,
-	private operationService: OperationService
-  ) {}
+    private userServices: UserService,
+    private operationService: OperationService,
+    private taskService: TaskService
+  ) { }
 
   async addJobByTelegramId<T>(telegramId: number, payload: TaskProcessingPayloadCall<T>) {
-	const user = await this.userServices.getUserByTelegramId(String(telegramId));
+    const user = await this.userServices.getUserByTelegramId(String(telegramId));
 
-	if (!user) {
-	  throw new NotFoundException(`User with telegramId ${telegramId} not found`);
-	}
+    if (!user) {
+      throw new NotFoundException(`User with telegramId ${telegramId} not found`);
+    }
 
-	const jobData = {
-	  userId: user.id,
-	  ...payload
-	}
+    const jobData = {
+      userId: user.id,
+      ...payload
+    }
 
-	await this.addQueueJob(jobData);
+    await this.addQueueJob(jobData);
   }
 
   async addQueueJobBulk<T>(tasksPayloads: TaskProcessingPayloadCall<T>[]) {
-	const tasks = tasksPayloads.map((task) => {
-		const taskUid = this.generateId();
-		const data = {
-			...task,
-			taskUid
-		}
-		return {
-			data,
-			jobId: taskUid,
-			removeOnComplete: true,
-		}
-	})
-	await this.queue.addBulk(tasks);
+    const tasks = tasksPayloads.map((task) => {
+      const taskUid = this.generateId();
+      const data = {
+        ...task,
+        taskUid,
+        systemTaskId: this.taskService.getTaskBySystemName(task.type).id
+      }
+      return {
+        data,
+        jobId: taskUid,
+        removeOnComplete: true,
+        removeOnFail: true,
+        attempts: 1
+      }
+    })
+    await this.queue.addBulk(tasks);
+    await this.operationService.createOperationsBulk(tasks.map((task) => ({
+      id: task?.data?.taskUid,
+      taskId: this.taskService.getTaskBySystemName(task?.data?.type).id,
+      userId: task?.data?.userId,
+      parentOperationId: task?.data?.parentOperationId
+    })));
   }
 
   async addQueueJob<T>(jobData: TaskProcessingPayloadCall<T>) {
-	const uuid = this.generateId();
+    const uuid = this.generateId();
     this.logger.log(
       `[${uuid}] Received task: ${jobData.type}`,
     );
@@ -61,16 +72,24 @@ export class TaskProcessingQueueService {
         `[${uuid}] No existing job, creating new one`,
       );
 
-	  const payload = {
-		taskUid: uuid,
-		...jobData
-	  }
+      const systemTaskId = this.taskService.getTaskBySystemName(jobData.type).id;
 
-	  await this.queue.add(payload, {
-		  jobId: payload.taskUid,
-		  removeOnComplete: true,
-		});
-	  await this.operationService.createOperationByTaskSystemName(uuid, jobData.type, jobData?.userId);
+      const payload = {
+        ...jobData,
+        taskUid: uuid,
+        systemTaskId,
+      }
+
+      await this.queue.add(payload, {
+        jobId: payload.taskUid,
+        removeOnComplete: true,
+        removeOnFail: true,
+        attempts: 1,
+      });
+      await this.operationService.createOperation(uuid, systemTaskId, {
+        userId: jobData?.userId,
+        parentOperationId: jobData?.parentOperationId
+      });
     } else if ((await job.getState()) === 'failed') {
       await job.retry();
     }
@@ -108,6 +127,6 @@ export class TaskProcessingQueueService {
   }
 
   private generateId() {
-	return uuidV4();
+    return uuidV4();
   }
 }

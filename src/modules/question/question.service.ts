@@ -8,8 +8,10 @@ import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { getPreviousQuarter, getPreviousQuarterMonths, getPreviousQuarterYear } from 'src/utils/date';
 import { DeepPartial, Repository } from 'typeorm';
-import { CreateOrUdpdateFieldAnswer } from './question.types';
+import { CreateOrUdpdateFieldAnswer, UserMetaFieldsRequest, UserMetaFieldsRequestExtended } from './question.types';
 import { UserFieldRepository } from 'src/repositories/user-field.repository';
+import { EmptyFieldsError } from './question.error';
+import { fieldsSerializer } from './questions.serializer';
 
 @Injectable()
 export class QuestionService {
@@ -89,10 +91,15 @@ export class QuestionService {
 		return this.prepareAnswers(answers);
 	}
 
-	async getUserMetaFields(userId: number, fieldSystemNames: string[]) {
-		const answers = await this.answerRepository.getAnswersByUserIdAndFieldSystemNames(userId, fieldSystemNames);
+	async getUserMetaFields(userId: number, fieldSystemNames: UserMetaFieldsRequest[]) {
+		const systemNames = fieldSystemNames.map(fieldsSerializer.serializeUserFieldsRequest)
+		const answers = await this.answerRepository.getAnswersByUserIdAndFieldSystemNames(userId, systemNames);
 
-		return this.prepareAnswers(answers);
+		const fieldsMap = this.prepareAnswers(answers);
+
+		this.validateAnswers(fieldsMap, fieldSystemNames);
+
+		return fieldsMap;
 	}
 
 	private prepareAnswers(answers: any[]) {
@@ -112,6 +119,24 @@ export class QuestionService {
 			acc[answer.fieldSystemName] = answer;
 			return acc;
 		}, {});
+	}
+
+	private validateAnswers(answers: Record<string, any>, fieldSystemNames: UserMetaFieldsRequest[]) {
+		const emptyFields = fieldSystemNames.filter((item) => {
+			if (typeof item === 'string') {
+				return false;
+			}
+
+			if (item.required) {
+				return !answers[item.systemName];
+			}
+
+			return false
+		}).map(fieldsSerializer.serializeUserFieldsRequest);
+
+		if (emptyFields.length) {
+			throw new EmptyFieldsError(emptyFields);
+		}
 	}
 
 	async setAnswerError(userId: number, fieldsSystemName: number, error: string) {

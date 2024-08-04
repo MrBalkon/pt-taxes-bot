@@ -13,13 +13,24 @@ import { TaskProcessingPayload } from '../task-processing.types';
 import { TaskProcessingService } from './task.processing.service';
 import { OperationService } from 'src/modules/operation/operation.service';
 import { OperationStatus } from 'src/entities/operation.entity';
+import { TaskProcessingQueueService } from './task-processing.queue';
+import { WrongCredentialsError } from '../task-processing.error';
+import { QuestionService } from 'src/modules/question/question.service';
+import { NotificaitonService } from 'src/modules/notification/notification.service';
+import { NotificationAction } from 'src/modules/notification/notification.types';
+import { EmptyFieldsError } from 'src/modules/question/question.error';
+import { UserService } from 'src/modules/user/user.service';
 
 @Processor(TASK_PROCESSING_QUEUE_NAME)
 export class TaskProcessingQueueConsumer {
 	private logger = new Logger(TaskProcessingQueueConsumer.name);
 	constructor(
 		@Inject(TaskProcessingService) private taskProcessingService: TaskProcessingService,
-		private readonly operationService: OperationService
+		private readonly operationService: OperationService,
+		private readonly taskProcessingQueueService: TaskProcessingQueueService,
+		private readonly questionService: QuestionService,
+		private readonly notificaitonService: NotificaitonService,
+		private readonly userService: UserService
 	) { }
 
 	@OnQueueEvent('completed')
@@ -40,8 +51,7 @@ export class TaskProcessingQueueConsumer {
 	@OnQueueFailed()
 	onQueueFailed(job: Job<TaskProcessingPayload>, error: Error) {
 		this.logger.error(
-			`[${job.id}] Failed to process task: ${job.id}`,
-			error.stack,
+			`[${job.id}] Failed to process task: ${job.id}, message: ${error.message}`,
 		);
 	}
 
@@ -56,14 +66,51 @@ export class TaskProcessingQueueConsumer {
 			`[${task.id}] Start processing task: ${payload.type}`,
 		);
 
+		if (payload.userId) {
+			payload.user = await this.userService.getUserById(payload.userId);
+		}
+
 		try {
 			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.IN_PROGRESS);
 			await this.taskProcessingService.processTask(payload);
 			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.SUCCESS);
+			if (payload.taskExecutionPath?.length) {
+				const [firstTask, ...otherTasks] = payload.taskExecutionPath;
+				const childPayload = {
+					...payload,
+					parentTaskUid: payload.taskUid,
+					type: firstTask,
+					taskExecutionPath: otherTasks,
+					userId: payload?.userId,
+				}
+				await this.taskProcessingQueueService.addQueueJob(childPayload);
+			}
 			done();
 			return;
 		} catch (e) {
 			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.FAIL, e.message);
+			if (e instanceof WrongCredentialsError) {
+				if (e?.fields?.length) {
+					await this.questionService.deleteAnswerBulk(payload.userId, e.fields);
+				}
+				if (payload?.user) {
+					await this.notificaitonService.sendNotification(payload?.user, e?.message, {
+						action: NotificationAction.REQUEST_CREDENTIALS
+					})
+				}
+				done(e);
+				return;
+			}
+			if (e instanceof EmptyFieldsError) {
+				if (payload?.user) {
+					const errorMessage = "It's not enough information to process the task.\nPlease, fill all needed fields";
+					await this.notificaitonService.sendNotification(payload?.user, errorMessage, {
+						action: NotificationAction.REQUEST_CREDENTIALS
+					});
+				}
+				done(e);
+				return;
+			}
 			if (e instanceof HttpException) {
 				this.logger.warn(
 					`[${task.id}] Exception processing task: ${e.message}`,
@@ -72,7 +119,7 @@ export class TaskProcessingQueueConsumer {
 				return;
 			}
 
-			this.logger.error(e.message);
+			this.logger.error(e.message, e.stack);
 			done(e);
 		}
 	}

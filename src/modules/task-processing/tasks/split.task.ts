@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingJobName, TaskProcessingPayloadTemplate } from "../task-processing.types";
+import { Task, TaskProcessingJobName, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from "../task-processing.types";
 
 import { ConfigService } from "src/modules/config/config.service";
 import { UserService } from "src/modules/user/user.service";
@@ -24,12 +24,13 @@ export class SplitTask implements Task {
 	const queueTask = await this.taskService.getTaskById(task.data.splitTaskId);
 	const userIds = await this.userService.getUserIdsByTaskId(task.data.splitTaskId);
 
-	const tasksPayloads = userIds.map((userId) => ({
+	const tasksPayloads: TaskProcessingPayloadCall<any>[] = userIds.map((userId) => ({
 		type: queueTask.systemName as TaskProcessingJobName,
+		userId,
 		data: {
-			userId,
-			...(task.data?.data || {})
-		}
+			...(task.data?.data || {}),
+		},
+		parentOperationId: task.taskUid,
 	}))
 
 	await this.taskProcessingQueueService.addQueueJobBulk(tasksPayloads)

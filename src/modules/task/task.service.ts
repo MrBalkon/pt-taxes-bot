@@ -20,7 +20,11 @@ export class TaskService implements OnModuleInit {
 		await this.updateLocalTasksMap();
 	}
 
-	async getTaskBySystemName(taskName: string) {
+	async getTasks() {
+		return this.taskRepository.find();
+	}
+
+	getTaskBySystemName(taskName: string) {
 		return this.tasksNameMap[taskName];
 	}
 

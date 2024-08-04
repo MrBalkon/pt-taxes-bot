@@ -6,5 +6,6 @@ import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
 	imports: [TelegamConfigModule],
 	controllers: [],
 	providers: [NotificaitonService],
+	exports: [NotificaitonService],
 })
 export class NotificationModule {};

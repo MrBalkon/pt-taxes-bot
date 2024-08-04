@@ -2,7 +2,7 @@ import { Injectable, Logger, OnModuleInit } from '@nestjs/common';
 import { Cron, CronExpression, SchedulerRegistry } from '@nestjs/schedule';
 import { CronJob } from 'cron';
 import { InjectRepository } from '@nestjs/typeorm';
-import { TaskShedule } from 'src/entities/task-schedule.entity';
+import { TaskShedule, TaskSheduleType } from 'src/entities/task-schedule.entity';
 import { Repository } from 'typeorm';
 import { TaskProcessingQueueService } from '../task-processing/services/task-processing.queue';
 import { TaskProcessingJobName } from '../task-processing/task-processing.types';
@@ -29,7 +29,7 @@ export class TaskSheduleService implements OnModuleInit {
 	}
 
 	async onModuleInit() {
-		await this.handleUpdates()
+		await this.sheduleCronJobs();
 	}
 
 	async handleUpdates() {
@@ -49,7 +49,6 @@ export class TaskSheduleService implements OnModuleInit {
 
 			if (now > taskTime) {
 				tasksToExecute.push(taskShedule);
-				await this.addTaskToQueue(taskShedule);
 			}
 		}
 
@@ -125,4 +124,26 @@ export class TaskSheduleService implements OnModuleInit {
 			type: taskShedule.task.systemName as TaskProcessingJobName
 		}
 	}
+
+	async createOneShotTaskShedule(taskId: number, taskPayload: any, oneShotDate: Date) {
+		return this.taskSheduleRepository.createTaskShedule({
+			taskId,
+			taskPayload,
+			oneShotDate,
+			type: TaskSheduleType.ONE_SHOT
+		});
+	}
+
+	// private async genNearestDayforcron() {
+	// 	// cron range between 20th to 25th of every month
+	// 	const cron = `0 0 20-25 * *`;
+	// 	// cron range between 1 day of every quarter and last day of every second month of every quarter
+	// 	const cron2 = `0 0 1-31/2 1-12/3 *`;
+	// }
+
+	// example cron 0 0 20-25 * *
+	// example cron 0 0 1-31/2 1-12/3 *
+	// private async checkIfDateInRangeOfCron(date: Date, cron: string) {
+	// 	// const cron = cro
+	// }
 }

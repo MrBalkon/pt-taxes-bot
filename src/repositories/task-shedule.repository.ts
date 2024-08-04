@@ -27,6 +27,10 @@ export class TaskSheduleRepository extends Repository<TaskShedule> {
 		  .getMany();
 	}
 
+	async createTaskShedule(data: Partial<TaskShedule>) {
+		return this.save(data);
+	}
+
 	async deleteOneShotTasksByIds(ids: number[]) {
 		await this.createQueryBuilder()
 		  .delete()

@@ -10,6 +10,7 @@ import { TaskService } from 'src/modules/task/task.service';
 import { DynamicTask } from '../tasks/dynamic-selenium/dynamic-selenium.task';
 import { Task } from 'src/entities/task.entity';
 import { FinancaisFillData } from '../tasks/financais-fill-data.task';
+import { InitUserService } from '../tasks/init-user-service.task';
 
 @Injectable()
 export class TaskProcessingService {
@@ -21,6 +22,7 @@ export class TaskProcessingService {
 		private readonly socialsecurityfilldeclarationtask: SocialSecurityFillDeclarationTask,
 		private readonly splittask: SplitTask,
 		private readonly financaisfilldata: FinancaisFillData,
+		private readonly inituserservice: InitUserService,
 		private readonly dynamicTask: DynamicTask,
 		private readonly taskService: TaskService
 	) {}
