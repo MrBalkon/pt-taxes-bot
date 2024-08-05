@@ -5,9 +5,13 @@ import { Task } from 'src/entities/task.entity';
 import { TaskRepository } from 'src/repositories/task.repository';
 import { ExecutionStep } from 'src/entities/execution-step.entity';
 import { ExecutionStepRepository } from 'src/repositories/execution-step.repository';
+import { FieldModule } from '../field/field.module';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Task, ExecutionStep])],
+	imports: [
+		FieldModule,
+		TypeOrmModule.forFeature([Task, ExecutionStep])
+	],
 	controllers: [],
 	providers: [TaskService, TaskRepository, ExecutionStepRepository],
 	exports: [TaskService],

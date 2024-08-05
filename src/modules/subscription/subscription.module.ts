@@ -7,6 +7,7 @@ import { UserSubscription } from 'src/entities/user-subscription.entity';
 import { NotificationModule } from '../notification/notification.module';
 import { UserModule } from '../user/user.module';
 import { FeatureModule } from '../feature/feature.module';
+import { TaskProcessingModule } from '../task-processing/task-processing.module';
 
 @Module({
 	imports: [
@@ -14,6 +15,7 @@ import { FeatureModule } from '../feature/feature.module';
 		NotificationModule,
 		UserModule,
 		FeatureModule,
+		TaskProcessingModule,
 	],
 	controllers: [],
 	providers: [SubscriptionService],

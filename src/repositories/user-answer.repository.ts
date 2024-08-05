@@ -26,6 +26,14 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .execute();
 	}
 
+	async getAnswersByInputTaskIds(userId: number, ids: number[]) {
+		return this.defaultSelector()
+		  .leftJoin('field.taskFields', 'tf')
+		  .where('answer.userId = :userId', { userId })
+		  .andWhere('tf.task_id IN (:...ids)', { ids })
+		  .execute();
+	}
+
 	async createAnswer(data: DeepPartial<UserAnswer>) {
 		const { userValues, parameters } = this.prepareAnswerSaveData(data);
 		parameters.encryptKey = this.encryptKey;
@@ -106,6 +114,13 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		return this.defaultSelector()
 		  .where('answer.userId = :userId', { userId })
 		  .andWhere('field.system_name IN (:...fieldsSystemNames)', { fieldsSystemNames })
+		  .execute();
+	}
+
+	async getAnswersByUserIdAndFieldIds(userId: number, fieldIds: number[]) {
+		return this.defaultSelector()
+		  .where('answer.userId = :userId', { userId })
+		  .andWhere('field.id IN (:...fieldIds)', { fieldIds })
 		  .execute();
 	}
 

@@ -117,9 +117,8 @@ export class FormScene {
 		delete (ctx.scene.state as SceneState).currentFieldId;
 		await ctx.reply("You have successfully completed the poll")
 		await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
-			type: TaskProcessingJobName.CHECK_CRENDENTIALS,
+			type: TaskProcessingJobName.TASK_MANAGER,
 			data: null,
-			taskExecutionPath: [TaskProcessingJobName.FINANCAIS_FILL_DATA]
 		})
 		ctx.scene.enter('homeScene');
 	}

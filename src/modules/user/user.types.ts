@@ -10,3 +10,7 @@ export interface UserWithMetaFields extends User {
 	metaFields: Record<string, any>;
 	tasksMap?: Record<string, Task>;
 }
+
+export interface UserWithAccesses extends User {
+	acessedTasks: Task[];
+}

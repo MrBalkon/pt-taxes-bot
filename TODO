@@ -1,6 +1,7 @@
 
 Todo:
   Active:
+    ☐ Add global meta fields to user-fields & answers
     ☐ fill data about IVA/IRS Enquadramento
     ✔ Add next task argument for every task @done(24-08-04 20:38)
     ☐ Shedule missed tasks after subscription created

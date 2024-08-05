@@ -13,10 +13,14 @@ import { Feature } from './feature.entity';
 import { Task } from './task.entity';
 import { UserAnswer } from './user-answer.entity';
 import { Question } from './question.entity';
+import { TaskOutputField } from './task-fields-output.entity';
+import { TaskField } from './task-field.entity';
 
 export enum FieldLifeSpanType {
 	PERMANENT = 'permanent',
-	PERIODIC = 'periodic',
+	MONTHLY = 'monthly',
+	QUARTERLY = 'quarterly',
+	YEARLY = 'yearly',
 }
 
 export enum FieldValueType {
@@ -41,7 +45,7 @@ export class UserField {
 	@Column('varchar', { name: 'system_name' })
 	systemName: string;
 
-	@Column('varchar', { name: 'field_life_span_type' })
+	@Column('enum', { name: 'field_life_span_type', enum: FieldLifeSpanType, default: FieldLifeSpanType.PERMANENT })
 	fieldLifeSpanType: FieldLifeSpanType
 
 	@Column('varchar', { name: 'fields_value_type' })
@@ -61,14 +65,12 @@ export class UserField {
 	@OneToMany(() => UserAnswer, userAnswer => userAnswer.field)
 	answers: UserAnswer[];
 
-	@ManyToMany(() => Task, "taskFields")
-	@JoinTable({
-	  name: "tasks_fields",
-	  joinColumn: { name: "field_id" },
-	  inverseJoinColumn: { name: "task_id" }
-	})
-	taskFields: Task[];
+	@OneToMany(() => TaskField, tf => tf.field)
+	taskFields: TaskField[];
 
 	@OneToMany(() => Question, question => question.field)
 	questions: Question[];
+
+	@OneToMany(() => TaskOutputField, tof => tof.field)
+	taskOutputFields: TaskOutputField[];
 }

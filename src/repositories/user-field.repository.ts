@@ -16,4 +16,10 @@ export class UserFieldRepository extends Repository<UserField> {
 		  .where('userField.systemName IN (:...systemNames)', { systemNames })
 		  .getMany();
 	}
+
+	async getUserFieldsByIds(ids: number[]) {
+		return this.createQueryBuilder('userField')
+		  .where('userField.id IN (:...ids)', { ids })
+		  .getMany();
+	}
 }

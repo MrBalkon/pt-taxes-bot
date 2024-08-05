@@ -33,10 +33,6 @@ export class QuestionService {
 		return this.questionRepository.getPriorityQuestion(userId);
 	}
 
-	async getQuestionsCount(userId: number) {
-		return this.questionRepository.getQuestionsCount(userId);
-	}
-
 	async saveAnswer(userId: number, question: FindQuestionResult, answer: string | string[]) {
 		const answers = []
 
@@ -88,35 +84,71 @@ export class QuestionService {
 	async getUserMetaFieldsByTaskSystemName(userId: number, taskSystemName: string) {
 		const answers = await this.answerRepository.getAnswersByUserIdAndTaskSystemName(userId, taskSystemName);
 
-		return this.prepareAnswers(answers);
+		return this.prepareAnswersSystemNameMap(answers);
 	}
 
+	// async getUserMetaFieldsByTaskId(userId: number, taskId: number) {
+
+	// }
+
 	async getUserMetaFields(userId: number, fieldSystemNames: UserMetaFieldsRequest[]) {
+		if (!fieldSystemNames.length) {
+			return {};
+		}
 		const systemNames = fieldSystemNames.map(fieldsSerializer.serializeUserFieldsRequest)
 		const answers = await this.answerRepository.getAnswersByUserIdAndFieldSystemNames(userId, systemNames);
 
-		const fieldsMap = this.prepareAnswers(answers);
+		const fieldsMap = this.prepareAnswersSystemNameMap(answers);
 
 		this.validateAnswers(fieldsMap, fieldSystemNames);
 
 		return fieldsMap;
 	}
 
-	private prepareAnswers(answers: any[]) {
+	async getUserAllMetaFieldsByTaskIds(userId: number, inputTaskIds: number[]) {
+		const answers = await this.answerRepository.getAnswersByInputTaskIds(userId, inputTaskIds);
+
+		return this.prepareAnswersByIdMap(answers);
+	}
+
+	async getAnswersByUserIdAndFieldIds(userId: number, fieldIds: number[]) {
+		return this.answerRepository.getAnswersByUserIdAndFieldIds(userId, fieldIds);
+	}
+
+	async getSystemNamesByFieldIds(fieldIds: number[]) {
+		return this.userFieldRepository.getUserFieldsByIds(fieldIds);
+	}
+
+	async getUserMetaFieldsByIds(userId: number, fieldIds: number[]) {
+		const answers = await this.answerRepository.getAnswersByUserIdAndFieldIds(userId, fieldIds);
+
+		return this.prepareAnswersSystemNameMap(answers);
+	}
+
+	prepareAnswersSystemNameMap(answers: any[]) {
+		return this.prepareAnswersMapByProperty(answers, 'fieldSystemName');
+	}
+
+	prepareAnswersByIdMap(answers: any[]) {
+		return this.prepareAnswersMapByProperty(answers, 'fieldId');
+	}
+
+	prepareAnswersMapByProperty(answers: any[], property: string) {
 		return answers.reduce((acc, answer) => {
-			if (answer.fieldLifeSpanType == FieldLifeSpanType.PERIODIC) {
-				if (!acc[answer.fieldSystemName]) {
-					acc[answer.fieldSystemName] = {};
+			const key = answer[property];
+			if (answer.fieldLifeSpanType == FieldLifeSpanType.MONTHLY) {
+				if (!acc[key]) {
+					acc[key] = {};
 				}
 
-				if (!acc[answer.fieldSystemName][answer.year]) {
-					acc[answer.fieldSystemName][answer.year] = [];
+				if (!acc[key][answer.year]) {
+					acc[key][answer.year] = [];
 				}
 
-				acc[answer.fieldSystemName][answer.year][answer.month] = answer;
+				acc[key][answer.year][answer.month] = answer;
 				return acc;
 			}
-			acc[answer.fieldSystemName] = answer;
+			acc[key] = answer;
 			return acc;
 		}, {});
 	}

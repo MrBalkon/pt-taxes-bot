@@ -3,7 +3,7 @@ import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { User } from 'src/entities/user.entity';
 import { Brackets, DataSource, DeepPartial, EntityManager, ObjectLiteral, Repository } from 'typeorm';
 import { ConfigService } from '../config/config.service';
-import { UserUpdate, UserWithMetaFields } from './user.types';
+import { UserUpdate, UserWithAccesses, UserWithMetaFields } from './user.types';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
 import { QuestionService } from '../question/question.service';
 import { TaskService } from '../task/task.service';
@@ -21,13 +21,11 @@ export class UserService {
 
 	async getFullUserMetaById(id: number, fieldSystemNames: UserMetaFieldsRequest[], manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
 		const user = await this.getUserById(id, manager);
-		const tasksMap = await this.taskService.getTasksMapByUserId(id, manager);
 		const metaFields = await this.questionService.getUserMetaFields(id, fieldSystemNames);
 
 		return {
 			...user,
 			metaFields,
-			tasksMap,
 		}
 	}
 
@@ -38,6 +36,16 @@ export class UserService {
 		return {
 			...user,
 			metaFields,
+		}
+	}
+
+	async getUserWithAccesses(userId: number, manager: EntityManager = this.connection.manager): Promise<UserWithAccesses> {
+		const user = await this.getUserById(userId, manager);
+		const userTasks = await this.taskService.getTasksByUserId(userId, manager);
+
+		return {
+			...user,
+			acessedTasks: userTasks,
 		}
 	}
 

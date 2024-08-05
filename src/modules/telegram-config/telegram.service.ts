@@ -36,6 +36,7 @@ export class TelegramService implements NotificationServiceType {
 	private getExtra(user: User, notificationBody?: NotificationExtra): ExtraReplyMessage | undefined {
 		switch (notificationBody?.action) {
 			case NotificationAction.REQUEST_CREDENTIALS:
+			case NotificationAction.REQUEST_DATA:
 				return {
 					reply_markup: {
 						inline_keyboard: [

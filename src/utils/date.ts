@@ -19,6 +19,10 @@ export const getPreviousQuarterYear = (): number => {
 	return getCurrentYear();
 }
 
+export const getPreviousYear = (): number => {
+	return getCurrentYear() - 1;
+}
+
 export const getPreviousQuarterMonths = (): number[] => {
 	const previousQuarter = getPreviousQuarter();
 

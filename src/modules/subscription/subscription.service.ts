@@ -9,6 +9,8 @@ import { NotificaitonService } from '../notification/notification.service';
 import { NotificationAction } from '../notification/notification.types';
 import { UserService } from '../user/user.service';
 import { FeatureService } from '../feature/feature.service';
+import { TaskProcessingQueueService } from '../task-processing/services/task-processing.queue';
+import { TaskProcessingJobName } from '../task-processing/task-processing.types';
 
 @Injectable()
 export class SubscriptionService {
@@ -23,6 +25,7 @@ export class SubscriptionService {
 		private readonly userService: UserService,
 		private readonly featuresService: FeatureService,
 		@InjectDataSource() private connection: DataSource,
+		private taskProcessingQueueService: TaskProcessingQueueService,
 	) {}
 
 	async getUniquePeriodTypes() {
@@ -148,9 +151,16 @@ export class SubscriptionService {
 			await this.featuresService.grantAccessToFeatures(userId, features.map((feature) => feature.id), manager);
 
 			const featureNames = features.map((feature) => feature.name).join(', ');
-			await this.notificationService.sendNotification(user, `You have been granted access to features ${featureNames}. Please, fill needed information`, {
-				action: NotificationAction.REQUEST_CREDENTIALS
-			});
+
+			await this.notificationService.sendNotification(
+				user,
+				`You have been granted access to features ${featureNames}.\n Please, wait for our system to process your request and prepare your tasks`,
+			);
+			await this.taskProcessingQueueService.addQueueJob({
+				type: TaskProcessingJobName.TASK_MANAGER,
+				userId,
+				data: undefined
+			})
 		})
 	}
 

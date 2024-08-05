@@ -30,24 +30,6 @@ export class QuestionRepository {
 		return response as FindQuestionResult[];
 	}
 
-	async getQuestionsCount(userId: number) {
-		// return questions available for user's features's tasks
-		// add join to return only questions without answers
-		const response = await this.repository.query(`
-			SELECT
-				count(q.id)
-			FROM questions q
-			JOIN "user-fields" uf ON q.field_id = uf.id
-			JOIN tasks_fields tf ON q.field_id = tf.field_id 
-			JOIN "features-tasks" ft ON ft.task_id = tf.task_id
-			JOIN "features-access" fa ON fa.feature_id = ft.feature_id
-			LEFT JOIN "user-answers" ua ON ua.field_id = q.field_id
-			WHERE fa.user_id = $1 AND ua.id IS NULL
-		`, [userId]) as { count: number }[];
-
-		return response[0].count;
-	}
-
 	async getPriorityQuestion(userId: number) {
 		const currentYear = getPreviousQuarterYear();
 		const previousQuarter = getPreviousQuarter();

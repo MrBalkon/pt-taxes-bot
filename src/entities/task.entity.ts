@@ -16,6 +16,18 @@ import { TaskShedule } from './task-schedule.entity';
 import { Operation } from './operation.entity';
 import { ExecutionScenario } from './execution-scenario.entity';
 import { ExecutionScenarionTask } from './execution-scenario-task.entity';
+import { TaskOutputField } from './task-fields-output.entity';
+import { TaskField } from './task-field.entity';
+
+export enum TaskType {
+	ACTION = 'action',
+	DATA_EXTRACTION = 'data_extraction',
+}
+
+export enum TaskLifespanType {
+	PERIODIC = 'periodic',
+	ON_DEMAND = 'on_demand',
+}
 
 @Entity('tasks')
 export class Task {
@@ -37,18 +49,21 @@ export class Task {
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
 
+	@Column('enum', { name: 'task_type', enum: TaskType, default: TaskType.DATA_EXTRACTION })
+	type: TaskType;
+
+	@Column('enum', { name: 'lifespan_type', enum: TaskLifespanType, default: TaskLifespanType.ON_DEMAND })
+	lifespanType: TaskLifespanType;
+
 	// @Column('varchar', { name: 'task_type', nullable: true })
 	// taskDateRestriction: string;
 
-	@ManyToMany(() => UserField, "taskFields")
-	@JoinTable({
-	  name: "tasks_fields",
-	  joinColumn: { name: "field_id" },
-	  inverseJoinColumn: { name: "task_id" }
-	})
-	taskFields: UserField[];
+	// relations
 
-	@OneToMany(() => FeatureTasks, featureAccess => featureAccess.feature)
+	@OneToMany(() => TaskField, tf => tf.task)
+	taskFields: TaskField[];
+
+	@OneToMany(() => FeatureTasks, featureAccess => featureAccess.task)
 	featureTasks: FeatureTasks[];
 
 	@OneToMany(() => TaskShedule, schedule => schedule.task)
@@ -59,4 +74,7 @@ export class Task {
 
 	@OneToMany(() => ExecutionScenarionTask, executionScenarionTask => executionScenarionTask.task)
 	executionScenarios: ExecutionScenarionTask[];
+
+	@OneToMany(() => TaskOutputField, tof => tof.task)
+	outputFields: TaskOutputField[];
 }

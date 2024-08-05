@@ -17,31 +17,17 @@ import { ServiceUnavailableError, WrongCredentialsError } from "../task-processi
 import { NotificaitonService } from "src/modules/notification/notification.service";
 import { NotificationAction } from "src/modules/notification/notification.types";
 import { User } from "src/entities/user.entity";
-import { TaskService } from "src/modules/task/task.service";
-import { SubscriptionService } from "src/modules/subscription/subscription.service";
 
 @Injectable()
-export class InitUserService implements Task {
+export class UserRequestData implements Task {
 	constructor(
-		private readonly userService: UserService,
-		private readonly questionService: QuestionService,
-		private readonly seleniumService: SeleniumService,
 		private readonly notificaitonService: NotificaitonService,
-		private readonly i18n: I18nService,
-		private readonly taskService: TaskService,
-		private readonly subscriptionService: SubscriptionService
 	) { }
 
 	async run(task: TaskProcessingPayload): Promise<void> {
 		const user = task.user
-
-		const metaFields = await this.questionService.getUserMetaFields(
-			task.userId,
-			[]
-		)
-		const subscription = await this.subscriptionService.findActiveUserSubscription(user.id)
-		const tasks = await this.taskService.getTasksByUserId(user.id)
-
-		// check if user has missed sheduled tasks
+		await this.notificaitonService.sendNotification(user, "Please, fill needed", {
+			action: NotificationAction.REQUEST_DATA,
+		})
 	}
 }

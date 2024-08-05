@@ -9,17 +9,18 @@ import {
 import { HttpException, Inject, Logger } from '@nestjs/common';
 import { DoneCallback, Job } from 'bull';
 import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing.constants';
-import { TaskProcessingPayload } from '../task-processing.types';
+import { TaskProcessingJobName, TaskProcessingPayload } from '../task-processing.types';
 import { TaskProcessingService } from './task.processing.service';
 import { OperationService } from 'src/modules/operation/operation.service';
 import { OperationStatus } from 'src/entities/operation.entity';
 import { TaskProcessingQueueService } from './task-processing.queue';
-import { WrongCredentialsError } from '../task-processing.error';
+import { TaskInputFieldsException, WrongCredentialsError } from '../task-processing.error';
 import { QuestionService } from 'src/modules/question/question.service';
 import { NotificaitonService } from 'src/modules/notification/notification.service';
 import { NotificationAction } from 'src/modules/notification/notification.types';
 import { EmptyFieldsError } from 'src/modules/question/question.error';
 import { UserService } from 'src/modules/user/user.service';
+import { TaskService } from 'src/modules/task/task.service';
 
 @Processor(TASK_PROCESSING_QUEUE_NAME)
 export class TaskProcessingQueueConsumer {
@@ -30,7 +31,8 @@ export class TaskProcessingQueueConsumer {
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
 		private readonly questionService: QuestionService,
 		private readonly notificaitonService: NotificaitonService,
-		private readonly userService: UserService
+		private readonly userService: UserService,
+		private readonly taskService: TaskService,
 	) { }
 
 	@OnQueueEvent('completed')
@@ -63,11 +65,11 @@ export class TaskProcessingQueueConsumer {
 		const payload = task.data;
 
 		this.logger.log(
-			`[${task.id}] Start processing task: ${payload.type}`,
+			`[${payload.taskUid}] Start processing task: ${payload.type}`,
 		);
 
 		if (payload.userId) {
-			payload.user = await this.userService.getUserById(payload.userId);
+			payload.user = await this.userService.getUserWithAccesses(payload.userId);
 		}
 
 		try {
@@ -89,6 +91,23 @@ export class TaskProcessingQueueConsumer {
 			return;
 		} catch (e) {
 			await this.operationService.updateOperationStatus(payload.taskUid, OperationStatus.FAIL, e.message);
+			if (e instanceof TaskInputFieldsException) {
+				const allowedTaskIds = payload?.user?.acessedTasks?.map((task) => task.id) || [];
+				const tasksWithMissingFields = this.taskService.searchForTasksWithOutputFields(allowedTaskIds, e.fieldIds);
+
+				if (tasksWithMissingFields?.length) {
+					const firstTask = tasksWithMissingFields[0];
+					await this.taskProcessingQueueService.addQueueJob({
+						...payload,
+						type: firstTask.systemName as TaskProcessingJobName,
+						requestedFields: e.fields,
+						 // Todo restart task after needed fields are filled
+						// taskExecutionPath: [payload.type, ...payload.taskExecutionPath],
+					});
+				}
+				done(e)
+				return;
+			}
 			if (e instanceof WrongCredentialsError) {
 				if (e?.fields?.length) {
 					await this.questionService.deleteAnswerBulk(payload.userId, e.fields);

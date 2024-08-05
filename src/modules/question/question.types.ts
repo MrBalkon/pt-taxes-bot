@@ -13,3 +13,11 @@ export interface UserMetaFieldsRequestExtended {
 type UserMetaFieldsRequestValue = UserMetaFieldsRequestExtended | string
 
 export type UserMetaFieldsRequest = UserMetaFieldsRequestValue;
+
+
+export interface UserMetaFieldsIdsRequestExtended {
+	id: number;
+	required: boolean;
+}
+
+export type UserMetaFieldsIdsRequest = UserMetaFieldsIdsRequestExtended | number;
