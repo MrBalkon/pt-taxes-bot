@@ -7,7 +7,7 @@ import * as path from 'path';
 import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import { DatabaseModule } from './modules/database/database.module';
 import { BullConfigModule } from './modules/bull-config/bull-config.module';
-import { TaskProcessingModule } from './modules/task-processing/task-processing.module';
+import { TaskProcessingQueueModule } from './modules/task-processing-queue/task-processing.module';
 import { UserModule } from './modules/user/user.module';
 import { SeleniumModule } from './modules/selenium/selenium.module';
 import { TaskSheduleModule } from './modules/task-schedule/task-schedule.module';
@@ -18,7 +18,7 @@ import { FeatureModule } from './modules/feature/feature.module';
     ConfigModule,
     DatabaseModule,
     BullConfigModule,
-    TaskProcessingModule,
+    TaskProcessingQueueModule,
     UserModule,
     SeleniumModule,
     TaskSheduleModule,

@@ -1,6 +1,5 @@
 // @ts-ignore
 import {By, WebDriver, Select, WebElement, until } from "selenium-webdriver"
-import { TaskProcessingError } from "../../task-processing.error"
 import { goBack, goPage } from "../default.scenarios"
 import { DownloadFinancaisFaturaTable, downloadFinancais } from "./download-financais"
 import { parse } from 'csv-parse/sync';

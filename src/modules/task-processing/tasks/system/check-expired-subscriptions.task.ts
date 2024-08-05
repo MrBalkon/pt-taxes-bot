@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Task, TaskProcessingPayload, TaskProcessingResultStatus } from "../../task-processing.types";
+import { Task, TaskProcessingPayload } from "../../../task-processing-queue/task-processing.types";
 
 import { SubscriptionService } from "src/modules/subscription/subscription.service";
 

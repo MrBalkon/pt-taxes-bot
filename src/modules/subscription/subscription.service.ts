@@ -9,8 +9,8 @@ import { NotificaitonService } from '../notification/notification.service';
 import { NotificationAction } from '../notification/notification.types';
 import { UserService } from '../user/user.service';
 import { FeatureService } from '../feature/feature.service';
-import { TaskProcessingQueueService } from '../task-processing/services/task-processing.queue';
-import { TaskProcessingJobName } from '../task-processing/task-processing.types';
+import { TaskProcessingQueueService } from '../task-processing-queue/services/task-processing.queue';
+import { TaskProcessingJobName } from '../task-processing-queue/task-processing.types';
 
 @Injectable()
 export class SubscriptionService {

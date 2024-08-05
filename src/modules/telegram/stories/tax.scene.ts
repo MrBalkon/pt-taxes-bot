@@ -4,8 +4,8 @@ import {Update} from 'telegraf/typings/core/types/typegram';
 import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { ActionContract } from 'src/decorators/action.decorator';
-import { TaskProcessingQueueService } from 'src/modules/task-processing/services/task-processing.queue';
-import { TaskProcessingJobName } from 'src/modules/task-processing/task-processing.types';
+import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/services/task-processing.queue';
+import { TaskProcessingJobName } from 'src/modules/task-processing-queue/task-processing.types';
 
 @Injectable()
 @Scene('taxScene')

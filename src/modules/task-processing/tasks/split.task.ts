@@ -1,10 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingJobName, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from "../task-processing.types";
+import { Task, TaskProcessingJobName, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from "../../task-processing-queue/task-processing.types";
 
-import { ConfigService } from "src/modules/config/config.service";
 import { UserService } from "src/modules/user/user.service";
-import { TelegramService } from "src/modules/telegram-config/telegram.service";
-import { TaskProcessingQueueService } from "../services/task-processing.queue";
+import { TaskProcessingQueueService } from "../../task-processing-queue/services/task-processing.queue";
 import { TaskService } from "src/modules/task/task.service";
 
 export interface SplitTaskData {

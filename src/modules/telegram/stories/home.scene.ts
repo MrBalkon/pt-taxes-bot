@@ -9,7 +9,7 @@ import { QuestionService } from 'src/modules/question/question.service';
 import { TelegramService } from 'src/modules/telegram-config/telegram.service';
 import { FeatureService } from 'src/modules/feature/feature.service';
 import { TaskService } from 'src/modules/task/task.service';
-import { TaskProcessingQueueService } from 'src/modules/task-processing/services/task-processing.queue';
+import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/services/task-processing.queue';
 import { Markup } from 'telegraf';
 import { SubscriptionService } from 'src/modules/subscription/subscription.service';
 import { DateTime } from 'luxon';

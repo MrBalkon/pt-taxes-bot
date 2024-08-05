@@ -1,7 +1,7 @@
 // @ts-ignore
 import { By, Key, WebDriver, Select } from "selenium-webdriver"
-import { PageException, ServiceUnavailableError, TaskProcessingError, WrongCredentialsError } from "../../task-processing.error"
 import { goPage } from "../default.scenarios"
+import { ServiceUnavailableError, WrongCredentialsError, TaskProcessingError } from "src/modules/task-processing-queue/task-processing.error"
 
 export const financaisGoMainPage = async (driver: WebDriver) => {
 	try {

@@ -10,7 +10,7 @@ import { HttpException, Inject, Logger } from '@nestjs/common';
 import { DoneCallback, Job } from 'bull';
 import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing.constants';
 import { TaskProcessingJobName, TaskProcessingPayload } from '../task-processing.types';
-import { TaskProcessingService } from './task.processing.service';
+import { TaskProcessingService } from '../../task-processing/task.processing.service';
 import { OperationService } from 'src/modules/operation/operation.service';
 import { OperationStatus } from 'src/entities/operation.entity';
 import { TaskProcessingQueueService } from './task-processing.queue';

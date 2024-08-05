@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingPayload } from "../task-processing.types";
+import { Task, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
 
 import { WebDriver } from 'selenium-webdriver';
 import { ConfigService } from "src/modules/config/config.service";
@@ -8,9 +8,8 @@ import { SeleniumService } from "src/modules/selenium/selenium.service";
 import { TelegramService } from "src/modules/telegram-config/telegram.service";
 import { socialSecurityLogin, socialSecuriyGoMainPage } from "../selenium-scenarios/seg-social/social-security.scenarios";
 import { I18nService } from "nestjs-i18n";
-import { User } from "src/entities/user.entity";
 import { SocialSecurityDeclarationData, socialSecurityFillTrimestralDeclaration } from "../selenium-scenarios/seg-social/declaration/fill-trimestral-declaration";
-import { getCurrentQuarter, getPreviousQuarter, getPreviousQuarterYear } from "src/utils/date";
+import { getPreviousQuarter, getPreviousQuarterYear } from "src/utils/date";
 import { UserWithMetaFields } from "src/modules/user/user.types";
 
 @Injectable()

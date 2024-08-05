@@ -1,5 +1,5 @@
 import { By, Key, WebDriver, until } from "selenium-webdriver"
-import { ServiceUnavailableError, TaskProcessingError, WrongCredentialsError } from "../../task-processing.error"
+import { ServiceUnavailableError, WrongCredentialsError } from "src/modules/task-processing-queue/task-processing.error"
 
 export const socialSecuriyGoMainPage = async (driver: WebDriver) => {
 	try {

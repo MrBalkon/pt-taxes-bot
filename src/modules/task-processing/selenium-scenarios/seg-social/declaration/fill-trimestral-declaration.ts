@@ -1,4 +1,4 @@
-import { TaskProcessingError } from "src/modules/task-processing/task-processing.error";
+import { TaskProcessingError } from "src/modules/task-processing-queue/task-processing.error";
 import { goPage } from "../../default.scenarios";
 import { WebDriver, until, By } from "selenium-webdriver";
 

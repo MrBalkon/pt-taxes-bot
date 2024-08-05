@@ -1,10 +1,13 @@
-import { Module } from '@nestjs/common';;
-import { TaskProcessingService } from './task.processing.service';
+import { Module } from '@nestjs/common';
+import { TaskProcessingQueueService } from './services/task-processing.queue';
+import { TASK_PROCESSING_QUEUE_NAME } from './task-processing.constants';
+import { BullModule } from '@nestjs/bull';
+import { TaskProcessingService } from '../task-processing/task.processing.service';
+import { TaskProcessingQueueConsumer } from './services/task-processing.consumer';
 import { ConfigModule } from '../config/config.module';
 import { UserModule } from '../user/user.module';
 import { SeleniumModule } from '../selenium/selenium.module';
 import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
-import { InjectDynamicProviders } from 'nestjs-dynamic-providers';
 import { QuestionModule } from '../question/question.module';
 import { TaskModule } from '../task/task.module';
 import { OperationModule } from '../operation/operation.module';
@@ -13,27 +16,21 @@ import { ExecutionCommandModule } from '../execution-command/execution-command.m
 import { NotificationModule } from '../notification/notification.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 import { FieldModule } from '../field/field.module';
-import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing.module';
+import { TaskProcessingModule } from '../task-processing/task-processing.module';
 
-@InjectDynamicProviders('dist/**/*.task.js')
 @Module({
 	imports: [
+		TaskProcessingModule,
 		ConfigModule,
 		UserModule,
-		SeleniumModule,
-		TelegamConfigModule,
 		QuestionModule,
 		TaskModule,
 		OperationModule,
-		ExecutionCommandModule,
-		ExecutionScenarioModule,
 		NotificationModule,
-		SubscriptionModule,
-		FieldModule,
-		TaskProcessingQueueModule
+		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],
-	providers: [TaskProcessingService],
-	exports: [TaskProcessingService],
+	providers: [TaskProcessingQueueService, TaskProcessingQueueConsumer],
+	exports: [TaskProcessingQueueService],
 })
-export class TaskProcessingModule {};
+export class TaskProcessingQueueModule {};

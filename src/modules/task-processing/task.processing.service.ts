@@ -1,20 +1,20 @@
 import { Injectable, Logger } from '@nestjs/common';
-import { TaskProcessingPayload } from '../task-processing.types';
-import { SocialSecurityTask } from '../tasks/social-security.task';
-import { TelegramNotifyTask } from '../tasks/telegram-notify.task';
-import { CheckCredentialsTask } from '../tasks/check-credentials.task';
-import { SocialSecurityFillDeclarationTask } from '../tasks/social-security-fill-declaration.task';
-import { SplitTask } from '../tasks/split.task';
+import { TaskProcessingPayload } from '../task-processing-queue/task-processing.types';
+import { SocialSecurityTask } from './tasks/social-security.task';
+import { TelegramNotifyTask } from './tasks/telegram-notify.task';
+import { CheckCredentialsTask } from './tasks/check-credentials.task';
+import { SocialSecurityFillDeclarationTask } from './tasks/social-security-fill-declaration.task';
+import { SplitTask } from './tasks/split.task';
 import { TaskService } from 'src/modules/task/task.service';
-import { DynamicTask } from '../tasks/dynamic-selenium/dynamic-selenium.task';
+import { DynamicTask } from './tasks/dynamic-selenium/dynamic-selenium.task';
 import { Task } from 'src/entities/task.entity';
-import { FinancaisFillData } from '../tasks/financais-fill-data.task';
-import { TaskManagerService } from '../tasks/task-manager.task';
+import { FinancaisFillData } from './tasks/financais-fill-data.task';
+import { TaskManagerService } from './tasks/task-manager.task';
 import { QuestionService } from 'src/modules/question/question.service';
-import { TaskInputFieldsException } from '../task-processing.error';
+import { TaskInputFieldsException } from '../task-processing-queue/task-processing.error';
 import { TaskFieldTimeRangeType } from 'src/entities/task-field.entity';
 import { getPreviousQuarterMonths, getPreviousQuarterYear, getPreviousYear } from 'src/utils/date';
-import { UserRequestData } from '../tasks/user-request-data.task';
+import { UserRequestData } from './tasks/user-request-data.task';
 
 @Injectable()
 export class TaskProcessingService {

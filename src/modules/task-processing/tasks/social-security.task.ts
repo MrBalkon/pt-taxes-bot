@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingPayload } from "../task-processing.types";
+import { Task, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
 
 import { Builder, Browser, By, Key, until, Capabilities } from 'selenium-webdriver';
 import { ConfigService } from "src/modules/config/config.service";
