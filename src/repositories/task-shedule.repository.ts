@@ -1,4 +1,5 @@
 import { Injectable } from "@nestjs/common";
+import { DateTime } from "luxon";
 import { TaskShedule, TaskSheduleType } from "src/entities/task-schedule.entity";
 import { DataSource, Repository } from "typeorm";
 
@@ -37,5 +38,15 @@ export class TaskSheduleRepository extends Repository<TaskShedule> {
 		  .from(TaskShedule)
 		  .where("id IN (:...ids) AND type = 'one_shot'", { ids })
 		  .execute();
+	}
+
+	async getOneShotTaskByTaskAndUserId(taskId: number, userId: number, date: DateTime) {
+		return this.createQueryBuilder('ts')
+		  .where('ts.type = :type', { type: TaskSheduleType.ONE_SHOT })
+		  .andWhere("COALESCE(ts.task_payload::jsonb->>'userId', NULL)::int = :userId", { userId })
+		  .andWhere('ts.taskId = :taskId', { taskId })
+		  .andWhere('ts.isActive = true')
+		  .andWhere('ts.oneShotDate > :date', { date: date.toJSDate() })
+		  .getMany();
 	}
 }

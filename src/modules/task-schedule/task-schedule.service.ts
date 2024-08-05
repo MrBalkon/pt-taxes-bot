@@ -134,6 +134,10 @@ export class TaskSheduleService implements OnModuleInit {
 		});
 	}
 
+	async getUserOneShotTaskHigherThanDate(taskId: number, userId: number, date: DateTime) {
+		return this.taskSheduleRepository.getOneShotTaskByTaskAndUserId(taskId, userId, date);
+	}
+
 	// private async genNearestDayforcron() {
 	// 	// cron range between 20th to 25th of every month
 	// 	const cron = `0 0 20-25 * *`;

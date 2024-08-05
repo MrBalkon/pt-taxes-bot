@@ -16,6 +16,7 @@ import { TaskProcessingQueueService } from "../../../task-processing-queue/task-
 import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
 import { taskFieldParser } from "../../utils/taskFieldsParse";
 import { OperationService } from "src/modules/operation/operation.service";
+import { treeSearch } from "../../utils/tree";
 
 @Injectable()
 export class TaskManagerService implements Task {
@@ -41,7 +42,7 @@ export class TaskManagerService implements Task {
 		const user = taskPayload.user
 		const subscription = await this.subscriptionService.findActiveUserSubscription(user.id)
 
-		const tasks = await this.getNextTasksToExecute(user)
+		const tasks = await this.getNextTasksToExecuteV2(user)
 
 		if (!tasks.length) {
 			this.logger.log(`[${taskPayload.taskUid}] No tasks found for user ${user.id}`)
@@ -141,4 +142,76 @@ export class TaskManagerService implements Task {
 
 		return priorityTasks;
 	}
+
+	async getNextTasksToExecuteV2(user: User) {
+		const tasks = await this.taskService.getFullTasksByUserId(user.id)
+		const taskIdsMap = tasks.reduce<Record<number, DBTask>>((acc, task) => {
+			acc[task.id] = task;
+			return acc;
+		}, {})
+
+		const metaFields = await this.questionService.getUserAllMetaFieldsByTaskIds(
+			user.id,
+			tasks.map(task => task.id)
+		)
+
+		const tasksToProcess = tasks.reduce<DBTask[]>((acc, task) => {
+			task.taskFields  = task.taskFields.filter(field => !taskFieldParser.userHasField(field, metaFields[field.fieldId]))
+			acc.push(task)
+
+			return acc;
+		}, [])
+
+		if (!tasksToProcess.length) {
+			return []
+		}
+
+		const tasksTree = tasks.reduce<Record<number, any>>((acc, task) => {
+			if (!acc[task.id]) {
+				acc[task.id] = [];
+			}
+
+			tasks.forEach(extractionTask => {
+				const hasMatch = task.taskFields.some(inputField => extractionTask.outputFields.some(taskField => taskField.fieldId === inputField.fieldId));
+
+				if (hasMatch) {
+					acc[task.id].push(extractionTask.id);
+				}
+			})
+
+			return acc;
+		}, {})
+
+		const priorityTasksIds = treeSearch(tasksTree)
+		const priorityTasks = priorityTasksIds.map(taskId => taskIdsMap[taskId])
+
+
+		return priorityTasks
+	}
 }
+
+
+// {
+// 	"1": [
+// 	  5,
+// 	  3,
+// 	  11,
+// 	],
+// 	"3": [
+// 	  11,
+// 	],
+// 	"5": [
+// 	  3,
+// 	  11,
+// 	],
+// 	"6": [
+// 	  3,
+// 	  11,
+// 	],
+// 	"8": [
+// 	  3,
+// 	  11,
+// 	],
+// 	"11": [
+// 	],
+//   }
