@@ -1,5 +1,5 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Task, TaskProcessingJobName, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
+import { Task, TaskProcessingJobName, TaskProcessingPayload } from "../../../task-processing-queue/task-processing.types";
 
 import { UserService } from "src/modules/user/user.service";
 import { SeleniumService } from "src/modules/selenium/selenium.service";
@@ -12,9 +12,9 @@ import { TaskService } from "src/modules/task/task.service";
 import { SubscriptionService } from "src/modules/subscription/subscription.service";
 import { TaskLifespanType, TaskType } from "src/entities/task.entity";
 import { FieldService } from "src/modules/field/field.service";
-import { TaskProcessingQueueService } from "../../task-processing-queue/task-processing-queue.service";
+import { TaskProcessingQueueService } from "../../../task-processing-queue/task-processing-queue.service";
 import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
-import { taskFieldParser } from "../utils/taskFieldsParse";
+import { taskFieldParser } from "../../utils/taskFieldsParse";
 
 @Injectable()
 export class TaskManagerService implements Task {

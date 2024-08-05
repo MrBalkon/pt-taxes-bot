@@ -1,11 +1,11 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
+import { Task, TaskProcessingPayload } from "../../../task-processing-queue/task-processing.types";
 
 import { Builder, Browser, By, Key, until, Capabilities } from 'selenium-webdriver';
 import { ConfigService } from "src/modules/config/config.service";
 import { UserService } from "src/modules/user/user.service";
 import { SeleniumService } from "src/modules/selenium/selenium.service";
-import { TelegramNotifyTask } from "./telegram-notify.task";
+import { TelegramNotifyTask } from "../telegram-notify.task";
 
 @Injectable()
 export class SocialSecurityTask implements Task {

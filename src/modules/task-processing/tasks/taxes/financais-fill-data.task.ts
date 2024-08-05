@@ -1,17 +1,17 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
+import { Task, TaskProcessingPayload } from "../../../task-processing-queue/task-processing.types";
 
 import { WebDriver } from 'selenium-webdriver';
 import { UserService } from "src/modules/user/user.service";
 import { SeleniumService } from "src/modules/selenium/selenium.service";
 import { TelegramService } from "src/modules/telegram-config/telegram.service";
 import { I18nService } from "nestjs-i18n";
-import { financaisGoMainPage, financaisLogin, getActivityStartDate, gotToAtividadePage, retrieveCategoryData } from "../selenium-scenarios/financais/financais.scenarios";
+import { financaisGoMainPage, financaisLogin, getActivityStartDate, gotToAtividadePage, retrieveCategoryData } from "../../selenium-scenarios/financais/financais.scenarios";
 import { UserWithMetaFields } from "src/modules/user/user.types";
 import { QuestionService } from "src/modules/question/question.service";
 import { DateTime } from "luxon";
-import { goFaturaVerdePage, retrieveFaturaVerdeIncome } from "../selenium-scenarios/financais/retrieve-fatura-verde.scenario";
-import { DownloadFinancaisFaturaTable, DownloadFinancaisFaturaTableCSituaca, DownloadFinancaisFaturaTableTipoRecibo } from "../selenium-scenarios/financais/download-financais";
+import { goFaturaVerdePage, retrieveFaturaVerdeIncome } from "../../selenium-scenarios/financais/retrieve-fatura-verde.scenario";
+import { DownloadFinancaisFaturaTable, DownloadFinancaisFaturaTableCSituaca, DownloadFinancaisFaturaTableTipoRecibo } from "../../selenium-scenarios/financais/download-financais";
 import { NotificaitonService } from "src/modules/notification/notification.service";
 import { User } from "src/entities/user.entity";
 

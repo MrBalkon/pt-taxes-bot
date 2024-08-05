@@ -1,8 +1,8 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingJobName, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from "../../task-processing-queue/task-processing.types";
+import { Task, TaskProcessingJobName, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from "../../../task-processing-queue/task-processing.types";
 
 import { UserService } from "src/modules/user/user.service";
-import { TaskProcessingQueueService } from "../../task-processing-queue/task-processing-queue.service";
+import { TaskProcessingQueueService } from "../../../task-processing-queue/task-processing-queue.service";
 import { TaskService } from "src/modules/task/task.service";
 
 export interface SplitTaskData {

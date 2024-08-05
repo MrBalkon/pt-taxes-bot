@@ -1,5 +1,5 @@
 import { JobStatusClean } from "bull";
-import { SocialSecurityTask } from "../task-processing/tasks/social-security.task";
+import { SocialSecurityTask } from "../task-processing/tasks/taxes/social-security.task";
 import { User } from "src/entities/user.entity";
 import { UserWithAccesses } from "../user/user.types";
 import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";

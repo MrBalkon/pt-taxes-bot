@@ -1,14 +1,14 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
+import { Task, TaskProcessingPayload } from "../../../task-processing-queue/task-processing.types";
 
 import { WebDriver } from 'selenium-webdriver';
 import { UserService } from "src/modules/user/user.service";
 import { SeleniumService } from "src/modules/selenium/selenium.service";
-import { socialSecurityLogin, socialSecuriyGoMainPage } from "../selenium-scenarios/seg-social/social-security.scenarios";
+import { socialSecurityLogin, socialSecuriyGoMainPage } from "../../selenium-scenarios/seg-social/social-security.scenarios";
 import { I18nService } from "nestjs-i18n";
 import { QuestionService } from "src/modules/question/question.service";
-import { financaisGoMainPage, financaisLogin } from "../selenium-scenarios/financais/financais.scenarios";
-import { ServiceUnavailableError, WrongCredentialsError } from "../../task-processing-queue/task-processing-queue.error";
+import { financaisGoMainPage, financaisLogin } from "../../selenium-scenarios/financais/financais.scenarios";
+import { ServiceUnavailableError, WrongCredentialsError } from "../../../task-processing-queue/task-processing-queue.error";
 import { NotificaitonService } from "src/modules/notification/notification.service";
 import { User } from "src/entities/user.entity";
 

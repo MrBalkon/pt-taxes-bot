@@ -1,23 +1,20 @@
 
 Todo:
   Active:
-    ☐ Add global meta fields to user-fields & answers
-    ☐ fill data about IVA/IRS Enquadramento
-    ✔ Add next task argument for every task @done(24-08-04 20:38)
     ☐ Shedule missed tasks after subscription created
     ☐ Make DB for faturas classification
     ☐ Add user tax registered payments
     ☐ Notify myself about errors in operations every day
     ☐ Shedule public task for testing if gov site is up
     ☐ Shedule failed tasks if gov service is down
-    ☐ Add task conditions
-    ☐ Add fields fill trigger
+    ☐ fill data about IVA/IRS Enquadramento
+    ✘ Add task conditions @cancelled(24-08-05 18:01)
+    ✘ Add fields fill trigger @cancelled(24-08-05 18:01)
+    ☐ Add global meta fields to user-fields & answers
     Social Security calculation:
       ☐ Check service availability
-      ✔ Check credentials @done(24-08-01 01:44)
       ☐ Fill declaration
       ☐ Retrieve payment
-      ✔ Fill income data for Category B @done(24-08-03 02:13)
     Financais:
       ☐ Check service availability
       ☐ Check credentials
@@ -25,7 +22,6 @@ Todo:
         ☐ Fill declaration
         ☐ Retrieve payment
         ☐ Quarter Faturas processing
-        ✔ Fill income data for Category B @done(24-08-03 02:13)
       ☐ IRS calculation
         ☐ Fill declaration
         ☐ Retrieve payment
@@ -39,20 +35,6 @@ Todo:
     ☐ Add public/system visibility to tasks
     ☐ Handle start poll on no questions
     ☐ Switch questions to tree with conditions
-    ✔ Add data parameter to split task @done(24-08-01 00:49)
-    ✔ Add one shot cron jobs @done(24-08-01 00:47)
-    ✔ Add operations handling @done(24-08-01 01:43)
-    ✔ Add cron for handling periodic tasks @done(24-07-31 23:57)
-    ✔ Make questions conditional based on other questions @done(24-07-30 23:46)
-    ✔ Fix handling error on check credentials task @done(24-07-30 21:08)
-    ✔ Make questions available to fill with income @done(24-07-31 19:13)
-    ✔ Get income in user meta fields @done(24-08-01 15:06)
-    ✔ Add periodic time for previous_quarter @done(24-08-01 15:55)
-    ✔ Restrict access to bot with has_contract @done(24-08-01 16:12)
-    ✔ Process scenarios tree @done(24-08-02 13:14)
-    ✔ Add Scenario conditions @done(24-08-02 13:14)
-    ✔ Handle scenario error @done(24-08-02 14:27)
-    ✔ Store Selenium scenarios in db @done(24-08-02 00:36)
   Later:
     ☐ Replace custom code tasks with dynamic
     ☐ Add support for downloaded files?
@@ -81,11 +63,31 @@ Todo:
 
   Probably never:
     ☐ think about conditional question for income as a compare
-  ✔ Add user system @done(24-07-26 23:30)
-  ✔ Add worker for executing Selenium scenarios @done(24-07-26 21:20)
-  ✔ Add Selenium integraion @done(24-07-26 21:19)
-  ✔ Setup Redis for worker queue @done(24-07-26 16:42)
-  ✔ Create Postgresql db integration @done(24-07-26 16:03)
-  ✔ Add different languages support @done(24-07-26 01:17)
-  ✔ Switch session storage to Postgres @done(24-07-26 16:03)
-  ✔ Move Selenium server to env variable @done(24-07-26 23:30)
+
+Archive:
+  ✔ Add next task argument for every task @done(24-08-04 20:38) @project(Todo.Active)
+  ✔ Check credentials @done(24-08-01 01:44) @project(Todo.Active.Social Security calculation)
+  ✔ Fill income data for Category B @done(24-08-03 02:13) @project(Todo.Active.Social Security calculation)
+  ✔ Fill income data for Category B @done(24-08-03 02:13) @project(Todo.Active.Financais)
+  ✔ Add data parameter to split task @done(24-08-01 00:49) @project(Todo.Active)
+  ✔ Add one shot cron jobs @done(24-08-01 00:47) @project(Todo.Active)
+  ✔ Add operations handling @done(24-08-01 01:43) @project(Todo.Active)
+  ✔ Add cron for handling periodic tasks @done(24-07-31 23:57) @project(Todo.Active)
+  ✔ Make questions conditional based on other questions @done(24-07-30 23:46) @project(Todo.Active)
+  ✔ Fix handling error on check credentials task @done(24-07-30 21:08) @project(Todo.Active)
+  ✔ Make questions available to fill with income @done(24-07-31 19:13) @project(Todo.Active)
+  ✔ Get income in user meta fields @done(24-08-01 15:06) @project(Todo.Active)
+  ✔ Add periodic time for previous_quarter @done(24-08-01 15:55) @project(Todo.Active)
+  ✔ Restrict access to bot with has_contract @done(24-08-01 16:12) @project(Todo.Active)
+  ✔ Process scenarios tree @done(24-08-02 13:14) @project(Todo.Active)
+  ✔ Add Scenario conditions @done(24-08-02 13:14) @project(Todo.Active)
+  ✔ Handle scenario error @done(24-08-02 14:27) @project(Todo.Active)
+  ✔ Store Selenium scenarios in db @done(24-08-02 00:36) @project(Todo.Active)
+  ✔ Add user system @done(24-07-26 23:30) @project(Todo)
+  ✔ Add worker for executing Selenium scenarios @done(24-07-26 21:20) @project(Todo)
+  ✔ Add Selenium integraion @done(24-07-26 21:19) @project(Todo)
+  ✔ Setup Redis for worker queue @done(24-07-26 16:42) @project(Todo)
+  ✔ Create Postgresql db integration @done(24-07-26 16:03) @project(Todo)
+  ✔ Add different languages support @done(24-07-26 01:17) @project(Todo)
+  ✔ Switch session storage to Postgres @done(24-07-26 16:03) @project(Todo)
+  ✔ Move Selenium server to env variable @done(24-07-26 23:30) @project(Todo)

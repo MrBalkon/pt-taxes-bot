@@ -1,17 +1,19 @@
 import { Injectable } from "@nestjs/common";
-import { Task, TaskProcessingPayload } from "../../task-processing-queue/task-processing.types";
+import { Task, TaskProcessingPayload } from "../../../task-processing-queue/task-processing.types";
 
 import { WebDriver } from 'selenium-webdriver';
 import { ConfigService } from "src/modules/config/config.service";
 import { UserService } from "src/modules/user/user.service";
 import { SeleniumService } from "src/modules/selenium/selenium.service";
 import { TelegramService } from "src/modules/telegram-config/telegram.service";
-import { socialSecurityLogin, socialSecuriyGoMainPage } from "../selenium-scenarios/seg-social/social-security.scenarios";
+import { socialSecurityLogin, socialSecuriyGoMainPage } from "../../selenium-scenarios/seg-social/social-security.scenarios";
 import { I18nService } from "nestjs-i18n";
-import { User } from "src/entities/user.entity";
+import { SocialSecurityDeclarationData, socialSecurityFillTrimestralDeclaration } from "../../selenium-scenarios/seg-social/declaration/fill-trimestral-declaration";
+import { getPreviousQuarter, getPreviousQuarterYear } from "src/utils/date";
+import { UserWithMetaFields } from "src/modules/user/user.types";
 
 @Injectable()
-export class IVAFillDeclarationTask implements Task {
+export class SocialSecurityFillDeclarationTask implements Task {
 	constructor(
 		private readonly configService: ConfigService,
 		private readonly userService: UserService,
@@ -20,22 +22,27 @@ export class IVAFillDeclarationTask implements Task {
 		private readonly i18n: I18nService
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
-	const user = await this.userService.getUserById(task.userId)
+	const user = await this.userService.getFullUserMetaById(task.userId, ['niss', 'segSocialPassword'])
 
 	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, task))
 
-	await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
+	// await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
   }
 
-  async runInSelenium(driver: WebDriver, user: User, task: TaskProcessingPayload): Promise<void> {
+  async runInSelenium(driver: WebDriver, user: UserWithMetaFields, task: TaskProcessingPayload): Promise<void> {
 	// TODO switch to user fields
-	const { niss, segSocialPassword } = { niss: '12345678901', segSocialPassword: 'password' }
+	const { niss, segSocialPassword } = user.metaFields
 
 	try {
 		await socialSecuriyGoMainPage(driver)
-		await socialSecurityLogin(driver, { niss, password: segSocialPassword })
+		await socialSecurityLogin(driver, { niss: niss.fieldValue, password: segSocialPassword.fieldValue })
 
-		// await socialSecurityFillDeclaration(driver)
+		const data: SocialSecurityDeclarationData = {
+			previousQuarter: getPreviousQuarter(),
+			previousQuarterYear: getPreviousQuarterYear(),
+		}
+
+		await socialSecurityFillTrimestralDeclaration(driver, data)
 
 		await this.telegramService.sendMessage(user.telegramId, 'Successfully submitted you declaration!')
 	} catch (e) {
@@ -47,6 +54,8 @@ export class IVAFillDeclarationTask implements Task {
 			},
 			parse_mode: 'HTML'
 		})
+
+		throw e
 	}
   }
 }
