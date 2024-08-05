@@ -26,6 +26,7 @@ export interface TaskProcessingPayloadCall<T> {
 	taskExecutionPath?: TaskProcessingJobName[];
 	parentOperationId?: string;
 	requestedFields?: FieldWithTimeSpan[];
+	attemptsMade?: number
 }
 
 export interface TaskProcessingPayloadTemplate<T> extends TaskProcessingPayloadCall<T> {

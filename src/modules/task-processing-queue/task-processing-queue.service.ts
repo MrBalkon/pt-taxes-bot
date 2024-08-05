@@ -57,7 +57,8 @@ export class TaskProcessingQueueService {
       id: task?.data?.taskUid,
       taskId: this.taskService.getTaskBySystemName(task?.data?.type).id,
       userId: task?.data?.userId,
-      parentOperationId: task?.data?.parentOperationId
+      parentOperationId: task?.data?.parentOperationId,
+      payload: task?.data
     })));
   }
 
@@ -91,7 +92,8 @@ export class TaskProcessingQueueService {
       });
       await this.operationService.createOperation(uuid, dbTask.id, {
         userId: jobData?.userId,
-        parentOperationId: jobData?.parentOperationId
+        parentOperationId: jobData?.parentOperationId,
+        payload: jobData
       });
     } else if ((await job.getState()) === 'failed') {
       await job.retry();

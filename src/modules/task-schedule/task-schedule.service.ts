@@ -5,7 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { TaskShedule, TaskSheduleType } from 'src/entities/task-schedule.entity';
 import { Repository } from 'typeorm';
 import { TaskProcessingQueueService } from '../task-processing-queue/task-processing-queue.service';
-import { TaskProcessingJobName } from '../task-processing-queue/task-processing.types';
+import { TaskProcessingJobName, TaskProcessingPayloadCall } from '../task-processing-queue/task-processing.types';
 import { TaskSheduleRepository } from 'src/repositories/task-shedule.repository';
 import { DateTime } from 'luxon'
 
@@ -120,9 +120,9 @@ export class TaskSheduleService implements OnModuleInit {
 
 	private prepareTaskPayload(taskShedule: TaskShedule) {
 		return {
-			data: taskShedule.taskPayload,
+			...taskShedule.taskPayload,
 			type: taskShedule.task.systemName as TaskProcessingJobName
-		}
+		} as TaskProcessingPayloadCall<any>
 	}
 
 	async createOneShotTaskShedule(taskId: number, taskPayload: any, oneShotDate: Date) {

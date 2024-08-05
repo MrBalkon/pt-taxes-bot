@@ -17,7 +17,9 @@ export enum OperationStatus {
 }
 
 export enum OperationErrorType {
+	RESOURCE_UNAVAILABLE='resource_unavailable',
 	SYSTEM_ERROR='system_error',
+	EXCEPTION = 'exception',
 }
 
 @Entity('operations')
@@ -33,6 +35,12 @@ export class Operation {
 
 	@Column('varchar', { name: 'error', nullable: true })
 	error: string | null;
+
+	@Column('jsonb', { name: 'payload', nullable: true })
+	payload: object | null;
+
+	@Column('enum', { name: 'error_type', enum: OperationErrorType, nullable: true })
+	errorType: OperationErrorType;
 
 	@Column('timestamp', { name: 'finished_at', nullable: true })
 	finishedAt: Date;

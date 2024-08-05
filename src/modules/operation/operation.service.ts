@@ -1,5 +1,5 @@
 import { Injectable } from '@nestjs/common';
-import { Operation, OperationStatus } from 'src/entities/operation.entity';
+import { Operation, OperationErrorType, OperationStatus } from 'src/entities/operation.entity';
 import { OperationRepository } from 'src/repositories/operation.repository';
 import { DeepPartial } from 'typeorm';
 
@@ -8,6 +8,10 @@ export class OperationService {
 	constructor(
 		private readonly operationRepository: OperationRepository,
 	) {}
+
+	async getOperationById(operationId: string) {
+		return this.operationRepository.findOneBy({ id: operationId })
+	}
 
 	async createOperationsBulk(data: DeepPartial<Operation>[]) {
 		return this.operationRepository.save(data)
@@ -26,10 +30,11 @@ export class OperationService {
 		return this.operationRepository.update(operationId, data)
 	}
 
-	async updateOperationStatus(operationId: string, status: OperationStatus, error?: string) {
+	async updateOperationStatus(operationId: string, status: OperationStatus, error?: string, errorType?: OperationErrorType) {
 		return this.operationRepository.update(operationId, {
 			status,
-			error
+			error,
+			errorType
 		})
 	}
 

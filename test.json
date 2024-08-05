@@ -1,8 +1,129 @@
 {
-	"methodArgs": [
-		{
-			"value": "user.metaFields.niss.fieldSystemName"
+	"data": null,
+	"type": "CheckCredentialsTask",
+	"user": {
+		"id": 1,
+		"role": "user",
+		"createdAt": "2024-07-28T17:08:19.503Z",
+		"telegramId": "695318557",
+		"hasContract": true,
+		"acessedTasks": [
+			{
+				"id": 1,
+				"name": "Fill Social Security declaration",
+				"type": "action",
+				"createdAt": "2024-07-28T23:20:45.916Z",
+				"isDynamic": false,
+				"systemName": "SocialSecurityFillDeclarationTask",
+				"description": "Bla bla bla",
+				"lifespanType": "periodic",
+				"executionType": "invoke_manager"
+			},
+			{
+				"id": 5,
+				"name": "Financais fill data",
+				"type": "data_extraction",
+				"createdAt": "2024-08-01T23:47:13.844Z",
+				"isDynamic": false,
+				"systemName": "FinancaisFillData",
+				"description": "Task for filling data from Financais to local db",
+				"lifespanType": "on_demand",
+				"executionType": "invoke_manager"
+			},
+			{
+				"id": 3,
+				"name": "Check Credentials",
+				"type": "data_extraction",
+				"createdAt": "2024-07-29T20:33:22.934Z",
+				"isDynamic": false,
+				"systemName": "CheckCredentialsTask",
+				"description": "Task for checking all login credentials",
+				"lifespanType": "on_demand",
+				"executionType": "invoke_manager"
+			},
+			{
+				"id": 11,
+				"name": "Request from user",
+				"type": "data_extraction",
+				"createdAt": "2024-08-04T23:32:46.311Z",
+				"isDynamic": false,
+				"systemName": "UserRequestData",
+				"description": null,
+				"lifespanType": "on_demand",
+				"executionType": "none"
+			},
+			{
+				"id": 8,
+				"name": "Fill actual income data from financas",
+				"type": "data_extraction",
+				"createdAt": "2024-08-04T19:48:15.587Z",
+				"isDynamic": false,
+				"systemName": "FinancaisFillIncome",
+				"description": "Fill actual income data from financas",
+				"lifespanType": "on_demand",
+				"executionType": "invoke_manager"
+			},
+			{
+				"id": 6,
+				"name": "Social Security Retrieve Payment information",
+				"type": "action",
+				"createdAt": "2024-08-03T16:07:22.400Z",
+				"isDynamic": false,
+				"systemName": "SocialSecurityPaymentInformationTask",
+				"description": null,
+				"lifespanType": "periodic",
+				"executionType": "invoke_manager"
+			}
+		]
+	},
+	"userId": 1,
+	"taskUid": "0684754f-1d30-4798-ba3a-3476c006b21a",
+	"metaFields": {
+		"nif": {
+			"id": 1552,
+			"year": null,
+			"month": null,
+			"userId": 1,
+			"fieldId": 5,
+			"fieldName": "NIF",
+			"fieldValue": "315300752",
+			"fieldSystemName": "nif",
+			"fieldLifeSpanType": "permanent"
+		},
+		"niss": {
+			"id": 1550,
+			"year": null,
+			"month": null,
+			"userId": 1,
+			"fieldId": 1,
+			"fieldName": "NISS",
+			"fieldValue": "12167229718",
+			"fieldSystemName": "niss",
+			"fieldLifeSpanType": "permanent"
+		},
+		"financasPassword": {
+			"id": 1553,
+			"year": null,
+			"month": null,
+			"userId": 1,
+			"fieldId": 6,
+			"fieldName": "Financas password",
+			"fieldValue": "PS3GY45N5FVV",
+			"fieldSystemName": "financasPassword",
+			"fieldLifeSpanType": "permanent"
+		},
+		"segSocialPassword": {
+			"id": 1551,
+			"year": null,
+			"month": null,
+			"userId": 1,
+			"fieldId": 3,
+			"fieldName": "Seg Social password",
+			"fieldValue": "LL,.Gb2ueP,TiZ'",
+			"fieldSystemName": "segSocialPassword",
+			"fieldLifeSpanType": "permanent"
 		}
-	],
-	"resultNamePath": "credentialdFields[0]"
+	},
+	"systemTaskId": 3,
+	"executionType": "invoke_manager"
 }

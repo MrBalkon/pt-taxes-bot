@@ -10,6 +10,9 @@ import { FieldService } from '../field/field.service';
 import { TaskField, TaskFieldTimeRangeType } from 'src/entities/task-field.entity';
 import { FieldLifeSpanType } from 'src/entities/user-field.entity';
 import { group } from 'src/utils';
+import { TaskRetryPolicy } from 'src/entities/task-retry-policy.entity';
+
+const groupByOperationErrorType = group("operationErrorType")
 
 @Injectable()
 export class TaskService implements OnModuleInit {
@@ -98,34 +101,28 @@ export class TaskService implements OnModuleInit {
 	// 	)
 	// }
 
-	private searchTreeForTasks(): Task[] {
-		const tasks = Object.values(this.tasksNameMap);
-		const actionTasks = tasks.filter(task => task.type === TaskType.ACTION);
-
-		const neededFieldIds = actionTasks.map(task => task.taskFields.map(taskField => taskField.fieldId)).flat();
-
-		if (!neededFieldIds.length) {
-			return actionTasks
-		}
-
-
-	}
-
 	private async updateLocalTasksMap(manager: EntityManager = this.connection.manager) {
 		const tasks = await manager
 			.getRepository(Task)
 			.createQueryBuilder('task')
+			.leftJoinAndSelect('task.retryPolicies', 'retryPolicies')
 			.leftJoinAndSelect('task.taskFields', 'taskFields')
 			.leftJoinAndSelect('taskFields.field', 'field')
 			.leftJoinAndSelect('task.outputFields', 'outputFields')
 			.getMany();
 		this.tasksNameMap = tasks.reduce((acc, task) => {
-			acc[task.systemName] = task;
+			const localTask = task as TaskWithChildrenIds;
+			const retryPoliciesMap = task.retryPolicies.reduce((acc, retryPolicy) => {
+				acc[retryPolicy.operationErrorType] = retryPolicy;
+				return acc;
+			}, {})
+			localTask.retryPoliciesMap = retryPoliciesMap;
+			acc[task.systemName] = localTask;
 			return acc;
 		}, {});
 	}
 }
 
 export interface TaskWithChildrenIds extends Task {
-	
+	retryPoliciesMap: Record<string, TaskRetryPolicy>
 }

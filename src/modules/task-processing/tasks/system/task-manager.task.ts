@@ -15,6 +15,7 @@ import { FieldService } from "src/modules/field/field.service";
 import { TaskProcessingQueueService } from "../../../task-processing-queue/task-processing-queue.service";
 import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
 import { taskFieldParser } from "../../utils/taskFieldsParse";
+import { OperationService } from "src/modules/operation/operation.service";
 
 @Injectable()
 export class TaskManagerService implements Task {
@@ -29,9 +30,14 @@ export class TaskManagerService implements Task {
 		private readonly subscriptionService: SubscriptionService,
 		private readonly fieldService: FieldService,
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
+		private readonly operationsService: OperationService
 	) { }
 
 	async run(taskPayload: TaskProcessingPayload): Promise<void> {
+		if (!await this.validateParentOperaration(taskPayload)) {
+			return;
+		}
+
 		const user = taskPayload.user
 		const subscription = await this.subscriptionService.findActiveUserSubscription(user.id)
 
@@ -52,6 +58,26 @@ export class TaskManagerService implements Task {
 		})
 
 		await this.taskProcessingQueueService.addQueueJobBulk(tasksPayloads)
+	}
+
+	private async validateParentOperaration(taskPayload: TaskProcessingPayload): Promise<boolean> {
+		if (!taskPayload?.parentOperationId) {
+			return true
+		}
+
+		const parentOperation = await this.operationsService.getOperationById(taskPayload.parentOperationId)
+
+		if (!parentOperation) {
+			this.logger.log(`[${taskPayload.taskUid}] Parent operation not found`)
+			return false;
+		}
+
+		if (parentOperation?.error) {
+			this.logger.log(`[${taskPayload.taskUid}] Parent operation failed`)
+			return false;
+		}
+
+		return true;
 	}
 
 	async getNextTasksToExecute(user: User) {

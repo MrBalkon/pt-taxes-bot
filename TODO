@@ -8,8 +8,6 @@ Todo:
     ☐ Shedule public task for testing if gov site is up
     ☐ Shedule failed tasks if gov service is down
     ☐ fill data about IVA/IRS Enquadramento
-    ✘ Add task conditions @cancelled(24-08-05 18:01)
-    ✘ Add fields fill trigger @cancelled(24-08-05 18:01)
     ☐ Add global meta fields to user-fields & answers
     Social Security calculation:
       ☐ Check service availability
@@ -65,6 +63,8 @@ Todo:
     ☐ think about conditional question for income as a compare
 
 Archive:
+  ✘ Add task conditions @cancelled(24-08-05 18:01) @project(Todo.Active)
+  ✘ Add fields fill trigger @cancelled(24-08-05 18:01) @project(Todo.Active)
   ✔ Add next task argument for every task @done(24-08-04 20:38) @project(Todo.Active)
   ✔ Check credentials @done(24-08-01 01:44) @project(Todo.Active.Social Security calculation)
   ✔ Fill income data for Category B @done(24-08-03 02:13) @project(Todo.Active.Social Security calculation)

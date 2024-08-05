@@ -18,6 +18,7 @@ import { ExecutionScenario } from './execution-scenario.entity';
 import { ExecutionScenarionTask } from './execution-scenario-task.entity';
 import { TaskOutputField } from './task-fields-output.entity';
 import { TaskField } from './task-field.entity';
+import { TaskRetryPolicy } from './task-retry-policy.entity';
 
 export enum TaskType {
 	ACTION = 'action',
@@ -85,4 +86,7 @@ export class Task {
 
 	@OneToMany(() => TaskOutputField, tof => tof.task)
 	outputFields: TaskOutputField[];
+
+	@OneToMany(() => TaskRetryPolicy, trp => trp.task)
+	retryPolicies: TaskRetryPolicy[];
 }

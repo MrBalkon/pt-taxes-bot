@@ -51,17 +51,25 @@ export class CheckCredentialsTask implements Task {
 			const incorrectFields = []
 			if (metaFields.niss && metaFields.segSocialPassword) {
 				await socialSecuriyGoMainPage(driver)
-				incorrectFields.push(...await this.checkSegSocialCredentialsErrors(user, metaFields, driver))
-				if (!incorrectFields.length) {
-					await this.questionService.saveAnswerByFieldSystemName(user.id, 'hasUserCheckedSegSocialCreds', { fieldValue: 'yes' })
+				const segSocialFields = await this.checkSegSocialCredentialsErrors(user, metaFields, driver)
+				incorrectFields.push(...segSocialFields)
+
+				if (!segSocialFields.length) {
+					await this.questionService.saveAnswerByFieldSystemName(user.id, 'hasUserCheckedSegSocialCreds', { fieldValue: "yes" })
+				} else {
+					await this.questionService.deleteAnswer(user.id, 'hasUserCheckedSegSocialCreds')
 				}
 			}
 
 			if (metaFields.nif && metaFields.financasPassword) {
 				await financaisGoMainPage(driver)
-				incorrectFields.push(...await this.checkFinancasCredentialsErrors(user, metaFields, driver))
-				if (!incorrectFields.length) {
-					await this.questionService.saveAnswerByFieldSystemName(user.id, 'hasUserCheckedFinancasCreds', { fieldValue: 'yes' })
+				const finacasFields = await this.checkFinancasCredentialsErrors(user, metaFields, driver)
+				incorrectFields.push(...finacasFields)
+
+				if (!finacasFields?.length) {
+					await this.questionService.saveAnswerByFieldSystemName(user.id, 'hasUserCheckedFinancasCreds', { fieldValue: "yes" })
+				} else {
+					await this.questionService.deleteAnswer(user.id, 'hasUserCheckedFinancasCreds')
 				}
 			}
 
@@ -72,10 +80,6 @@ export class CheckCredentialsTask implements Task {
 				throw new WrongCredentialsError(text, fieldSystemNames)
 			}
 		} catch (e) {
-			if (e instanceof ServiceUnavailableError) {
-				// TODO add retry job after some time
-				await this.notificaitonService.sendNotification(user, `${e.message}, please try again later.`)
-			}
 			throw e
 		}
 	}

@@ -10,6 +10,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { TaskProcessingModule } from '../task-processing/task-processing.module';
 import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing-queue/task-processing-queue.constants';
 import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
+import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
 
 @Module({
 	imports: [
@@ -19,6 +20,7 @@ import { TaskProcessingQueueModule } from '../task-processing-queue/task-process
 		UserModule,
 		QuestionModule,
 		TaskModule,
+		TaskSheduleModule,
 		OperationModule,
 		NotificationModule,
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
