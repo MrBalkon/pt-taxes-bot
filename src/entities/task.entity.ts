@@ -29,6 +29,11 @@ export enum TaskLifespanType {
 	ON_DEMAND = 'on_demand',
 }
 
+export enum TaskExecutionType {
+	NONE = 'none',
+	INVOKE_MANAGER = 'invoke_manager',
+}
+
 @Entity('tasks')
 export class Task {
 	@PrimaryGeneratedColumn()
@@ -54,6 +59,9 @@ export class Task {
 
 	@Column('enum', { name: 'lifespan_type', enum: TaskLifespanType, default: TaskLifespanType.ON_DEMAND })
 	lifespanType: TaskLifespanType;
+
+	@Column('enum', { name: 'execution_type', enum: TaskExecutionType, default: TaskExecutionType.NONE })
+	executionType: TaskExecutionType;
 
 	// @Column('varchar', { name: 'task_type', nullable: true })
 	// taskDateRestriction: string;

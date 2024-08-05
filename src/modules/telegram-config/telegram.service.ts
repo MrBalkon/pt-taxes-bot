@@ -18,6 +18,9 @@ export class TelegramService implements NotificationServiceType {
 
 	async sendNotification(user: User, message: string, notificationBody?: NotificationExtra): Promise<void> {
 		const extra = this.getExtra(user, notificationBody);
+		if (notificationBody.action === NotificationAction.REQUEST_DATA) {
+			await this.bot.telegram.sendChatAction(user.telegramId, 'typing');
+		}
 		await this.bot.telegram.sendMessage(user.telegramId, message, extra);
 	}
 

@@ -10,7 +10,7 @@ import { TaxScene } from './stories/tax.scene';
 import { PostgresAdapter } from 'kysely';
 import { Postgres } from '@telegraf/session/pg';
 import { session } from 'telegraf';
-import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing.module';
+import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 import { UserModule } from '../user/user.module';
 import { WizardScene } from './stories/wizard.scene';
 import { FormScene } from './stories/form/form.scene';

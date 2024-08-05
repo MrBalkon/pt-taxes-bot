@@ -10,3 +10,15 @@ export interface TaskFieldsSearch {
 	timeRangeType: TaskFieldTimeRangeType;
 	isRequired: boolean;
 }
+
+export type TaskMetaFieldPermanent = string
+
+export type TaskMetaFieldPeriodic = {
+	[year: string]: {
+		[dateField: string]: TaskMetaFieldPermanent
+	}
+}
+
+export type TaskMetaField = TaskMetaFieldPermanent | TaskMetaFieldPeriodic
+
+export type TaskMetaFields = Record<string, TaskMetaField>;

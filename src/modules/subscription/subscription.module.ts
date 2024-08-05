@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { SubscriptionService } from './subscription.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { SubscriptionPackage } from 'src/entities/subscription-package.entity';
@@ -7,7 +7,7 @@ import { UserSubscription } from 'src/entities/user-subscription.entity';
 import { NotificationModule } from '../notification/notification.module';
 import { UserModule } from '../user/user.module';
 import { FeatureModule } from '../feature/feature.module';
-import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing.module';
+import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 
 @Module({
 	imports: [
@@ -15,7 +15,7 @@ import { TaskProcessingQueueModule } from '../task-processing-queue/task-process
 		NotificationModule,
 		UserModule,
 		FeatureModule,
-		TaskProcessingQueueModule,
+		forwardRef(() => TaskProcessingQueueModule),
 	],
 	controllers: [],
 	providers: [SubscriptionService],

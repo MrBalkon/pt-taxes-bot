@@ -3,6 +3,7 @@ import { SocialSecurityTask } from "../task-processing/tasks/social-security.tas
 import { User } from "src/entities/user.entity";
 import { UserWithAccesses } from "../user/user.types";
 import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
+import { TaskExecutionType } from "src/entities/task.entity";
 
 export enum TaskProcessingJobName {
 	GOOGLE_EXAMPLE_COM = "SocialSecurityTask",
@@ -32,6 +33,7 @@ export interface TaskProcessingPayloadTemplate<T> extends TaskProcessingPayloadC
 	taskUid: string;
 	user?: UserWithAccesses;
 	metaFields?: Record<string, any>
+	executionType: TaskExecutionType
 }
 
 export type TaskProcessingPayload = TaskProcessingPayloadTemplate<null>

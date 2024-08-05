@@ -1,8 +1,8 @@
 import { InjectQueue } from '@nestjs/bull';
 import { Injectable, Logger, NotFoundException } from '@nestjs/common';
 import { JobStatus, Queue } from 'bull';
-import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing.constants';
-import { CleanJobsQuery, TaskProcessingPayload, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from '../task-processing.types';
+import { TASK_PROCESSING_QUEUE_NAME } from './task-processing-queue.constants';
+import { CleanJobsQuery, TaskProcessingPayload, TaskProcessingPayloadCall, TaskProcessingPayloadTemplate } from './task-processing.types';
 import { v4 as uuidV4 } from "uuid"
 import { UserService } from 'src/modules/user/user.service';
 import { OperationService } from 'src/modules/operation/operation.service';
@@ -37,10 +37,12 @@ export class TaskProcessingQueueService {
   async addQueueJobBulk<T>(tasksPayloads: TaskProcessingPayloadCall<T>[]) {
     const tasks = tasksPayloads.map((task) => {
       const taskUid = this.generateId();
+      const dbTask = this.taskService.getTaskBySystemName(task.type);
       const data = {
         ...task,
         taskUid,
-        systemTaskId: this.taskService.getTaskBySystemName(task.type).id
+        systemTaskId: dbTask.id,
+        executionType: dbTask.executionType
       }
       return {
         data,
@@ -72,12 +74,13 @@ export class TaskProcessingQueueService {
         `[${uuid}] No existing job, creating new one`,
       );
 
-      const systemTaskId = this.taskService.getTaskBySystemName(jobData.type).id;
+      const dbTask = this.taskService.getTaskBySystemName(jobData.type);
 
       const payload = {
         ...jobData,
         taskUid: uuid,
-        systemTaskId,
+        systemTaskId: dbTask.id,
+        executionType: dbTask.executionType
       }
 
       await this.queue.add(payload, {
@@ -86,7 +89,7 @@ export class TaskProcessingQueueService {
         removeOnFail: true,
         attempts: 1,
       });
-      await this.operationService.createOperation(uuid, systemTaskId, {
+      await this.operationService.createOperation(uuid, dbTask.id, {
         userId: jobData?.userId,
         parentOperationId: jobData?.parentOperationId
       });

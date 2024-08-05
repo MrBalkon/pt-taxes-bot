@@ -1,11 +1,11 @@
 // @ts-ignore
 import { By, Key, WebDriver, Select } from "selenium-webdriver"
 import { goPage } from "../default.scenarios"
-import { ServiceUnavailableError, WrongCredentialsError, TaskProcessingError } from "src/modules/task-processing-queue/task-processing.error"
+import { ServiceUnavailableError, WrongCredentialsError, TaskProcessingError } from "src/modules/task-processing-queue/task-processing-queue.error"
 
 export const financaisGoMainPage = async (driver: WebDriver) => {
 	try {
-		await driver.get('https://sitfiscal.portaldasfinancas.gov.pt/geral/dashboard')
+		await driver.get('https://sitasdasdfiscal.portaldasfinancas.gov.pt/geral/dashboard')
 	} catch (error) {
 		throw new ServiceUnavailableError('Finanças')
 	}

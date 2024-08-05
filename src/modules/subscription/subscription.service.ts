@@ -9,7 +9,7 @@ import { NotificaitonService } from '../notification/notification.service';
 import { NotificationAction } from '../notification/notification.types';
 import { UserService } from '../user/user.service';
 import { FeatureService } from '../feature/feature.service';
-import { TaskProcessingQueueService } from '../task-processing-queue/services/task-processing.queue';
+import { TaskProcessingQueueService } from '../task-processing-queue/task-processing-queue.service';
 import { TaskProcessingJobName } from '../task-processing-queue/task-processing.types';
 
 @Injectable()
@@ -156,11 +156,12 @@ export class SubscriptionService {
 				user,
 				`You have been granted access to features ${featureNames}.\n Please, wait for our system to process your request and prepare your tasks`,
 			);
-			await this.taskProcessingQueueService.addQueueJob({
-				type: TaskProcessingJobName.TASK_MANAGER,
-				userId,
-				data: undefined
-			})
+		})
+
+		await this.taskProcessingQueueService.addQueueJob({
+			type: TaskProcessingJobName.TASK_MANAGER,
+			userId,
+			data: undefined
 		})
 	}
 

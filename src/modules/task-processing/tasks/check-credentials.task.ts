@@ -8,7 +8,7 @@ import { socialSecurityLogin, socialSecuriyGoMainPage } from "../selenium-scenar
 import { I18nService } from "nestjs-i18n";
 import { QuestionService } from "src/modules/question/question.service";
 import { financaisGoMainPage, financaisLogin } from "../selenium-scenarios/financais/financais.scenarios";
-import { ServiceUnavailableError, WrongCredentialsError } from "../../task-processing-queue/task-processing.error";
+import { ServiceUnavailableError, WrongCredentialsError } from "../../task-processing-queue/task-processing-queue.error";
 import { NotificaitonService } from "src/modules/notification/notification.service";
 import { User } from "src/entities/user.entity";
 
@@ -52,11 +52,17 @@ export class CheckCredentialsTask implements Task {
 			if (metaFields.niss && metaFields.segSocialPassword) {
 				await socialSecuriyGoMainPage(driver)
 				incorrectFields.push(...await this.checkSegSocialCredentialsErrors(user, metaFields, driver))
+				if (!incorrectFields.length) {
+					await this.questionService.saveAnswerByFieldSystemName(user.id, 'hasUserCheckedSegSocialCreds', { fieldValue: 'yes' })
+				}
 			}
 
 			if (metaFields.nif && metaFields.financasPassword) {
 				await financaisGoMainPage(driver)
 				incorrectFields.push(...await this.checkFinancasCredentialsErrors(user, metaFields, driver))
+				if (!incorrectFields.length) {
+					await this.questionService.saveAnswerByFieldSystemName(user.id, 'hasUserCheckedFinancasCreds', { fieldValue: 'yes' })
+				}
 			}
 
 			if (incorrectFields.length) {

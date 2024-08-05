@@ -6,7 +6,7 @@ import { I18nService } from 'nestjs-i18n';
 import { ActionContract } from 'src/decorators/action.decorator';
 import { UserService } from 'src/modules/user/user.service';
 import { FormError } from './form.errors';
-import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/services/task-processing.queue';
+import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/task-processing-queue.service';
 import { TaskProcessingJobName } from 'src/modules/task-processing-queue/task-processing.types';
 import { QuestionService } from 'src/modules/question/question.service';
 import { FormQuestion } from './form.types';

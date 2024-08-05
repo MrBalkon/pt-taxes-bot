@@ -1,6 +1,6 @@
 import { WebDriver } from "selenium-webdriver"
 import { Logger } from "@nestjs/common"
-import { PageException } from "src/modules/task-processing-queue/task-processing.error"
+import { PageException } from "src/modules/task-processing-queue/task-processing-queue.error"
 
 export const goPage = (pageName: string, url: string) => async (driver: WebDriver) => {
 	try {

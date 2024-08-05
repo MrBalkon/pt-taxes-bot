@@ -23,6 +23,26 @@ export const getPreviousYear = (): number => {
 	return getCurrentYear() - 1;
 }
 
+export const getPreviousMonth = (): number => {
+	const currentMonth = new Date().getMonth() + 1;
+
+	if (currentMonth === 1) {
+		return 12;
+	}
+
+	return currentMonth - 1;
+}
+
+export const getPreviousMonthYear = (): number => {
+	const currentMonth = new Date().getMonth() + 1;
+
+	if (currentMonth === 1) {
+		return getCurrentYear() - 1;
+	}
+
+	return getCurrentYear();
+}
+
 export const getPreviousQuarterMonths = (): number[] => {
 	const previousQuarter = getPreviousQuarter();
 

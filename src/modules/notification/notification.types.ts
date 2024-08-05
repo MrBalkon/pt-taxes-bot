@@ -5,8 +5,13 @@ export enum NotificationAction {
 	REQUEST_DATA = "REQUEST_DATA",
 }
 
-export interface NotificationExtra {
+export interface NotificationRequestDataData {
+	fields: string[]
+}
+
+export interface NotificationExtra<T = undefined> {
 	action?: NotificationAction
+	data?: T
 }
 
 export interface NotificationServiceType {

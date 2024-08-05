@@ -11,10 +11,11 @@ import { Task } from 'src/entities/task.entity';
 import { FinancaisFillData } from './tasks/financais-fill-data.task';
 import { TaskManagerService } from './tasks/task-manager.task';
 import { QuestionService } from 'src/modules/question/question.service';
-import { TaskInputFieldsException } from '../task-processing-queue/task-processing.error';
+import { TaskInputFieldsException } from '../task-processing-queue/task-processing-queue.error';
 import { TaskFieldTimeRangeType } from 'src/entities/task-field.entity';
 import { getPreviousQuarterMonths, getPreviousQuarterYear, getPreviousYear } from 'src/utils/date';
 import { UserRequestData } from './tasks/user-request-data.task';
+import { taskFieldParser } from './utils/taskFieldsParse';
 
 @Injectable()
 export class TaskProcessingService {
@@ -70,23 +71,7 @@ export class TaskProcessingService {
 		const missingFields = dbTask.taskFields.filter((taskField) => {
 			const key = taskField.field.systemName
 			const existingMetaField = metaFields[key]
-			if (!existingMetaField) {
-				return true;
-			}
-
-			switch (taskField.timeRangeType) {
-				case TaskFieldTimeRangeType.PREVIOUS_QUARTER:
-					const previousQuarterYear = getPreviousQuarterYear();
-					const previousQuarterMonth = getPreviousQuarterMonths();
-					return previousQuarterMonth.every((month) => {
-						return existingMetaField[previousQuarterYear][month];
-					})
-				case TaskFieldTimeRangeType.PREVIOUS_YEAR:
-					const previousYear = getPreviousYear()
-					return Object.values(existingMetaField[previousYear])?.length === 12;
-				default:
-					return false
-			}
+			return !taskFieldParser.userHasField(taskField, existingMetaField);
 		});
 
 		if (missingFields.length) {

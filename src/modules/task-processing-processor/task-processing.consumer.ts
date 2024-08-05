@@ -8,19 +8,20 @@ import {
 } from '@nestjs/bull';
 import { HttpException, Inject, Logger } from '@nestjs/common';
 import { DoneCallback, Job } from 'bull';
-import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing.constants';
-import { TaskProcessingJobName, TaskProcessingPayload } from '../task-processing.types';
-import { TaskProcessingService } from '../../task-processing/task.processing.service';
+import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing-queue/task-processing-queue.constants';
+import { TaskProcessingJobName, TaskProcessingPayload } from '../task-processing-queue/task-processing.types';
+import { TaskProcessingService } from '../task-processing/task.processing.service';
 import { OperationService } from 'src/modules/operation/operation.service';
 import { OperationStatus } from 'src/entities/operation.entity';
-import { TaskProcessingQueueService } from './task-processing.queue';
-import { TaskInputFieldsException, WrongCredentialsError } from '../task-processing.error';
+import { TaskProcessingQueueService } from '../task-processing-queue/task-processing-queue.service';
+import { TaskInputFieldsException, WrongCredentialsError } from '../task-processing-queue/task-processing-queue.error';
 import { QuestionService } from 'src/modules/question/question.service';
 import { NotificaitonService } from 'src/modules/notification/notification.service';
 import { NotificationAction } from 'src/modules/notification/notification.types';
 import { EmptyFieldsError } from 'src/modules/question/question.error';
 import { UserService } from 'src/modules/user/user.service';
 import { TaskService } from 'src/modules/task/task.service';
+import { TaskExecutionType } from 'src/entities/task.entity';
 
 @Processor(TASK_PROCESSING_QUEUE_NAME)
 export class TaskProcessingQueueConsumer {
@@ -140,6 +141,15 @@ export class TaskProcessingQueueConsumer {
 
 			this.logger.error(e.message, e.stack);
 			done(e);
+		} finally {
+			if (payload.executionType === TaskExecutionType.INVOKE_MANAGER) {
+				await this.taskProcessingQueueService.addQueueJob({
+					type: TaskProcessingJobName.TASK_MANAGER,
+					userId: payload.userId,
+					parentOperationId: payload.taskUid,
+					data: undefined
+				})
+			}
 		}
 	}
 }

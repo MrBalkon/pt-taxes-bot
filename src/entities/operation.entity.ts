@@ -16,6 +16,10 @@ export enum OperationStatus {
 	FAIL='fail'
 }
 
+export enum OperationErrorType {
+	SYSTEM_ERROR='system_error',
+}
+
 @Entity('operations')
 export class Operation {
 	@PrimaryGeneratedColumn("uuid")

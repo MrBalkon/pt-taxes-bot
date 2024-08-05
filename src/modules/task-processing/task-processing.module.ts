@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';;
+import { Module, forwardRef } from '@nestjs/common';;
 import { TaskProcessingService } from './task.processing.service';
 import { ConfigModule } from '../config/config.module';
 import { UserModule } from '../user/user.module';
@@ -13,7 +13,7 @@ import { ExecutionCommandModule } from '../execution-command/execution-command.m
 import { NotificationModule } from '../notification/notification.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 import { FieldModule } from '../field/field.module';
-import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing.module';
+import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
@@ -30,7 +30,7 @@ import { TaskProcessingQueueModule } from '../task-processing-queue/task-process
 		NotificationModule,
 		SubscriptionModule,
 		FieldModule,
-		TaskProcessingQueueModule
+		forwardRef(() => TaskProcessingQueueModule)
 	],
 	controllers: [],
 	providers: [TaskProcessingService],

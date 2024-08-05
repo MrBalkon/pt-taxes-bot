@@ -12,7 +12,9 @@ import { TaskService } from "src/modules/task/task.service";
 import { SubscriptionService } from "src/modules/subscription/subscription.service";
 import { TaskLifespanType, TaskType } from "src/entities/task.entity";
 import { FieldService } from "src/modules/field/field.service";
-import { TaskProcessingQueueService } from "../../task-processing-queue/services/task-processing.queue";
+import { TaskProcessingQueueService } from "../../task-processing-queue/task-processing-queue.service";
+import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
+import { taskFieldParser } from "../utils/taskFieldsParse";
 
 @Injectable()
 export class TaskManagerService implements Task {
@@ -66,16 +68,10 @@ export class TaskManagerService implements Task {
 		)
 
 		const neededFieldIds = tasks
-			.map(task => {
-				const fieldsIds = task.taskFields.filter(
-					field => field.isRequired
-				)
-				.map(taskField => taskField.fieldId)
-
-				return fieldsIds.filter(fieldId => {
-					return !metaFields?.[fieldId]
-				})
-			})
+			.map(task => task.taskFields
+					.filter(field => !taskFieldParser.userHasField(field, metaFields[field.fieldId]))
+					.map(taskField => taskField.fieldId)
+			)
 			.filter(fieldIds => fieldIds.length);
 
 		if (!neededFieldIds.flat().length) {

@@ -1,9 +1,9 @@
 import { Module } from '@nestjs/common';
-import { TaskProcessingQueueService } from './services/task-processing.queue';
-import { TASK_PROCESSING_QUEUE_NAME } from './task-processing.constants';
+import { TaskProcessingQueueService } from './task-processing-queue.service';
+import { TASK_PROCESSING_QUEUE_NAME } from './task-processing-queue.constants';
 import { BullModule } from '@nestjs/bull';
 import { TaskProcessingService } from '../task-processing/task.processing.service';
-import { TaskProcessingQueueConsumer } from './services/task-processing.consumer';
+import { TaskProcessingQueueConsumer } from '../task-processing-processor/task-processing.consumer';
 import { ConfigModule } from '../config/config.module';
 import { UserModule } from '../user/user.module';
 import { SeleniumModule } from '../selenium/selenium.module';
@@ -30,7 +30,7 @@ import { TaskProcessingModule } from '../task-processing/task-processing.module'
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],
-	providers: [TaskProcessingQueueService, TaskProcessingQueueConsumer],
+	providers: [TaskProcessingQueueService],
 	exports: [TaskProcessingQueueService],
 })
 export class TaskProcessingQueueModule {};

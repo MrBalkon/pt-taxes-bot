@@ -12,6 +12,7 @@ import { CreateOrUdpdateFieldAnswer, UserMetaFieldsRequest, UserMetaFieldsReques
 import { UserFieldRepository } from 'src/repositories/user-field.repository';
 import { EmptyFieldsError } from './question.error';
 import { fieldsSerializer } from './questions.serializer';
+import { TaskMetaFields } from '../task/task.types';
 
 @Injectable()
 export class QuestionService {
@@ -106,6 +107,9 @@ export class QuestionService {
 	}
 
 	async getUserAllMetaFieldsByTaskIds(userId: number, inputTaskIds: number[]) {
+		if (!inputTaskIds.length) {
+			return {};
+		}
 		const answers = await this.answerRepository.getAnswersByInputTaskIds(userId, inputTaskIds);
 
 		return this.prepareAnswersByIdMap(answers);
@@ -133,7 +137,7 @@ export class QuestionService {
 		return this.prepareAnswersMapByProperty(answers, 'fieldId');
 	}
 
-	prepareAnswersMapByProperty(answers: any[], property: string) {
+	prepareAnswersMapByProperty(answers: any[], property: string): TaskMetaFields {
 		return answers.reduce((acc, answer) => {
 			const key = answer[property];
 			if (answer.fieldLifeSpanType == FieldLifeSpanType.MONTHLY) {

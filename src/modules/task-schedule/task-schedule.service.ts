@@ -4,7 +4,7 @@ import { CronJob } from 'cron';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TaskShedule, TaskSheduleType } from 'src/entities/task-schedule.entity';
 import { Repository } from 'typeorm';
-import { TaskProcessingQueueService } from '../task-processing-queue/services/task-processing.queue';
+import { TaskProcessingQueueService } from '../task-processing-queue/task-processing-queue.service';
 import { TaskProcessingJobName } from '../task-processing-queue/task-processing.types';
 import { TaskSheduleRepository } from 'src/repositories/task-shedule.repository';
 import { DateTime } from 'luxon'
