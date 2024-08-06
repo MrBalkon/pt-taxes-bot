@@ -49,4 +49,20 @@ export class TaskSheduleRepository extends Repository<TaskShedule> {
 		  .andWhere('ts.oneShotDate > :date', { date: date.toJSDate() })
 		  .getMany();
 	}
+
+	async getMissedRecurringTasks(date: DateTime) {
+		return this.createQueryBuilder('ts')
+		  .where('ts.type = :type', { type: TaskSheduleType.ONE_SHOT })
+		  .andWhere('ts.isActive = true')
+		  .andWhere('ts.oneShotDate < :date', { date: date.toJSDate() })
+		  .getMany();
+	}
+
+	async getRecurringSystemTasks() {
+		return this.createQueryBuilder('ts')
+		  .where('ts.type = :type', { type: TaskSheduleType.RECURRING })
+		  .andWhere('ts.isActive = true')
+		  .andWhere('COALESCE(ts.task_payload::jsonb->\'data\'->\'splitTaskId\', NULL) IS NOT NULL')
+		  .getMany();
+	}
 }

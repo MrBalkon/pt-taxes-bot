@@ -14,6 +14,7 @@ import { NotificationModule } from '../notification/notification.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 import { FieldModule } from '../field/field.module';
 import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
+import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({

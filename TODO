@@ -6,7 +6,6 @@ Todo:
     ☐ Add user tax registered payments
     ☐ Notify myself about errors in operations every day
     ☐ Shedule public task for testing if gov site is up
-    ☐ Shedule failed tasks if gov service is down
     ☐ fill data about IVA/IRS Enquadramento
     ☐ Add global meta fields to user-fields & answers
     Social Security calculation:
@@ -15,7 +14,6 @@ Todo:
       ☐ Retrieve payment
     Financais:
       ☐ Check service availability
-      ☐ Check credentials
       ☐ IVA calculation
         ☐ Fill declaration
         ☐ Retrieve payment
@@ -27,14 +25,11 @@ Todo:
         ☐ IRS previous year declaration parsing
       ☐ Category B
         ☐ Fill fatura-reciebos
-    ☐ Handle exceptions from gov site
     ☐ Add Database seeding via migraiton
     ☐ Add different service modes
     ☐ Add public/system visibility to tasks
     ☐ Handle start poll on no questions
-    ☐ Switch questions to tree with conditions
   Later:
-    ☐ Replace custom code tasks with dynamic
     ☐ Add support for downloaded files?
     ☐ Add support for parsing downloaded files?
     ☐ Add test for get priority question
@@ -47,10 +42,9 @@ Todo:
     ☐ Add AI
     ☐ Add UI
     ☐ Add Handling sensitive data in operation errors
-    ☐ Add constraint on permanent fields
     ☐ Handle options questions answer (edit telegram message)
-    ☐ Add parent_operation_id for split tasks
     ☐ Handle array in scenario
+    ☐ Rewrite asking questions based on output fields
   Features:
     ☐ Add payment system
     ☐ Add edit fields module
@@ -59,10 +53,18 @@ Todo:
     ☐ Add feedback module
     ☐ Post system (reuse one-shot cron)
 
+  REALLY LATER:
+    ☐ Replace custom code tasks with dynamic
   Probably never:
     ☐ think about conditional question for income as a compare
 
 Archive:
+  ✘ Add constraint on permanent fields @cancelled(24-08-05 23:09) @project(Todo.Later)
+  ✔ Add parent_operation_id for split tasks @done(24-08-05 23:09) @project(Todo.Later)
+  ✔ Shedule failed tasks if gov service is down @done(24-08-05 23:07) @project(Todo.Active)
+  ✔ Check credentials @done(24-08-05 23:08) @project(Todo.Active.Financais)
+  ✔ Handle exceptions from gov site @done(24-08-05 23:08) @project(Todo.Active)
+  ✔ Switch questions to tree with conditions @done(24-08-05 23:08) @project(Todo.Active)
   ✘ Add task conditions @cancelled(24-08-05 18:01) @project(Todo.Active)
   ✘ Add fields fill trigger @cancelled(24-08-05 18:01) @project(Todo.Active)
   ✔ Add next task argument for every task @done(24-08-04 20:38) @project(Todo.Active)

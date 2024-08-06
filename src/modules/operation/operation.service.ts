@@ -1,7 +1,8 @@
 import { Injectable } from '@nestjs/common';
 import { Operation, OperationErrorType, OperationStatus } from 'src/entities/operation.entity';
 import { OperationRepository } from 'src/repositories/operation.repository';
-import { DeepPartial } from 'typeorm';
+import { getCurrentYear } from 'src/utils/date';
+import { DeepPartial, In } from 'typeorm';
 
 @Injectable()
 export class OperationService {
@@ -44,5 +45,17 @@ export class OperationService {
 			finishedAt: new Date(),
 			error,
 		})
+	}
+
+	async getSystemOperationsByTaskIds(taskIds: number[]) {
+		if (!taskIds?.length) {
+			return []
+		}
+		const year = getCurrentYear()
+		return this.operationRepository.createQueryBuilder('operation')
+			.where('operation.userId IS NULL')
+			.andWhere('COALESCE(operation.payload -> \'data\' -> \'splitTaskId\', NULL)::int IN (:...taskIds)', { taskIds })
+			.andWhere("date_part('year', created_at) = :year", { year })
+			.getMany()
 	}
 }

@@ -17,6 +17,7 @@ import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
 import { taskFieldParser } from "../../utils/taskFieldsParse";
 import { OperationService } from "src/modules/operation/operation.service";
 import { treeSearch } from "../../utils/tree";
+import { TaskSheduleService } from "src/modules/task-schedule/task-schedule.service";
 
 @Injectable()
 export class TaskManagerService implements Task {
@@ -31,7 +32,7 @@ export class TaskManagerService implements Task {
 		private readonly subscriptionService: SubscriptionService,
 		private readonly fieldService: FieldService,
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
-		private readonly operationsService: OperationService
+		private readonly operationsService: OperationService,
 	) { }
 
 	async run(taskPayload: TaskProcessingPayload): Promise<void> {
@@ -40,14 +41,23 @@ export class TaskManagerService implements Task {
 		}
 
 		const user = taskPayload.user
-		const subscription = await this.subscriptionService.findActiveUserSubscription(user.id)
+		// const subscription = await this.subscriptionService.findActiveUserSubscription(user.id)
 
-		const tasks = await this.getNextTasksToExecuteV2(user)
+		const userdbDasks = await this.taskService.getFullTasksByUserId(user.id)
+
+		if (!userdbDasks.length) {
+			this.logger.log(`[${taskPayload.taskUid}] No tasks found for user ${user.id}`)
+			return;
+		}
+
+		const tasks = await this.getNextTasksToExecuteV2(user, userdbDasks)
 
 		if (!tasks.length) {
 			this.logger.log(`[${taskPayload.taskUid}] No tasks found for user ${user.id}`)
 			return;
 		}
+
+		await this.checkMissedSheduledTasks(userdbDasks)
 
 		const tasksPayloads = tasks.map(task => {
 			return {
@@ -81,70 +91,7 @@ export class TaskManagerService implements Task {
 		return true;
 	}
 
-	async getNextTasksToExecute(user: User) {
-		const tasks = await this.taskService.getFullTasksByUserId(user.id)
-		const taskIdsMap = tasks.reduce<Record<number, DBTask>>((acc, task) => {
-			acc[task.id] = task;
-			return acc;
-		}, {})
-
-		const actionTasks = tasks.filter(task => task.type === TaskType.ACTION);
-		const metaFields = await this.questionService.getUserAllMetaFieldsByTaskIds(
-			user.id,
-			tasks.map(task => task.id)
-		)
-
-		const neededFieldIds = tasks
-			.map(task => task.taskFields
-					.filter(field => !taskFieldParser.userHasField(field, metaFields[field.fieldId]))
-					.map(taskField => taskField.fieldId)
-			)
-			.filter(fieldIds => fieldIds.length);
-
-		if (!neededFieldIds.flat().length) {
-			return actionTasks.filter(task => task.lifespanType === TaskLifespanType.ON_DEMAND);
-		}
-
-		const dataExtractionTasks = tasks.filter(task => task.type === TaskType.DATA_EXTRACTION);
-
-		const taskMatchesCountMap = neededFieldIds.reduce<Record<number, number>>((acc, neededIdsGroup: number[]) => {
-			const matchedTasks = dataExtractionTasks.filter(task => {
-				return neededIdsGroup.some(fieldId => task.outputFields.some(taskField => taskField.fieldId === fieldId));
-			})
-
-			matchedTasks.forEach(task => {
-				if (!acc[task.id]) {
-					acc[task.id] = 0;
-				}
-
-				acc[task.id]++;
-			})
-
-			return acc;
-		}, {})
-
-		const sortedTasks = Object.entries(taskMatchesCountMap)
-			.sort((a, b) => b[1] - a[1])
-			.reduce((acc, item, index) => {
-				if (index == 0) {
-					acc.push(item)
-					return acc
-				}
-
-				const previousAcc = acc[acc.length - 1];
-				if (previousAcc[1] === item[1]) {
-					acc.push(item)
-				}
-
-				return acc
-			}, [])
-		const priorityTasks = sortedTasks.map(([taskId]) => taskIdsMap[taskId])
-
-		return priorityTasks;
-	}
-
-	async getNextTasksToExecuteV2(user: User) {
-		const tasks = await this.taskService.getFullTasksByUserId(user.id)
+	async getNextTasksToExecuteV2(user: User, tasks: DBTask[]) {
 		const taskIdsMap = tasks.reduce<Record<number, DBTask>>((acc, task) => {
 			acc[task.id] = task;
 			return acc;
@@ -188,30 +135,9 @@ export class TaskManagerService implements Task {
 
 		return priorityTasks
 	}
+
+	async checkMissedSheduledTasks(userDbTasks: DBTask[]) {
+		await this.taskService.getSystemMissedTasks()
+	}
 }
 
-
-// {
-// 	"1": [
-// 	  5,
-// 	  3,
-// 	  11,
-// 	],
-// 	"3": [
-// 	  11,
-// 	],
-// 	"5": [
-// 	  3,
-// 	  11,
-// 	],
-// 	"6": [
-// 	  3,
-// 	  11,
-// 	],
-// 	"8": [
-// 	  3,
-// 	  11,
-// 	],
-// 	"11": [
-// 	],
-//   }

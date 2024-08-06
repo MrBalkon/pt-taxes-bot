@@ -15,7 +15,7 @@ export class TaskSheduleService implements OnModuleInit {
 	constructor(
 		private readonly taskSheduleRepository: TaskSheduleRepository,
 		private schedulerRegistry: SchedulerRegistry,
-		private taskProcessingQueueService: TaskProcessingQueueService
+		private taskProcessingQueueService: TaskProcessingQueueService,
 	) {}
 
 	@Cron(CronExpression.EVERY_30_MINUTES)
@@ -136,6 +136,10 @@ export class TaskSheduleService implements OnModuleInit {
 
 	async getUserOneShotTaskHigherThanDate(taskId: number, userId: number, date: DateTime) {
 		return this.taskSheduleRepository.getOneShotTaskByTaskAndUserId(taskId, userId, date);
+	}
+
+	async getRecurringSystemTasks() {
+		return this.taskSheduleRepository.getRecurringSystemTasks();
 	}
 
 	// private async genNearestDayforcron() {
