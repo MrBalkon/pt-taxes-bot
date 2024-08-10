@@ -3,6 +3,8 @@ import { User } from "src/entities/user.entity"
 export enum NotificationAction {
 	REQUEST_CREDENTIALS = 'REQUEST_CREDENTIALS',
 	REQUEST_DATA = "REQUEST_DATA",
+	VIEW_PAYMENTS = "VIEW_PAYMENTS",
+	PAYMENTS_CREATED = "PAYMENTS_CREATED",
 }
 
 export interface NotificationRequestDataData {

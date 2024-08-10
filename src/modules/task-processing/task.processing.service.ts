@@ -16,6 +16,7 @@ import { TaskFieldTimeRangeType } from 'src/entities/task-field.entity';
 import { getPreviousQuarterMonths, getPreviousQuarterYear, getPreviousYear } from 'src/utils/date';
 import { UserRequestData } from './tasks/user-request-data.task';
 import { taskFieldParser } from './utils/taskFieldsParse';
+import { SocialSecurityCheckPayments } from './tasks/taxes/social-security-check-payments.task';
 
 @Injectable()
 export class TaskProcessingService {
@@ -29,6 +30,7 @@ export class TaskProcessingService {
 		private readonly financaisfilldata: FinancaisFillData,
 		private readonly taskmanagerservice: TaskManagerService,
 		private readonly userrequestdata: UserRequestData,
+		private readonly socialsecuritycheckpayments: SocialSecurityCheckPayments,
 		private readonly dynamicTask: DynamicTask,
 		private readonly taskService: TaskService,
 		private readonly questionService: QuestionService,

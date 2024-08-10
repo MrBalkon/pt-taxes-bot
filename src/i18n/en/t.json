@@ -7,7 +7,8 @@
 		"welcome": "Welcome to the main page!\n\nThis bot will help you automate the process of accounting for taxes and filing declarations.",
 		"prices": "💸 Prices",
 		"fillData": "📊 Fill in the data",
-		"features": "📝  Available services"
+		"features": "📝  Available services",
+		"viewPayments": "💳 View payments"
 	},
 	"tax": {
 		"main": "ОПИСАНИЕ НАЛОГОВ\n\nтекст",

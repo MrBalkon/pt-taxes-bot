@@ -15,6 +15,7 @@ import { SubscriptionModule } from '../subscription/subscription.module';
 import { FieldModule } from '../field/field.module';
 import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
+import { PaymentModule } from '../payment/payment.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
@@ -31,6 +32,7 @@ import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
 		NotificationModule,
 		SubscriptionModule,
 		FieldModule,
+		PaymentModule,
 		forwardRef(() => TaskProcessingQueueModule)
 	],
 	controllers: [],

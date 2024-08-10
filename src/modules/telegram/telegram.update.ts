@@ -14,7 +14,7 @@ import { Context, Markup, Telegraf } from 'telegraf';
 import { UserService } from '../user/user.service';
 import { FeatureService } from '../feature/feature.service';
 import { TelegramService } from '../telegram-config/telegram.service';
-import { HomeScene } from './stories/home.scene';
+import { HomeScene } from './scenes/home/home.scene';
 
   @Update()
   export class TelegramUpdate {
@@ -36,6 +36,7 @@ import { HomeScene } from './stories/home.scene';
 
 	  const MAIN_MENU = Markup.keyboard([
 		["📦 Subscriptions"],
+		["💳 Tax payments"],
 		["📊 Fill in the data"],
 		["🎬 Actions"]
 		]).resize();
@@ -45,37 +46,12 @@ import { HomeScene } from './stories/home.scene';
 	  await ctx.scene.enter('homeScene');
 	}
 
-	// @On('poll_answer')
-	// async onPollAnswer(@Ctx() ctx: SceneContext) {
-	// 	await this.homeScene.onPollAnswer(ctx)
-	// }
-
 	@Command('test')
 	async unlink(@Ctx() ctx: SceneContext) {
 		console.log(ctx.scene)
 	  await ctx.scene.enter('basicScene');
 	  return
 	}
-
-	// @Help()
-	// async help(@Ctx() ctx: TelegrafContext) {
-	//   await ctx.reply('Send me a sticker');
-	// }
-  
-	// @On('sticker')
-	// async on(@Ctx() ctx: SceneContext) {
-	//   await ctx.reply('👍');
-	// }
-  
-	// @Hears(/(.*)/)
-	// async hears(@Ctx() ctx: SceneContext) {
-	//   const text = (ctx.message as any).text;
-	//   console.log(text)
-	//   const actionName = this.i18n.getTranslations()
-	//   console.log(actionName)
-	//   ctx.scene.current.action(text, () => {});
-	//   await ctx.reply('Hey there');
-	// }
 
 	@Hears("📝 Taxes")
 	async onAnswerTax(
@@ -91,11 +67,4 @@ import { HomeScene } from './stories/home.scene';
 	) {
 		 context.reply(this.i18n.t("t.prices.main"));
 	}
-
-	// @Hears("💸 Prices")
-	// async onAnswerPrices(
-	//   @Ctx() context: SceneContext
-	// ) {
-	// 	 context.reply(this.i18n.t("t.prices.main"));
-	// }
   }

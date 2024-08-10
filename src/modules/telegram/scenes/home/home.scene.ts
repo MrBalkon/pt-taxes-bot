@@ -1,6 +1,6 @@
 import {Action, Ctx, Hears, On, Scene, SceneEnter} from 'nestjs-telegraf';
 import {SceneContext} from 'telegraf/typings/scenes';
-import {Update} from 'telegraf/typings/core/types/typegram';
+import {InlineKeyboardButton, Update} from 'telegraf/typings/core/types/typegram';
 import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
 import { ActionContract } from 'src/decorators/action.decorator';
@@ -13,6 +13,8 @@ import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/ta
 import { Markup } from 'telegraf';
 import { SubscriptionService } from 'src/modules/subscription/subscription.service';
 import { DateTime } from 'luxon';
+import { PaymentService } from 'src/modules/payment/payment.service';
+import { PayementsView } from '../../components/payments';
 
 @Injectable()
 @Scene('homeScene')
@@ -25,21 +27,10 @@ export class HomeScene {
         private readonly tasksService: TaskService,
         private readonly taskProcessingQueueService: TaskProcessingQueueService,
         private readonly subscriptionService: SubscriptionService,
+        private readonly paymentService: PaymentService,
 	) {}
    @SceneEnter()
-   async enter(@Ctx() ctx: SceneContext) {
-	// 	const user = await this.userService.getUserByTelegramId(String(ctx.from.id));
-	// 	ctx.reply('', {
-    //        reply_markup: {
-    //            keyboard: [
-    //                [{text: "📦 Subscriptions"}],
-    //             //    [{text: this.i18n.t("t.home.prices"), callback_data: 'pricesAction'}],
-    //                [this.telegramService.fillDataAction()],
-    //            ],
-    //        },
-	// 	   parse_mode: 'HTML'
-    //    });
-   }
+   async enter(@Ctx() ctx: SceneContext) {}
 
    @Hears("📦 Subscriptions")
     async onServicesAction(
@@ -162,6 +153,26 @@ export class HomeScene {
 			type: taskType,
 			data: null,
 		})
+    }
+
+    @Action('viewPaymentsAction')
+    @Hears("💳 Tax payments")
+    async onTaxAction(
+        @Ctx() context: SceneContext
+    ) {
+        const user = await this.userService.getUserByTelegramId(String(context.from.id));
+        const payments = await this.paymentService.getPaymentsByUserId(user.id);
+
+        const propsPayments = payments.map((payment) => {
+            return {
+                description: payment.description,
+                amount: payment.amount,
+                dueDate: DateTime.fromJSDate(payment.dueDate).toFormat('yyyy-MM-dd'),
+                link: payment.link
+            }
+        })
+
+        await PayementsView.renderReply(context, { payments: propsPayments });
     }
 
    @Hears("📊 Fill in the data")

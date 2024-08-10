@@ -48,6 +48,15 @@ export class TelegramService implements NotificationServiceType {
 					},
 					parse_mode: 'HTML'
 				}
+			case NotificationAction.VIEW_PAYMENTS:
+				return {
+					reply_markup: {
+						inline_keyboard: [
+							[{text: this.i18n.t("t.home.viewPayments"), callback_data: 'viewPaymentsAction'}],
+						],
+					},
+					parse_mode: 'HTML'
+				}
 			default:
 				return null
 		}
