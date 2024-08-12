@@ -2,7 +2,7 @@ import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Question, QuestionPeriodTime } from 'src/entities/question.entity';
 import { UserAnswer } from 'src/entities/user-answer.entity';
-import { FieldLifeSpanType } from 'src/entities/user-field.entity';
+import { FieldLifeSpanType, FieldValueType } from 'src/entities/user-field.entity';
 import { FindQuestionResult } from 'src/repositories/queries/getPriorityQuestionQuery';
 import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
@@ -21,10 +21,6 @@ export class QuestionService {
 		private readonly answerRepository: UserAnswerRepository,
 		private readonly userFieldRepository: UserFieldRepository
 	) {}
-
-	async getQuestions(userId: number) {
-		return this.questionRepository.getQuestions(userId);
-	}
 
 	async getQuestionByUserIdAndFieldId(userId: number, fieldId: number) {
 		return this.questionRepository.getQuestionByUserIdAndFieldId(userId, fieldId);
@@ -88,10 +84,6 @@ export class QuestionService {
 		return this.prepareAnswersSystemNameMap(answers);
 	}
 
-	// async getUserMetaFieldsByTaskId(userId: number, taskId: number) {
-
-	// }
-
 	async getUserMetaFields(userId: number, fieldSystemNames: UserMetaFieldsRequest[]) {
 		if (!fieldSystemNames.length) {
 			return {};
@@ -106,29 +98,6 @@ export class QuestionService {
 		return fieldsMap;
 	}
 
-	async getUserAllMetaFieldsByTaskIds(userId: number, inputTaskIds: number[]) {
-		if (!inputTaskIds.length) {
-			return {};
-		}
-		const answers = await this.answerRepository.getAnswersByInputTaskIds(userId, inputTaskIds);
-
-		return this.prepareAnswersByIdMap(answers);
-	}
-
-	async getAnswersByUserIdAndFieldIds(userId: number, fieldIds: number[]) {
-		return this.answerRepository.getAnswersByUserIdAndFieldIds(userId, fieldIds);
-	}
-
-	async getSystemNamesByFieldIds(fieldIds: number[]) {
-		return this.userFieldRepository.getUserFieldsByIds(fieldIds);
-	}
-
-	async getUserMetaFieldsByIds(userId: number, fieldIds: number[]) {
-		const answers = await this.answerRepository.getAnswersByUserIdAndFieldIds(userId, fieldIds);
-
-		return this.prepareAnswersSystemNameMap(answers);
-	}
-
 	prepareAnswersSystemNameMap(answers: any[]) {
 		return this.prepareAnswersMapByProperty(answers, 'fieldSystemName');
 	}
@@ -140,6 +109,13 @@ export class QuestionService {
 	prepareAnswersMapByProperty(answers: any[], property: string): TaskMetaFields {
 		return answers.reduce((acc, answer) => {
 			const key = answer[property];
+			if (answer.field === FieldValueType.ARRAY) {
+				if (!acc[key]) {
+					acc[key] = [];
+				}
+				acc[key].push(answer);
+				return acc;
+			}
 			if (answer.fieldLifeSpanType == FieldLifeSpanType.MONTHLY) {
 				if (!acc[key]) {
 					acc[key] = {};
@@ -173,10 +149,6 @@ export class QuestionService {
 		if (emptyFields.length) {
 			throw new EmptyFieldsError(emptyFields);
 		}
-	}
-
-	async setAnswerError(userId: number, fieldsSystemName: number, error: string) {
-		return this.answerRepository.setAnswerError(userId, fieldsSystemName, error);
 	}
 
 	async deleteAnswer(userId: number, fieldsSystemName: string) {

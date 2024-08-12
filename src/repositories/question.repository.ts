@@ -20,16 +20,6 @@ export class QuestionRepository {
 		this.encryptKey = this.configService.get('DB_ENCRYPT_KEY');
 	}
 
-
-	async getQuestions(userId: number) {
-		// return questions available for user's features's tasks
-		// add join to return only questions without answers
-		// consider question conditions
-		const response = await this.repository.query(GET_QUESTIONS_QUERY, [userId, this.encryptKey])
-
-		return response as FindQuestionResult[];
-	}
-
 	async getPriorityQuestion(userId: number) {
 		const currentYear = getPreviousQuarterYear();
 		const previousQuarter = getPreviousQuarter();
@@ -38,7 +28,6 @@ export class QuestionRepository {
 			GET_PRIORITY_QUESTIONS_QUERY,
 			[
 				userId,
-				this.encryptKey,
 				currentYear,
 				previousQuarterMonths,
 				previousQuarter,

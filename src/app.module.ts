@@ -13,6 +13,7 @@ import { SeleniumModule } from './modules/selenium/selenium.module';
 import { TaskSheduleModule } from './modules/task-schedule/task-schedule.module';
 import { FeatureModule } from './modules/feature/feature.module';
 import { TaskProcessingProcessorModule } from './modules/task-processing-processor/task-processing-processor.module';
+import { UserRequestDataModule } from './modules/user-request-data/user-request-data.module';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { TaskProcessingProcessorModule } from './modules/task-processing-process
     SeleniumModule,
     TaskSheduleModule,
     FeatureModule,
+    UserRequestDataModule,
     I18nModule.forRoot({
       fallbackLanguage: 'en',
       loaderOptions: {

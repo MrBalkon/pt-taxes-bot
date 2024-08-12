@@ -16,14 +16,12 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		this.encryptKey = this.configService.get('DB_ENCRYPT_KEY');
     }
 
-	async saveAnswer(answer: UserAnswer) {
-		return this.save(answer);
+	async getAnswersByUserId(userId: number) {
+		return this.findBy({ userId });
 	}
 
-	async getAnswersByUserId(userId: number) {
-		return this.defaultSelector()
-		  .where('answer.userId = :userId', { userId })
-		  .execute();
+	async saveAnswer(answer: UserAnswer) {
+		return this.save(answer);
 	}
 
 	async getAnswersByInputTaskIds(userId: number, ids: number[]) {
@@ -31,19 +29,13 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		  .leftJoin('field.taskFields', 'tf')
 		  .where('answer.userId = :userId', { userId })
 		  .andWhere('tf.task_id IN (:...ids)', { ids })
-		  .execute();
+		  .getMany();
 	}
 
 	async createAnswer(data: DeepPartial<UserAnswer>) {
 		const { userValues, parameters } = this.prepareAnswerSaveData(data);
-		parameters.encryptKey = this.encryptKey;
 
-		return this.createQueryBuilder()
-		  .insert()
-		  .into(UserAnswer)
-		  .values(userValues)
-		  .setParameters(parameters)
-		  .execute();
+		return this.save(data);
 	}
 
 	async createOrUpdateAnswerByFieldSystemName(userId: number, systemName: string, data: DeepPartial<UserAnswer>) {
@@ -72,22 +64,7 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 	}
 
 	async createAnswerBulk(data: DeepPartial<UserAnswer>[]) {
-		let baseParameters = this.prepareEncryptKey();
-		const values = data.map((answer, index) => {
-			const { userValues, parameters } = this.prepareAnswerSaveData(answer, String(index));
-
-			baseParameters = { ...baseParameters, ...parameters };
-
-			return userValues;
-		});
-
-		return this.createQueryBuilder()
-		  .insert()
-		  .into(UserAnswer)
-		  .values(values)
-		  .setParameters(baseParameters)
-		  .orUpdate({ conflict_target: ['field_id', 'user_id', 'year', 'month'], overwrite: ['field_value'] })
-		  .execute();
+		return this.save(this.create(data));
 	}
 
 	async updateAnswer(id: number, data: DeepPartial<UserAnswer>) {
@@ -114,23 +91,14 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		return this.defaultSelector()
 		  .where('answer.userId = :userId', { userId })
 		  .andWhere('field.system_name IN (:...fieldsSystemNames)', { fieldsSystemNames })
-		  .execute();
+		  .getMany();
 	}
 
 	async getAnswersByUserIdAndFieldIds(userId: number, fieldIds: number[]) {
 		return this.defaultSelector()
 		  .where('answer.userId = :userId', { userId })
 		  .andWhere('field.id IN (:...fieldIds)', { fieldIds })
-		  .execute();
-	}
-
-	async setAnswerError(userId: number, fieldsSystemName: number, error: string) {
-		return this.createQueryBuilder()
-		  .update(UserAnswer)
-		  .set({ error })
-		  .where('userId = :userId', { userId })
-		  .andWhere('field.system_name = :fieldsSystemName', { fieldsSystemName })
-		  .execute();
+		  .getMany();
 	}
 
 	async deleteAnswer(userId: number, fieldsSystemName: string) {
@@ -167,7 +135,7 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		const valueId = `fieldValue${uniqueString || ''}`
 		const userValues: Record<string, any> = {
 			...data,
-			fieldValue: () => `PGP_SYM_ENCRYPT(:${valueId},:encryptKey)`,
+			fieldValue: data.fieldValue,
 		}
 
 		const parameters: Record<string, any> = {
@@ -187,19 +155,18 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 		return this
 		  .createQueryBuilder('answer')
 		  .leftJoinAndSelect('answer.field', 'field')
-		  .select(
-			`
-				answer.id,
-				field.field_name as "fieldName",
-				field.system_name as "fieldSystemName",
-				field.field_life_span_type as "fieldLifeSpanType",
-				answer.field_id as "fieldId",
-				answer.user_id as "userId",
-				answer.year,
-				answer.month,
-			  	PGP_SYM_DECRYPT(answer.field_value, :encryptKey) as "fieldValue"
-			`,
-		  )
-		  .setParameter('encryptKey', this.encryptKey);
+		//   .select(
+		// 	`
+		// 		answer.id,
+		// 		field.field_name as "fieldName",
+		// 		field.system_name as "fieldSystemName",
+		// 		field.field_life_span_type as "fieldLifeSpanType",
+		// 		answer.field_id as "fieldId",
+		// 		answer.user_id as "userId",
+		// 		answer.year,
+		// 		answer.month,
+		// 		answer.field_value as "fieldValue"
+		// 	`,
+		//   )
 	}
 }

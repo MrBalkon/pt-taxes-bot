@@ -27,23 +27,7 @@ export class FinancaisFillData implements Task {
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
 	const user = task.user;
-
-	const metaFields = await this.questionService.getUserMetaFields(task.userId,
-		[
-			{
-				systemName: "nif",
-				required: true,
-			},
-			{
-				systemName: "financasPassword",
-				required: true,
-			},
-			"incomeReciebaVerde",
-			"ivaFaturaRecieba",
-			"irsFaturaRecieba",
-		]
-	)
-
+	const metaFields = task.metaFields
 	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields))
 
 	// await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')

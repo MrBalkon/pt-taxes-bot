@@ -12,6 +12,7 @@ import { UserField } from './user-field.entity';
 
 export enum TaskFieldTimeRangeType {
 	PREVIOUS_QUARTER = 'previous_quarter',
+	PREVIOUS_QUARTER_MONTHS = 'previous_quarter_months',
 	PREVIOUS_MONTH = 'previous_month',
 	PREVIOUS_YEAR = 'previous_year',
 	YEAR_AGO = 'year_ago',

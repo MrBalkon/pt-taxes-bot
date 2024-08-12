@@ -10,29 +10,21 @@ import { User } from "src/entities/user.entity";
 import { Task as DBTask } from "src/entities/task.entity";
 import { TaskService } from "src/modules/task/task.service";
 import { SubscriptionService } from "src/modules/subscription/subscription.service";
-import { TaskLifespanType, TaskType } from "src/entities/task.entity";
 import { FieldService } from "src/modules/field/field.service";
 import { TaskProcessingQueueService } from "../../../task-processing-queue/task-processing-queue.service";
-import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
 import { taskFieldParser } from "../../utils/taskFieldsParse";
 import { OperationService } from "src/modules/operation/operation.service";
 import { treeSearch } from "../../utils/tree";
-import { TaskSheduleService } from "src/modules/task-schedule/task-schedule.service";
+import { UserAnswerService } from "src/modules/user-answer/user-answer.service";
 
 @Injectable()
 export class TaskManagerService implements Task {
 	private readonly logger = new Logger(TaskManagerService.name);
 	constructor(
-		private readonly userService: UserService,
-		private readonly questionService: QuestionService,
-		private readonly seleniumService: SeleniumService,
-		private readonly notificaitonService: NotificaitonService,
-		private readonly i18n: I18nService,
 		private readonly taskService: TaskService,
-		private readonly subscriptionService: SubscriptionService,
-		private readonly fieldService: FieldService,
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
 		private readonly operationsService: OperationService,
+		private readonly answerService: UserAnswerService,
 	) { }
 
 	async run(taskPayload: TaskProcessingPayload): Promise<void> {
@@ -97,7 +89,7 @@ export class TaskManagerService implements Task {
 			return acc;
 		}, {})
 
-		const metaFields = await this.questionService.getUserAllMetaFieldsByTaskIds(
+		const metaFields = await this.answerService.getUserAllMetaFieldsByTaskIds(
 			user.id,
 			tasks.map(task => task.id)
 		)

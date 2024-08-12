@@ -1,9 +1,10 @@
 import { TaskField, TaskFieldTimeRangeType } from "src/entities/task-field.entity";
-import { TaskMetaField } from "src/modules/task/task.types";
+import { UserAnswer } from "src/entities/user-answer.entity";
+import { MetaField } from "src/modules/field/field.types";
 import { getPreviousQuarterYear, getPreviousQuarterMonths, getPreviousYear, getPreviousMonth } from "src/utils/date";
 
 class TaskFieldParser {
-	public userHasField(taskField: TaskField, userMetafield?: TaskMetaField): boolean {
+	public userHasField(taskField: TaskField, userMetafield?: MetaField<UserAnswer>): boolean {
 		// we dont validate optional fields
 		if (!taskField.isRequired) {
 			return true;

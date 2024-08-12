@@ -21,6 +21,7 @@ import { FeatureModule } from '../feature/feature.module';
 import { TaskModule } from '../task/task.module';
 import { SubscriptionModule } from '../subscription/subscription.module';
 import { PaymentModule } from '../payment/payment.module';
+import { UserRequestDataModule } from '../user-request-data/user-request-data.module';
 
 @Module({
 	imports: [
@@ -32,6 +33,7 @@ import { PaymentModule } from '../payment/payment.module';
 		TaskModule,
 		SubscriptionModule,
 		PaymentModule,
+		UserRequestDataModule,
 	],
 	controllers: [],
 	providers: [HomeScene, TaxScene, StoryScene, WizardScene, FormScene, TelegramUpdate, TelegramService],

@@ -1,7 +1,9 @@
 
 Todo:
   Active:
-    ✔ use handlebars for messages (or other templating engine) @done(24-08-10 02:07)
+    ☐ Replace question conditions source question to field
+    ☐ Separate and maek cleaner asnwers / questions / fields modules
+    ☐ Replace payments table with fields
     ☐ handle request user data from task manager (Rewrite asking questions based on output fields)
     ☐ Shedule missed tasks after subscription created
     ☐ Make DB for faturas classification
@@ -32,6 +34,7 @@ Todo:
     ☐ Add public/system visibility to tasks
     ☐ Handle start poll on no questions
   Later:
+    ☐ Rewrite existing views to handlebars
     ☐ Add support for downloaded files?
     ☐ Add support for parsing downloaded files?
     ☐ Add test for get priority question
@@ -60,6 +63,7 @@ Todo:
     ☐ think about conditional question for income as a compare
 
 Archive:
+  ✔ use handlebars for messages (or other templating engine) @done(24-08-10 02:07) @project(Todo.Active)
   ✘ Add constraint on permanent fields @cancelled(24-08-05 23:09) @project(Todo.Later)
   ✔ Add parent_operation_id for split tasks @done(24-08-05 23:09) @project(Todo.Later)
   ✔ Shedule failed tasks if gov service is down @done(24-08-05 23:07) @project(Todo.Active)

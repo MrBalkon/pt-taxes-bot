@@ -12,6 +12,7 @@ export enum TaskProcessingJobName {
 	FINANCAIS_FILL_DATA = 'FinancaisFillData',
 	SOCIAL_SECURITY_FILL_DECLARATION = 'SocialSecurityFillDeclarationTask',
 	TASK_MANAGER = 'TaskManagerService',
+	USER_REQUEST_DATA = 'UserRequestData'
 }
 
 export interface FieldWithTimeSpan {

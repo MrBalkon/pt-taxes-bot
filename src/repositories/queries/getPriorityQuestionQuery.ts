@@ -87,11 +87,11 @@ WITH questions AS (
             CASE
                 WHEN qc.id IS NULL THEN TRUE
                 WHEN qc."condition" = '=' THEN 
-                    qc.compare_value = PGP_SYM_DECRYPT(ua_temp.field_value, $2)
+                    qc.compare_value = ua_temp.field_value
                     AND
                     (
                         CASE
-                            WHEN qd."periodTime" = 'previous_quarter_months' THEN ua_temp."year" = $3 AND ua_temp."month" = $5
+                            WHEN qd."periodTime" = 'previous_quarter_months' THEN ua_temp."year" = $2 AND ua_temp."month" = $4
                             ELSE TRUE
                         END
                     )
@@ -150,8 +150,8 @@ WITH questions AS (
     HAVING
         (
             CASE
-                WHEN ur."periodTime" = 'previous_quarter_months' THEN NOT array_agg(ur."month") @> $4::integer[] 
-                WHEN ur."periodTime" = 'previous_quarter' THEN NOT array_agg(ur."month") @> ARRAY[$5::integer] 
+                WHEN ur."periodTime" = 'previous_quarter_months' THEN NOT array_agg(ur."month") @> $3::integer[] 
+                WHEN ur."periodTime" = 'previous_quarter' THEN NOT array_agg(ur."month") @> ARRAY[$4::integer] 
                 ELSE TRUE
             END
         )
@@ -162,7 +162,7 @@ WITH questions AS (
     WHERE (
         COALESCE (array_length(q."answerIds", 1), 0) = 0 OR q."periodTime" IS NOT NULL
     )
-    AND (q."year" = $3 OR q."year" IS NULL)
+    AND (q."year" = $2 OR q."year" IS NULL)
 )
 `
 

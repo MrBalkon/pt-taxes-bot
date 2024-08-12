@@ -31,14 +31,15 @@ export class DynamicTask implements Task {
 		private readonly executionCommandService: ExecutionCommandService,
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
-	const user = await this.userService.getFullUserById(task.userId, task.type)
+	const user = task.user
+	const metaFields = task.metaFields
 
-	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, task))
+	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields, task))
 
 	await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
   }
 
-  async runInSelenium(driver: WebDriver, user: UserWithMetaFields, task: TaskProcessingPayload): Promise<void> {
+  async runInSelenium(driver: WebDriver, user: User, metaFields: Record<string, any>, task: TaskProcessingPayload): Promise<void> {
 	const scenarioTasks = await this.executionScenarioService.getExecutionMapTreeByTaskSystemName(task.type)
 	const commands = await this.executionCommandService.getExecutionCommandsByTaskSystemName(task.type)
 

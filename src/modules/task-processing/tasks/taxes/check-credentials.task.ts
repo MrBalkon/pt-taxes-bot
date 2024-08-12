@@ -22,26 +22,7 @@ export class CheckCredentialsTask implements Task {
 
 	async run(task: TaskProcessingPayload): Promise<void> {
 		const user = task.user
-		const metaFields = await this.questionService.getUserMetaFields(task.userId,
-			[
-				{
-					systemName: "niss",
-					required: true,
-				},
-				{
-					systemName: "segSocialPassword",
-					required: true,
-				},
-				{
-					systemName: "nif",
-					required: true,
-				},
-				{
-					systemName: "financasPassword",
-					required: true,
-				},
-				"income"
-			])
+		const metaFields = task.metaFields
 
 		return this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields))
 	}

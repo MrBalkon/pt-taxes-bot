@@ -68,10 +68,17 @@ export class EnvSchemaDto {
 	@IsBoolean()
 	DB_LOGGING: boolean;
 
+	@IsSensitive()
 	@IsDefined()
 	@IsNotEmpty()
 	@IsString()
 	DB_ENCRYPT_KEY: string;
+
+	@IsSensitive()
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	DB_ENCRYPT_IV: string;
 
 	@IsDefined()
 	@IsNotEmpty()

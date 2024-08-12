@@ -17,6 +17,8 @@ import { getPreviousQuarterMonths, getPreviousQuarterYear, getPreviousYear } fro
 import { UserRequestData } from './tasks/user-request-data.task';
 import { taskFieldParser } from './utils/taskFieldsParse';
 import { SocialSecurityCheckPayments } from './tasks/taxes/social-security-check-payments.task';
+import { UserAnswerService } from '../user-answer/user-answer.service';
+import { TaskMetaField } from '../task/task.types';
 
 @Injectable()
 export class TaskProcessingService {
@@ -33,7 +35,7 @@ export class TaskProcessingService {
 		private readonly socialsecuritycheckpayments: SocialSecurityCheckPayments,
 		private readonly dynamicTask: DynamicTask,
 		private readonly taskService: TaskService,
-		private readonly questionService: QuestionService,
+		private readonly answersService: UserAnswerService
 	) {}
 
 	async processTask(task: TaskProcessingPayload): Promise<void> {
@@ -67,7 +69,7 @@ export class TaskProcessingService {
 		}
 
 		const fieldIds = dbTask.taskFields.map((taskField) => taskField.fieldId);
-		const metaFields = await this.questionService.getUserMetaFieldsByIds(queueTask.userId, fieldIds)
+		const metaFields = await this.answersService.getUserMetaFieldsByIds(queueTask.userId, fieldIds)
 
 		// validate if all fields are present
 		const missingFields = dbTask.taskFields.filter((taskField) => {

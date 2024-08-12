@@ -19,16 +19,6 @@ export class UserService {
 		private taskService: TaskService,
 	) {}
 
-	async getFullUserMetaById(id: number, fieldSystemNames: UserMetaFieldsRequest[], manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
-		const user = await this.getUserById(id, manager);
-		const metaFields = await this.questionService.getUserMetaFields(id, fieldSystemNames);
-
-		return {
-			...user,
-			metaFields,
-		}
-	}
-
 	async getFullUserById(id: number, taskSystemName: string,  manager: EntityManager = this.connection.manager): Promise<UserWithMetaFields> {
 		const user = await this.getUserById(id, manager);
 		const metaFields = await this.questionService.getUserMetaFieldsByTaskSystemName(id, taskSystemName);

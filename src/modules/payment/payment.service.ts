@@ -32,6 +32,7 @@ export class PaymentService {
 		const existingPayments = await this.getPaymentsByTaskAndUserId(taskId, userId)
 
 		// find payments that are not in the new list
+		// todo use map instead of filter
 		const paymentsToDelete = existingPayments.filter((existingPayment) => {
 			return !payements.find((newPayment) => newPayment.id === existingPayment.id)
 		})

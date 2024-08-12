@@ -32,7 +32,7 @@ export class TaskInputFieldsException extends TaskProcessingError {
 	fields: FieldWithTimeSpan[];
 	fieldIds: number[];
 	constructor(fieldsRequest: FieldWithTimeSpan[]) {
-		const message = `Task input fields are missing: ${fieldsRequest.toString()}`;
+		const message = `Task input fields are missing: ${fieldsRequest.map(field => field.fieldId).toString()}`;
 		super(message)
 		this.fieldIds = fieldsRequest.map(field => field.fieldId);
 		this.fields = fieldsRequest;

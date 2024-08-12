@@ -11,6 +11,7 @@ import { I18nService } from "nestjs-i18n";
 import { SocialSecurityDeclarationData, socialSecurityFillTrimestralDeclaration } from "../../selenium-scenarios/seg-social/declaration/fill-trimestral-declaration";
 import { getPreviousQuarter, getPreviousQuarterYear } from "src/utils/date";
 import { UserWithMetaFields } from "src/modules/user/user.types";
+import { User } from "src/entities/user.entity";
 
 @Injectable()
 export class SocialSecurityFillDeclarationTask implements Task {
@@ -22,14 +23,15 @@ export class SocialSecurityFillDeclarationTask implements Task {
 		private readonly i18n: I18nService
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
-	const user = await this.userService.getFullUserMetaById(task.userId, ['niss', 'segSocialPassword'])
+	const user = task.user
+	const metaFields = task.metaFields
 
-	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, task))
+	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields, task))
 
 	// await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
   }
 
-  async runInSelenium(driver: WebDriver, user: UserWithMetaFields, task: TaskProcessingPayload): Promise<void> {
+  async runInSelenium(driver: WebDriver, user: User, metFields: Record<string, any>, task: TaskProcessingPayload): Promise<void> {
 	// TODO switch to user fields
 	const { niss, segSocialPassword } = user.metaFields
 

@@ -4,13 +4,13 @@ import {
 	Entity,
 	JoinColumn,
 	ManyToOne,
-	OneToMany,
-	OneToOne,
 	PrimaryGeneratedColumn,
 	Unique,
 } from 'typeorm';
 import { User } from './user.entity';
 import { UserField } from './user-field.entity';
+import { EncryptedColumn } from 'src/decorators/encrypted-column.decorator';
+import { EncryptionTransformer } from 'typeorm-encrypted';
 
 @Entity('user-answers')
 @Unique(['fieldId', 'userId', 'year', 'month'])
@@ -24,7 +24,16 @@ export class UserAnswer {
 	@Column('varchar', { name: 'user_id' })
 	userId: number;
 
-	@Column('bytea', { name: 'field_value', nullable: true })
+	@Column('varchar', {
+		name: 'field_value',
+		nullable: true,
+		transformer: new EncryptionTransformer({
+			key: process.env.DB_ENCRYPT_KEY,
+			algorithm: 'aes-256-cbc',
+			ivLength: 16,
+			iv: process.env.DB_ENCRYPT_IV,
+		  })
+	})
 	fieldValue: string;
 
 	@Column('int', { name: 'year', nullable: true })
