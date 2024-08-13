@@ -6,9 +6,9 @@ import { UserAnswerModule } from '../user-answer/user-answer.module';
 import { QuestionModule } from '../question/question.module';
 
 @Module({
-	imports: [TaskModule, TaskFieldsModule, UserAnswerModule, QuestionModule],
-	controllers: [],
-	providers: [UserRequestDataService],
-	exports: [UserRequestDataService],
+  imports: [TaskModule, TaskFieldsModule, UserAnswerModule, QuestionModule],
+  controllers: [],
+  providers: [UserRequestDataService],
+  exports: [UserRequestDataService],
 })
-export class UserRequestDataModule {};
+export class UserRequestDataModule {}

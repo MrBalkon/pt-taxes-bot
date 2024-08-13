@@ -4,7 +4,12 @@ import { AppService } from './app.service';
 import { ConfigModule } from './modules/config/config.module';
 import { TelegramModule } from './modules/telegram/telegram.module';
 import * as path from 'path';
-import { AcceptLanguageResolver, HeaderResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import {
+  AcceptLanguageResolver,
+  HeaderResolver,
+  I18nModule,
+  QueryResolver,
+} from 'nestjs-i18n';
 import { DatabaseModule } from './modules/database/database.module';
 import { BullConfigModule } from './modules/bull-config/bull-config.module';
 import { TaskProcessingQueueModule } from './modules/task-processing-queue/task-processing-queue.module';

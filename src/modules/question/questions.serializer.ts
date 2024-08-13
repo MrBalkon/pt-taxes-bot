@@ -1,11 +1,11 @@
-import { UserMetaFieldsRequest } from "./question.types";
+import { UserMetaFieldsRequest } from './question.types';
 
 class FieldsSerializer {
   serializeUserFieldsRequest(fieldsRequest: UserMetaFieldsRequest): string {
-	if (typeof fieldsRequest === 'string') {
-	  return fieldsRequest;
-	}
-	return fieldsRequest.systemName;
+    if (typeof fieldsRequest === 'string') {
+      return fieldsRequest;
+    }
+    return fieldsRequest.systemName;
   }
 }
 

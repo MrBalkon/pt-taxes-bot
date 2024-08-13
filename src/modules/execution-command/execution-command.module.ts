@@ -5,9 +5,9 @@ import { ExecutionCommand } from 'src/entities/execution-command.entity';
 import { ExecutionCommandRepository } from 'src/repositories/task-execution.repository';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([ExecutionCommand])],
-	controllers: [],
-	providers: [ExecutionCommandService, ExecutionCommandRepository],
-	exports: [ExecutionCommandService],
+  imports: [TypeOrmModule.forFeature([ExecutionCommand])],
+  controllers: [],
+  providers: [ExecutionCommandService, ExecutionCommandRepository],
+  exports: [ExecutionCommandService],
 })
-export class ExecutionCommandModule {};
+export class ExecutionCommandModule {}

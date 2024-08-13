@@ -13,7 +13,11 @@ import { TaskManagerService } from './tasks/system/task-manager.task';
 import { QuestionService } from 'src/modules/question/question.service';
 import { TaskInputFieldsException } from '../task-processing-queue/task-processing-queue.error';
 import { TaskFieldTimeRangeType } from 'src/entities/task-field.entity';
-import { getPreviousQuarterMonths, getPreviousQuarterYear, getPreviousYear } from 'src/utils/date';
+import {
+  getPreviousQuarterMonths,
+  getPreviousQuarterYear,
+  getPreviousYear,
+} from 'src/utils/date';
 import { UserRequestData } from './tasks/user-request-data.task';
 import { taskFieldParser } from './utils/taskFieldsParse';
 import { SocialSecurityCheckPayments } from './tasks/taxes/social-security-check-payments.task';
@@ -23,67 +27,74 @@ import { IVAFillDeclarationTask } from './tasks/taxes/iva-fill-declaration.task'
 
 @Injectable()
 export class TaskProcessingService {
-	private logger = new Logger(TaskProcessingService.name);
-	constructor(
-		private readonly socialsecuritytask: SocialSecurityTask,
-		private readonly telegramnotifytask: TelegramNotifyTask,
-		private readonly checkcredentialstask: CheckCredentialsTask,
-		private readonly socialsecurityfilldeclarationtask: SocialSecurityFillDeclarationTask,
-		private readonly splittask: SplitTask,
-		private readonly financaisfilldata: FinancaisFillData,
-		private readonly taskmanagerservice: TaskManagerService,
-		private readonly userrequestdata: UserRequestData,
-		private readonly socialsecuritycheckpayments: SocialSecurityCheckPayments,
-		private readonly ivafilldeclarationtask: IVAFillDeclarationTask,
-		private readonly dynamicTask: DynamicTask,
-		private readonly taskService: TaskService,
-		private readonly answersService: UserAnswerService
-	) {}
+  private logger = new Logger(TaskProcessingService.name);
+  constructor(
+    private readonly socialsecuritytask: SocialSecurityTask,
+    private readonly telegramnotifytask: TelegramNotifyTask,
+    private readonly checkcredentialstask: CheckCredentialsTask,
+    private readonly socialsecurityfilldeclarationtask: SocialSecurityFillDeclarationTask,
+    private readonly splittask: SplitTask,
+    private readonly financaisfilldata: FinancaisFillData,
+    private readonly taskmanagerservice: TaskManagerService,
+    private readonly userrequestdata: UserRequestData,
+    private readonly socialsecuritycheckpayments: SocialSecurityCheckPayments,
+    private readonly ivafilldeclarationtask: IVAFillDeclarationTask,
+    private readonly dynamicTask: DynamicTask,
+    private readonly taskService: TaskService,
+    private readonly answersService: UserAnswerService,
+  ) {}
 
-	async processTask(task: TaskProcessingPayload): Promise<void> {
-		this.logger.log(`[${task.taskUid}] Processing task: ${task.type}`);
+  async processTask(task: TaskProcessingPayload): Promise<void> {
+    this.logger.log(`[${task.taskUid}] Processing task: ${task.type}`);
 
-		const dbTask = await this.taskService.getTaskBySystemNameOrFail(task.type);
-		task.metaFields = await this.injectFields(task, dbTask);
-		const taskExecutionService = this.getTaskExecutionService(dbTask);
+    const dbTask = await this.taskService.getTaskBySystemNameOrFail(task.type);
+    task.metaFields = await this.injectFields(task, dbTask);
+    const taskExecutionService = this.getTaskExecutionService(dbTask);
 
-		if (!taskExecutionService) {
-			throw new Error(`Task service not found: ${task.type}`);
-		}
+    if (!taskExecutionService) {
+      throw new Error(`Task service not found: ${task.type}`);
+    }
 
-		await taskExecutionService.run(task);
+    await taskExecutionService.run(task);
 
-		this.logger.log(`[${task.taskUid}] Task processed`);
-	}
+    this.logger.log(`[${task.taskUid}] Task processed`);
+  }
 
-	private getTaskExecutionService(task: Task) {
-		if (task.isDynamic) {
-			return this.dynamicTask;
-		}
+  private getTaskExecutionService(task: Task) {
+    if (task.isDynamic) {
+      return this.dynamicTask;
+    }
 
-		return this[task.systemName.toLowerCase()];
-	}
+    return this[task.systemName.toLowerCase()];
+  }
 
-	private async injectFields(queueTask: TaskProcessingPayload, dbTask: Task): Promise<Record<string, any>> {
-		// TODO switch to using global meta fields
-		if (!dbTask.taskFields?.length || !queueTask.userId) {
-			return {};
-		}
-		const metaFields = await this.answersService.getUserAllMetaFieldsSystemNameByTaskIds(queueTask.userId, [dbTask.id])
+  private async injectFields(
+    queueTask: TaskProcessingPayload,
+    dbTask: Task,
+  ): Promise<Record<string, any>> {
+    // TODO switch to using global meta fields
+    if (!dbTask.taskFields?.length || !queueTask.userId) {
+      return {};
+    }
+    const metaFields =
+      await this.answersService.getUserAllMetaFieldsSystemNameByTaskIds(
+        queueTask.userId,
+        [dbTask.id],
+      );
 
-		// validate if all fields are present
-		const missingFields = dbTask.taskFields.filter((taskField) => {
-			const key = taskField.field.systemName
-			const existingMetaField = metaFields[key]
-			return !taskFieldParser.userHasField(taskField, existingMetaField);
-		});
+    // validate if all fields are present
+    const missingFields = dbTask.taskFields.filter((taskField) => {
+      const key = taskField.field.systemName;
+      const existingMetaField = metaFields[key];
+      return !taskFieldParser.userHasField(taskField, existingMetaField);
+    });
 
-		if (missingFields.length) {
-			throw new TaskInputFieldsException(missingFields);
-		}
+    if (missingFields.length) {
+      throw new TaskInputFieldsException(missingFields);
+    }
 
-		return metaFields;
-	}
+    return metaFields;
+  }
 }
 
 // dump for tasks_fields:

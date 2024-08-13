@@ -1,24 +1,24 @@
-import { TaskFieldTimeRangeType } from "src/entities/task-field.entity";
-import { Task } from "src/entities/task.entity";
+import { TaskFieldTimeRangeType } from 'src/entities/task-field.entity';
+import { Task } from 'src/entities/task.entity';
 
 export interface TaskWithChildrenIds extends Task {
-	childrenIds: number[];
+  childrenIds: number[];
 }
 
 export interface TaskFieldsSearch {
-	fieldId: number;
-	timeRangeType: TaskFieldTimeRangeType;
-	isRequired: boolean;
+  fieldId: number;
+  timeRangeType: TaskFieldTimeRangeType;
+  isRequired: boolean;
 }
 
-export type TaskMetaFieldPermanent = string
+export type TaskMetaFieldPermanent = string;
 
 export type TaskMetaFieldPeriodic = {
-	[year: string]: {
-		[dateField: string]: TaskMetaFieldPermanent
-	}
-}
+  [year: string]: {
+    [dateField: string]: TaskMetaFieldPermanent;
+  };
+};
 
-export type TaskMetaField = TaskMetaFieldPermanent | TaskMetaFieldPeriodic
+export type TaskMetaField = TaskMetaFieldPermanent | TaskMetaFieldPeriodic;
 
 export type TaskMetaFields = Record<string, TaskMetaField>;

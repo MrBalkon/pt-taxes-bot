@@ -10,13 +10,18 @@ import { TaskSheduleRepository } from 'src/repositories/task-shedule.repository'
 import { OperationModule } from '../operation/operation.module';
 
 @Module({
-	imports: [
-		OperationModule,
-		FieldModule,
-		TypeOrmModule.forFeature([Task, ExecutionStep])
-	],
-	controllers: [],
-	providers: [TaskService, TaskRepository, ExecutionStepRepository, TaskSheduleRepository],
-	exports: [TaskService],
+  imports: [
+    OperationModule,
+    FieldModule,
+    TypeOrmModule.forFeature([Task, ExecutionStep]),
+  ],
+  controllers: [],
+  providers: [
+    TaskService,
+    TaskRepository,
+    ExecutionStepRepository,
+    TaskSheduleRepository,
+  ],
+  exports: [TaskService],
 })
-export class TaskModule {};
+export class TaskModule {}

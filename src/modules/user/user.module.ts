@@ -11,14 +11,14 @@ import { TaskModule } from '../task/task.module';
 import { UserRepository } from 'src/repositories/user.repository';
 
 @Module({
-	imports: [
-		ConfigModule,
-		TypeOrmModule.forFeature([User, UserAnswer]),
-		QuestionModule,
-		TaskModule,
-	],
-	controllers: [UserController],
-	providers: [UserService, UserAnswerRepository, UserRepository],
-	exports: [UserService],
+  imports: [
+    ConfigModule,
+    TypeOrmModule.forFeature([User, UserAnswer]),
+    QuestionModule,
+    TaskModule,
+  ],
+  controllers: [UserController],
+  providers: [UserService, UserAnswerRepository, UserRepository],
+  exports: [UserService],
 })
-export class UserModule {};
+export class UserModule {}

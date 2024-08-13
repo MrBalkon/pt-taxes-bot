@@ -6,15 +6,15 @@ import { TaskFieldSerializer } from './task-fields.serializer';
 
 @Injectable()
 export class TaskFieldsService {
-	constructor(
-		private taskFieldRepository: TaskFieldRepository,
-		private taskFieldSerializer: TaskFieldSerializer
-	) {}
+  constructor(
+    private taskFieldRepository: TaskFieldRepository,
+    private taskFieldSerializer: TaskFieldSerializer,
+  ) {}
 
+  async getOutputFieldsByUserAndTaskId(taskId: number) {
+    const outputFields =
+      await this.taskFieldRepository.getOutputFieldsByTaskId(taskId);
 
-	async getOutputFieldsByUserAndTaskId(taskId: number) {
-		const outputFields = await this.taskFieldRepository.getOutputFieldsByTaskId(taskId);
-
-		return this.taskFieldSerializer.serilizeFields(outputFields, 'fieldId');
-	}
+    return this.taskFieldSerializer.serilizeFields(outputFields, 'fieldId');
+  }
 }

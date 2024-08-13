@@ -10,9 +10,14 @@ import { UserFieldRepository } from 'src/repositories/user-field.repository';
 import { UserField } from 'src/entities/user-field.entity';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Question, UserAnswer, UserField])],
-	controllers: [QuestionController],
-	providers: [QuestionService, QuestionRepository, UserAnswerRepository, UserFieldRepository],
-	exports: [QuestionService],
+  imports: [TypeOrmModule.forFeature([Question, UserAnswer, UserField])],
+  controllers: [QuestionController],
+  providers: [
+    QuestionService,
+    QuestionRepository,
+    UserAnswerRepository,
+    UserFieldRepository,
+  ],
+  exports: [QuestionService],
 })
-export class QuestionModule {};
+export class QuestionModule {}

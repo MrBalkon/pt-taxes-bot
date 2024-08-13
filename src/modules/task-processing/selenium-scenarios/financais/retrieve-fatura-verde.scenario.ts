@@ -1,102 +1,128 @@
-// @ts-ignore
-import {By, WebDriver, Select, WebElement, until } from "selenium-webdriver"
-import { goBack, goPage } from "../default.scenarios"
-import { DownloadFinancaisFaturaTable, downloadFinancais } from "./download-financais"
+/* eslint-disable @typescript-eslint/ban-ts-comment */
+// @ts-expect-error
+import { By, WebDriver, Select, WebElement, until } from 'selenium-webdriver';
+import { goBack, goPage } from '../default.scenarios';
+import {
+  DownloadFinancaisFaturaTable,
+  downloadFinancais,
+} from './download-financais';
 import { parse } from 'csv-parse/sync';
-import { DateTime } from "luxon";
-import { group, sumFloats } from "src/utils";
+import { DateTime } from 'luxon';
+import { group, sumFloats } from 'src/utils';
 
 export enum FaturaVerdeType {
-	FATURA_RECIBO = 'Fatura-Recibo',
-	FATURA_RECIBO_ATO_ISOLADO = 'Fatura-Recibo Ato Isolado',
-	FATURA = 'Fatura',
-	FATURA_ATO_ISOLADO = 'Fatura Ato Isolado',
-	RECIBO = 'Recibo',
-	RECIBO_ATO_ISOLADO = 'Recibo Ato Isolado',
+  FATURA_RECIBO = 'Fatura-Recibo',
+  FATURA_RECIBO_ATO_ISOLADO = 'Fatura-Recibo Ato Isolado',
+  FATURA = 'Fatura',
+  FATURA_ATO_ISOLADO = 'Fatura Ato Isolado',
+  RECIBO = 'Recibo',
+  RECIBO_ATO_ISOLADO = 'Recibo Ato Isolado',
 }
 
 export enum FaturaVerdeIncomeStatus {
-	EMITIDO = 'Emitido',
-	ANULADO = 'Anulado',
-	SEM_PREENCHIMENTO = 'Sem Preenchimento',
+  EMITIDO = 'Emitido',
+  ANULADO = 'Anulado',
+  SEM_PREENCHIMENTO = 'Sem Preenchimento',
 }
 
 export interface FaturaVerdeIncomeArgs {
-	emissionStartDate: string,
-	emissionEndDate: string,
-	status: FaturaVerdeIncomeStatus,
-	type: FaturaVerdeType
+  emissionStartDate: string;
+  emissionEndDate: string;
+  status: FaturaVerdeIncomeStatus;
+  type: FaturaVerdeType;
 }
 
-
-export const goFaturaVerdePage = goPage('Fatura Verde', 'https://irs.portaldasfinancas.gov.pt/recibos/portal/consultar')
+export const goFaturaVerdePage = goPage(
+  'Fatura Verde',
+  'https://irs.portaldasfinancas.gov.pt/recibos/portal/consultar',
+);
 
 export enum FaturaVerdeIncomeTableColumns {
-	REFERENCIA = 'Referência',
-	TIPO_DOCUMENTO = 'Tipo Documento',
-	ATCUD = 'ATCUD',
-	SITUACAO = 'Situação',
-	DATA_TRANSACAO = 'Data da Transação',
-	DATA_EMISSAO = 'Data de Emissão',
-	NIF_PRESTADOR = 'NIF Prestador',
-	NIF_ADQUIRENTE = 'NIF Adquirente',
-	NOME_ADQUIRENTE = 'Nome do Adquirente',
-	VALOR_TRIBUTAVEL = 'Valor Tributável (em euros)',
-	VALOR_IVA = 'Valor do IVA (em euros)',
-	IMPOSTO_DO_SELO = 'Imposto do Selo como Retenção na Fonte',
-	VALOR_IMPOSTO_DO_SELO = 'Valor do Imposto do Selo (em euros)',
-	VALOR_IRS = 'Valor do IRS (em euros)',
-	TOTAL_IMPOSTOS = 'Total de Impostos (em euros)',
-	TOTAL_COM_IMPOSTOS = 'Total com Impostos (em euros)',
-	TOTAL_RETENCOES = 'Total de Retenções na Fonte (em euros)',
-	CONTRIBUICAO_CULTURA = 'Contribuição Cultura (em euros)',
-	TOTAL_DOCUMENTO = 'Total do Documento (em euros)',
+  REFERENCIA = 'Referência',
+  TIPO_DOCUMENTO = 'Tipo Documento',
+  ATCUD = 'ATCUD',
+  SITUACAO = 'Situação',
+  DATA_TRANSACAO = 'Data da Transação',
+  DATA_EMISSAO = 'Data de Emissão',
+  NIF_PRESTADOR = 'NIF Prestador',
+  NIF_ADQUIRENTE = 'NIF Adquirente',
+  NOME_ADQUIRENTE = 'Nome do Adquirente',
+  VALOR_TRIBUTAVEL = 'Valor Tributável (em euros)',
+  VALOR_IVA = 'Valor do IVA (em euros)',
+  IMPOSTO_DO_SELO = 'Imposto do Selo como Retenção na Fonte',
+  VALOR_IMPOSTO_DO_SELO = 'Valor do Imposto do Selo (em euros)',
+  VALOR_IRS = 'Valor do IRS (em euros)',
+  TOTAL_IMPOSTOS = 'Total de Impostos (em euros)',
+  TOTAL_COM_IMPOSTOS = 'Total com Impostos (em euros)',
+  TOTAL_RETENCOES = 'Total de Retenções na Fonte (em euros)',
+  CONTRIBUICAO_CULTURA = 'Contribuição Cultura (em euros)',
+  TOTAL_DOCUMENTO = 'Total do Documento (em euros)',
 }
 
-export const retrieveFaturaVerdeIncome = async (driver: WebDriver, args: DownloadFinancaisFaturaTable) => {
-	const csvString = await downloadFinancais(driver, args)
+export const retrieveFaturaVerdeIncome = async (
+  driver: WebDriver,
+  args: DownloadFinancaisFaturaTable,
+) => {
+  const csvString = await downloadFinancais(driver, args);
 
-	const records = parse(csvString, {
-		columns: true,
-		delimiter: ';',
-		skip_empty_lines: true
-	}) as Record<FaturaVerdeIncomeTableColumns, string>[]
+  const records = parse(csvString, {
+    columns: true,
+    delimiter: ';',
+    skip_empty_lines: true,
+  }) as Record<FaturaVerdeIncomeTableColumns, string>[];
 
-	return combine(records)
-}
+  return combine(records);
+};
 
 export const parseTableNumber = (value: string) => {
-	// "5.310" => 5310
-	// "1.221,3" => 1221.3
+  // "5.310" => 5310
+  // "1.221,3" => 1221.3
 
-	return parseFloat(value.replace('.', '').replace(',', '.'))
-}
+  return parseFloat(value.replace('.', '').replace(',', '.'));
+};
 
-const sumTablesRecordColumns = (records: Record<FaturaVerdeIncomeTableColumns, string>[], column: FaturaVerdeIncomeTableColumns) => {
-	return sumFloats(records.map(r => parseTableNumber(r[column])))
-}
+const sumTablesRecordColumns = (
+  records: Record<FaturaVerdeIncomeTableColumns, string>[],
+  column: FaturaVerdeIncomeTableColumns,
+) => {
+  return sumFloats(records.map((r) => parseTableNumber(r[column])));
+};
 
 export const combine = (
-	records: Record<FaturaVerdeIncomeTableColumns, string>[]
+  records: Record<FaturaVerdeIncomeTableColumns, string>[],
 ) =>
-	group(
-		record => {
-			const date = DateTime.fromISO(record[FaturaVerdeIncomeTableColumns.DATA_TRANSACAO])
-			return `${date.year}-${date.month}`
-		}
-	)(records)
-	.map((records: Record<FaturaVerdeIncomeTableColumns, string>[]) => {
-		const date = DateTime.fromISO(records[0][FaturaVerdeIncomeTableColumns.DATA_TRANSACAO])
-		return {
-			year: date.year,
-			month: date.month,
-			[FaturaVerdeIncomeTableColumns.NIF_ADQUIRENTE]: records[0][FaturaVerdeIncomeTableColumns.NIF_ADQUIRENTE],
-			[FaturaVerdeIncomeTableColumns.NIF_PRESTADOR]: records[0][FaturaVerdeIncomeTableColumns.NIF_PRESTADOR],
-			"incomeReciebaVerde": sumTablesRecordColumns(records, FaturaVerdeIncomeTableColumns.VALOR_TRIBUTAVEL),
-			"ivaFaturaRecieba": sumTablesRecordColumns(records, FaturaVerdeIncomeTableColumns.VALOR_IVA),
-			"irsFaturaRecieba": sumTablesRecordColumns(records, FaturaVerdeIncomeTableColumns.VALOR_IRS),
-		}
-	})
+  group((record) => {
+    const date = DateTime.fromISO(
+      record[FaturaVerdeIncomeTableColumns.DATA_TRANSACAO],
+    );
+    return `${date.year}-${date.month}`;
+  })(records).map(
+    (records: Record<FaturaVerdeIncomeTableColumns, string>[]) => {
+      const date = DateTime.fromISO(
+        records[0][FaturaVerdeIncomeTableColumns.DATA_TRANSACAO],
+      );
+      return {
+        year: date.year,
+        month: date.month,
+        [FaturaVerdeIncomeTableColumns.NIF_ADQUIRENTE]:
+          records[0][FaturaVerdeIncomeTableColumns.NIF_ADQUIRENTE],
+        [FaturaVerdeIncomeTableColumns.NIF_PRESTADOR]:
+          records[0][FaturaVerdeIncomeTableColumns.NIF_PRESTADOR],
+        incomeReciebaVerde: sumTablesRecordColumns(
+          records,
+          FaturaVerdeIncomeTableColumns.VALOR_TRIBUTAVEL,
+        ),
+        ivaFaturaRecieba: sumTablesRecordColumns(
+          records,
+          FaturaVerdeIncomeTableColumns.VALOR_IVA,
+        ),
+        irsFaturaRecieba: sumTablesRecordColumns(
+          records,
+          FaturaVerdeIncomeTableColumns.VALOR_IRS,
+        ),
+      };
+    },
+  );
 
 // {
 // 	"Refer�ncia": "R ATSIRE01R/19",
@@ -137,7 +163,6 @@ export const combine = (
 // 	// wait 2 seconds for page to update
 // 	await driver.sleep(2000)
 // }
-
 
 // export const retrieveFaturaVerdeIncomeDeprecated = async (driver: WebDriver, args: FaturaVerdeIncomeArgs) => {
 // 	const { emissionStartDate, emissionEndDate, status, type } = args
@@ -248,7 +273,7 @@ export const combine = (
 //                     </div>
 //                     <div class="col-md-2 col-xs-3">
 //                                                     <dd>5.310,00 €</dd>
-                        
+
 //                     </div>
 
 //                     <div class="col-md-10 col-xs-9">
@@ -270,8 +295,6 @@ export const combine = (
 //                                                 <div class="col-md-2 col-xs-3">
 //                                                             <dd>1.062,00 €</dd>
 //                                                     </div>
-                    
-                    
 
 //                     <div class="col-md-10 col-xs-9">
 //                     <dt>Importância recebida</dt>                                        </div>
@@ -305,7 +328,7 @@ export const combine = (
 // 	// parse using regex
 // 	const valorBase = extractFloatDataFromTable(driver, "Valor Base")
 
-// 	// 
+// 	//
 
 // 	await setTableSize(driver)
 // 	await goBack(driver)

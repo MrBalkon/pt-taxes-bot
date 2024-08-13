@@ -8,9 +8,15 @@ import { ExecutionScenarioTaskRepository } from 'src/repositories/execution-scen
 import { ExecutionScenarionTask } from 'src/entities/execution-scenario-task.entity';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([ExecutionScenario, ExecutionScenarionTask])],
-	controllers: [],
-	providers: [ExecutionScenarioService, ExecutionScenarioRepository, ExecutionScenarioTaskRepository],
-	exports: [ExecutionScenarioService],
+  imports: [
+    TypeOrmModule.forFeature([ExecutionScenario, ExecutionScenarionTask]),
+  ],
+  controllers: [],
+  providers: [
+    ExecutionScenarioService,
+    ExecutionScenarioRepository,
+    ExecutionScenarioTaskRepository,
+  ],
+  exports: [ExecutionScenarioService],
 })
-export class ExecutionScenarioModule {};
+export class ExecutionScenarioModule {}

@@ -1,23 +1,24 @@
 export interface CreateOrUdpdateFieldAnswer {
-	fieldSystemName: string;
-	fieldValue: any;
-	month?: number;
-	year?: number;
+  fieldSystemName: string;
+  fieldValue: any;
+  month?: number;
+  year?: number;
 }
 
 export interface UserMetaFieldsRequestExtended {
-	systemName: string;
-	required: boolean;
+  systemName: string;
+  required: boolean;
 }
 
-type UserMetaFieldsRequestValue = UserMetaFieldsRequestExtended | string
+type UserMetaFieldsRequestValue = UserMetaFieldsRequestExtended | string;
 
 export type UserMetaFieldsRequest = UserMetaFieldsRequestValue;
 
-
 export interface UserMetaFieldsIdsRequestExtended {
-	id: number;
-	required: boolean;
+  id: number;
+  required: boolean;
 }
 
-export type UserMetaFieldsIdsRequest = UserMetaFieldsIdsRequestExtended | number;
+export type UserMetaFieldsIdsRequest =
+  | UserMetaFieldsIdsRequestExtended
+  | number;

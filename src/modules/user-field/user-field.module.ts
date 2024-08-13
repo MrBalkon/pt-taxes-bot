@@ -5,11 +5,9 @@ import { UserFieldService } from './user-field.service';
 import { UserFieldRepository } from 'src/repositories/user-field.repository';
 
 @Module({
-	imports: [
-		TypeOrmModule.forFeature([UserField]),
-	],
-	controllers: [],
-	providers: [UserFieldService, UserFieldRepository],
-	exports: [UserFieldService],
+  imports: [TypeOrmModule.forFeature([UserField])],
+  controllers: [],
+  providers: [UserFieldService, UserFieldRepository],
+  exports: [UserFieldService],
 })
-export class UserFieldModule {};
+export class UserFieldModule {}

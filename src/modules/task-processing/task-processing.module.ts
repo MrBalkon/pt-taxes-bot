@@ -1,4 +1,4 @@
-import { Module, forwardRef } from '@nestjs/common';;
+import { Module, forwardRef } from '@nestjs/common';
 import { TaskProcessingService } from './task.processing.service';
 import { ConfigModule } from '../config/config.module';
 import { UserModule } from '../user/user.module';
@@ -19,24 +19,24 @@ import { UserAnswerModule } from '../user-answer/user-answer.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
-	imports: [
-		ConfigModule,
-		UserModule,
-		SeleniumModule,
-		TelegamConfigModule,
-		QuestionModule,
-		TaskModule,
-		OperationModule,
-		ExecutionCommandModule,
-		ExecutionScenarioModule,
-		NotificationModule,
-		SubscriptionModule,
-		FieldModule,
-		UserAnswerModule,
-		forwardRef(() => TaskProcessingQueueModule)
-	],
-	controllers: [],
-	providers: [TaskProcessingService],
-	exports: [TaskProcessingService],
+  imports: [
+    ConfigModule,
+    UserModule,
+    SeleniumModule,
+    TelegamConfigModule,
+    QuestionModule,
+    TaskModule,
+    OperationModule,
+    ExecutionCommandModule,
+    ExecutionScenarioModule,
+    NotificationModule,
+    SubscriptionModule,
+    FieldModule,
+    UserAnswerModule,
+    forwardRef(() => TaskProcessingQueueModule),
+  ],
+  controllers: [],
+  providers: [TaskProcessingService],
+  exports: [TaskProcessingService],
 })
-export class TaskProcessingModule {};
+export class TaskProcessingModule {}

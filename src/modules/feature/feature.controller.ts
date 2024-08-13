@@ -3,12 +3,10 @@ import { FeatureService } from './feature.service';
 
 @Controller('feature')
 export class FeatureController {
-	constructor(
-		private readonly featureService: FeatureService,
-	){}
+  constructor(private readonly featureService: FeatureService) {}
 
-	@Post()
-	async grantAccessToFeature(@Body() { userId, featureId }) {
-		return this.featureService.grantAcessToFeature(userId, featureId);
-	}
+  @Post()
+  async grantAccessToFeature(@Body() { userId, featureId }) {
+    return this.featureService.grantAcessToFeature(userId, featureId);
+  }
 }

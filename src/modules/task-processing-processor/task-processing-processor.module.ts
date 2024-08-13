@@ -14,20 +14,20 @@ import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
 import { UserAnswerModule } from '../user-answer/user-answer.module';
 
 @Module({
-	imports: [
-		TaskProcessingModule,
-		TaskProcessingQueueModule,
-		ConfigModule,
-		UserModule,
-		TaskModule,
-		TaskSheduleModule,
-		OperationModule,
-		NotificationModule,
-		UserAnswerModule,
-		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
-	],
-	controllers: [],
-	providers: [TaskProcessingQueueConsumer],
-	exports: [],
+  imports: [
+    TaskProcessingModule,
+    TaskProcessingQueueModule,
+    ConfigModule,
+    UserModule,
+    TaskModule,
+    TaskSheduleModule,
+    OperationModule,
+    NotificationModule,
+    UserAnswerModule,
+    BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
+  ],
+  controllers: [],
+  providers: [TaskProcessingQueueConsumer],
+  exports: [],
 })
-export class TaskProcessingProcessorModule {};
+export class TaskProcessingProcessorModule {}

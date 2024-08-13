@@ -3,9 +3,5 @@ import { UserFieldRepository } from 'src/repositories/user-field.repository';
 
 @Injectable()
 export class UserFieldService {
-	constructor(
-		private readonly userFieldRepository: UserFieldRepository
-	) {}
-
-	
+  constructor(private readonly userFieldRepository: UserFieldRepository) {}
 }

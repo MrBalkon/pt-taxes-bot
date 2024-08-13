@@ -7,28 +7,43 @@ import { QuestionService } from '../question/question.service';
 
 @Injectable()
 export class UserRequestDataService {
-	constructor(
-		private readonly taskService: TaskService,
-		private readonly taskFieldsService: TaskFieldsService,
-		private readonly userAnswerService: UserAnswerService,
-		private readonly questionService: QuestionService,
-	) {}
+  constructor(
+    private readonly taskService: TaskService,
+    private readonly taskFieldsService: TaskFieldsService,
+    private readonly userAnswerService: UserAnswerService,
+    private readonly questionService: QuestionService,
+  ) {}
 
-	async getUserMissingQuestions(userId: number) {
-		const task = this.taskService.getTaskBySystemName(TaskProcessingJobName.USER_REQUEST_DATA)
-		const outputFields = await this.taskFieldsService.getOutputFieldsByUserAndTaskId(task.id)
-		const userMetaFields = await this.userAnswerService.getUserAllMetaFieldsByTaskIds(userId, [task.id])
+  async getUserMissingQuestions(userId: number) {
+    const task = this.taskService.getTaskBySystemName(
+      TaskProcessingJobName.USER_REQUEST_DATA,
+    );
+    const outputFields =
+      await this.taskFieldsService.getOutputFieldsByUserAndTaskId(task.id);
+    const userMetaFields =
+      await this.userAnswerService.getUserAllMetaFieldsByTaskIds(userId, [
+        task.id,
+      ]);
 
-		const missingFields = Object.keys(outputFields).filter((fieldId) => {
-			return !userMetaFields[fieldId]
-		}).map((fieldId) => parseInt(fieldId))
+    const missingFields = Object.keys(outputFields)
+      .filter((fieldId) => {
+        return !userMetaFields[fieldId];
+      })
+      .map((fieldId) => parseInt(fieldId));
 
-		const questions = await this.questionService.getQuestionsByFieldIds(missingFields)
+    const questions =
+      await this.questionService.getQuestionsByFieldIds(missingFields);
 
-		return questions
-	}
+    return questions;
+  }
 
-	async getUserAnswersByFieldSystemName(userId: number, fieldSystemName: string) {
-		return this.userAnswerService.getUserAnswersByFieldSystemName(userId, fieldSystemName)
-	}
+  async getUserAnswersByFieldSystemName(
+    userId: number,
+    fieldSystemName: string,
+  ) {
+    return this.userAnswerService.getUserAnswersByFieldSystemName(
+      userId,
+      fieldSystemName,
+    );
+  }
 }

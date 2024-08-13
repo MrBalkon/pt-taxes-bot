@@ -8,12 +8,12 @@ import { TaskFieldSerializer } from './task-fields.serializer';
 import { FieldModule } from '../field/field.module';
 
 @Module({
-	imports: [
-		FieldModule,
-		TypeOrmModule.forFeature([TaskField, TaskOutputField])
-	],
-	controllers: [],
-	providers: [TaskFieldsService, TaskFieldRepository, TaskFieldSerializer],
-	exports: [TaskFieldsService],
+  imports: [
+    FieldModule,
+    TypeOrmModule.forFeature([TaskField, TaskOutputField]),
+  ],
+  controllers: [],
+  providers: [TaskFieldsService, TaskFieldRepository, TaskFieldSerializer],
+  exports: [TaskFieldsService],
 })
-export class TaskFieldsModule {};
+export class TaskFieldsModule {}

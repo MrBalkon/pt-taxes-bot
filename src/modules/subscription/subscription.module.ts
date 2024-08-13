@@ -10,15 +10,19 @@ import { FeatureModule } from '../feature/feature.module';
 import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 
 @Module({
-	imports: [
-		TypeOrmModule.forFeature([SubscriptionPackage, SubscriptionPackageFeature, UserSubscription]),
-		NotificationModule,
-		UserModule,
-		FeatureModule,
-		forwardRef(() => TaskProcessingQueueModule),
-	],
-	controllers: [],
-	providers: [SubscriptionService],
-	exports: [SubscriptionService],
+  imports: [
+    TypeOrmModule.forFeature([
+      SubscriptionPackage,
+      SubscriptionPackageFeature,
+      UserSubscription,
+    ]),
+    NotificationModule,
+    UserModule,
+    FeatureModule,
+    forwardRef(() => TaskProcessingQueueModule),
+  ],
+  controllers: [],
+  providers: [SubscriptionService],
+  exports: [SubscriptionService],
 })
-export class SubscriptionModule {};
+export class SubscriptionModule {}

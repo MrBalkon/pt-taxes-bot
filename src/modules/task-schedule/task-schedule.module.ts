@@ -7,13 +7,13 @@ import { TaskProcessingQueueModule } from '../task-processing-queue/task-process
 import { TaskSheduleRepository } from 'src/repositories/task-shedule.repository';
 
 @Module({
-	imports: [
-		ScheduleModule.forRoot(),
-		TypeOrmModule.forFeature([TaskShedule]),
-		TaskProcessingQueueModule,
-	],
-	controllers: [],
-	providers: [TaskSheduleService, TaskSheduleRepository],
-	exports: [TaskSheduleService],
+  imports: [
+    ScheduleModule.forRoot(),
+    TypeOrmModule.forFeature([TaskShedule]),
+    TaskProcessingQueueModule,
+  ],
+  controllers: [],
+  providers: [TaskSheduleService, TaskSheduleRepository],
+  exports: [TaskSheduleService],
 })
-export class TaskSheduleModule {};
+export class TaskSheduleModule {}

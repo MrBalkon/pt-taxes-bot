@@ -3,9 +3,9 @@ import { NotificaitonService } from './notification.service';
 import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
 
 @Module({
-	imports: [TelegamConfigModule],
-	controllers: [],
-	providers: [NotificaitonService],
-	exports: [NotificaitonService],
+  imports: [TelegamConfigModule],
+  controllers: [],
+  providers: [NotificaitonService],
+  exports: [NotificaitonService],
 })
-export class NotificationModule {};
+export class NotificationModule {}

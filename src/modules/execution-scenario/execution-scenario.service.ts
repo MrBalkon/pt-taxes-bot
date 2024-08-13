@@ -4,16 +4,20 @@ import { ExecutionScenarioRepository } from 'src/repositories/execution-scenario
 
 @Injectable()
 export class ExecutionScenarioService {
-	constructor(
-		private readonly executionScenarioRepository: ExecutionScenarioRepository,
-		private readonly executionScenarioTaskRepository : ExecutionScenarioTaskRepository,
-	) {}
+  constructor(
+    private readonly executionScenarioRepository: ExecutionScenarioRepository,
+    private readonly executionScenarioTaskRepository: ExecutionScenarioTaskRepository,
+  ) {}
 
-	async getExecutionScenariosByTaskSystemName(taskSystemName: string) {
-		return this.executionScenarioRepository.getExecutionScenariosByTaskSystemName(taskSystemName);
-	}
+  async getExecutionScenariosByTaskSystemName(taskSystemName: string) {
+    return this.executionScenarioRepository.getExecutionScenariosByTaskSystemName(
+      taskSystemName,
+    );
+  }
 
-	async getExecutionMapTreeByTaskSystemName(taskSystemName: string) {
-		return this.executionScenarioTaskRepository.getExecutionScenarioTasksByTaskSystemName(taskSystemName);
-	}
+  async getExecutionMapTreeByTaskSystemName(taskSystemName: string) {
+    return this.executionScenarioTaskRepository.getExecutionScenarioTasksByTaskSystemName(
+      taskSystemName,
+    );
+  }
 }

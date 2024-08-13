@@ -1,12 +1,12 @@
-import { QuestionPeriodTime } from "src/entities/question.entity";
-import { FieldOption } from "src/entities/user-field.entity";
+import { QuestionPeriodTime } from 'src/entities/question.entity';
+import { FieldOption } from 'src/entities/user-field.entity';
 
 export interface FindQuestionResult {
-	question: string;
-	description: string;
-	fieldId: number;
-	options?: FieldOption[];
-	periodTime?: QuestionPeriodTime | null
+  question: string;
+  description: string;
+  fieldId: number;
+  options?: FieldOption[];
+  periodTime?: QuestionPeriodTime | null;
 }
 
 export const GET_QUESTIONS_QUERY_BASE = `
@@ -163,20 +163,20 @@ WITH questions AS (
     )
     AND (q."year" = $2 OR q."year" IS NULL)
 )
-`
+`;
 
 export const GET_QUESTIONS_QUERY = `
 	${GET_QUESTIONS_QUERY_BASE}
 	SELECT * FROM unanswered_questions
-`
+`;
 
 export const GET_QUESTIONS_COUNT = `
 	${GET_QUESTIONS_QUERY_BASE}
 	select count(id) from unanswered_questions
-`
+`;
 
 export const GET_PRIORITY_QUESTIONS_QUERY = `
 	${GET_QUESTIONS_QUERY}
 	ORDER BY rank ASC
 	LIMIT 1
-`
+`;

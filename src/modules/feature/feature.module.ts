@@ -9,9 +9,13 @@ import { UserModule } from '../user/user.module';
 import { FeatureController } from './feature.controller';
 
 @Module({
-	imports: [TypeOrmModule.forFeature([Feature, FeatureAccess]), NotificationModule, UserModule],
-	controllers: [FeatureController],
-	providers: [FeatureService],
-	exports: [FeatureService]
+  imports: [
+    TypeOrmModule.forFeature([Feature, FeatureAccess]),
+    NotificationModule,
+    UserModule,
+  ],
+  controllers: [FeatureController],
+  providers: [FeatureService],
+  exports: [FeatureService],
 })
-export class FeatureModule {};
+export class FeatureModule {}

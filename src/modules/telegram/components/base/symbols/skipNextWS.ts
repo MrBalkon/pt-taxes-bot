@@ -1,1 +1,1 @@
-export const skipNextWS = '{{! ~}}'
+export const skipNextWS = '{{! ~}}';

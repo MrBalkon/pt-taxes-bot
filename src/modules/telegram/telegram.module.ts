@@ -1,15 +1,8 @@
-import { Module, NotFoundException } from '@nestjs/common';
-import { TelegrafModule, TelegrafModuleOptions } from 'nestjs-telegraf';
-import { ConfigModule } from '../config/config.module';
-import { ConfigService } from '../config/config.service';
+import { Module } from '@nestjs/common';
 import { TelegramUpdate } from './telegram.update';
 import { StoryScene } from './story.scene';
-import * as LocalSession from 'telegraf-session-local';
 import { HomeScene } from './scenes/home/home.scene';
 import { TaxScene } from './scenes/tax.scene';
-import { PostgresAdapter } from 'kysely';
-import { Postgres } from '@telegraf/session/pg';
-import { session } from 'telegraf';
 import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 import { UserModule } from '../user/user.module';
 import { WizardScene } from './scenes/wizard.scene';
@@ -23,18 +16,26 @@ import { SubscriptionModule } from '../subscription/subscription.module';
 import { UserRequestDataModule } from '../user-request-data/user-request-data.module';
 
 @Module({
-	imports: [
-		TaskProcessingQueueModule,
-		UserModule,
-		QuestionModule,
-		TelegamConfigModule,
-		FeatureModule,
-		TaskModule,
-		SubscriptionModule,
-		UserRequestDataModule,
-	],
-	controllers: [],
-	providers: [HomeScene, TaxScene, StoryScene, WizardScene, FormScene, TelegramUpdate, TelegramService],
-	exports: [TelegramService],
+  imports: [
+    TaskProcessingQueueModule,
+    UserModule,
+    QuestionModule,
+    TelegamConfigModule,
+    FeatureModule,
+    TaskModule,
+    SubscriptionModule,
+    UserRequestDataModule,
+  ],
+  controllers: [],
+  providers: [
+    HomeScene,
+    TaxScene,
+    StoryScene,
+    WizardScene,
+    FormScene,
+    TelegramUpdate,
+    TelegramService,
+  ],
+  exports: [TelegramService],
 })
-export class TelegramModule {};
+export class TelegramModule {}
