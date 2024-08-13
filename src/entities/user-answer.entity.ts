@@ -12,8 +12,9 @@ import { UserField } from './user-field.entity';
 import { EncryptedColumn } from 'src/decorators/encrypted-column.decorator';
 import { EncryptionTransformer } from 'typeorm-encrypted';
 
+export type FieldValueType = any
+
 @Entity('user-answers')
-@Unique(['fieldId', 'userId', 'year', 'month'])
 export class UserAnswer {
 	@PrimaryGeneratedColumn()
 	id: number;
@@ -24,7 +25,7 @@ export class UserAnswer {
 	@Column('varchar', { name: 'user_id' })
 	userId: number;
 
-	@Column('varchar', {
+	@Column('jsonb', {
 		name: 'field_value',
 		nullable: true,
 		transformer: new EncryptionTransformer({

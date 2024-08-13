@@ -18,20 +18,22 @@ import { PaymentService } from "src/modules/payment/payment.service";
 import { PAYMENT_LINK, goPayementsPage, retrievePayments } from "../../selenium-scenarios/seg-social/payment/retrieve-payments.scenario";
 import { Payment } from "src/entities/payment.entity";
 import { DeepPartial } from "typeorm";
+import { UserAnswerService } from "src/modules/user-answer/user-answer.service";
+import { FieldValueType, UserAnswer } from "src/entities/user-answer.entity";
 
 @Injectable()
 export class SocialSecurityCheckPayments implements Task {
 	constructor(
 		private readonly seleniumService: SeleniumService,
 		private readonly paymentService: PaymentService,
-		private readonly notificationService: NotificaitonService
+		private readonly notificationService: NotificaitonService,
+		private readonly answersService: UserAnswerService,
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
 	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, task))
   }
 
   async runInSelenium(driver: WebDriver, task: TaskProcessingPayload): Promise<void> {
-	// TODO switch to user fields
 	const { niss, segSocialPassword } = task.metaFields
 
 	await socialSecuriyGoMainPage(driver)
@@ -40,11 +42,11 @@ export class SocialSecurityCheckPayments implements Task {
 	await goPayementsPage(driver)
 	const segSocialPayments = await retrievePayments(driver)
 
-	const dbPayments: DeepPartial<Payment>[] = segSocialPayments.map((payment) => {
+	const dbPayments: FieldValueType[] = segSocialPayments.map((payment) => {
 		return {
 			description: `(Segurança Social) ${payment.type}`,
 			amount: payment.valueAmount,
-			dueDate: payment.expirationDate.toJSDate(),
+			dueDate: payment.expirationDate.toMillis(),
 			userId: task.user.id,
 			taskId: task.systemTaskId,
 			link: PAYMENT_LINK
@@ -52,15 +54,12 @@ export class SocialSecurityCheckPayments implements Task {
 	})
 
 	const {
-		paymentsToDelete,
-		paymentsToCreate,
-	} = await this.paymentService.paymentsSync(task.systemTaskId, task.user.id, dbPayments)
+		answersToDelete,
+		answersToCreate,
+	} = await this.answersService.answersSyncByFieldSystemName(task.user.id, 'taxPayements', dbPayments)
 
-	// if (paymentsToDelete.length) {
-	// 	await this.notificationService.sendNotification(task.user, "You've")
-	// }
-	if (paymentsToCreate.length) {
-		await this.notificationService.sendNotification(task.user, `You've got new payments from Segurança Social! ${paymentsToCreate.length}`, {
+	if (answersToCreate.length) {
+		await this.notificationService.sendNotification(task.user, `You've got new payments from Segurança Social! ${answersToCreate.length}`, {
 			action: NotificationAction.VIEW_PAYMENTS,
 		})
 	}

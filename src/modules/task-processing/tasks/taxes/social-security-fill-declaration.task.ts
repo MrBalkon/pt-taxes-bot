@@ -27,13 +27,10 @@ export class SocialSecurityFillDeclarationTask implements Task {
 	const metaFields = task.metaFields
 
 	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields, task))
-
-	// await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
   }
 
-  async runInSelenium(driver: WebDriver, user: User, metFields: Record<string, any>, task: TaskProcessingPayload): Promise<void> {
-	// TODO switch to user fields
-	const { niss, segSocialPassword } = user.metaFields
+  async runInSelenium(driver: WebDriver, user: User, metaFields: Record<string, any>, task: TaskProcessingPayload): Promise<void> {
+	const { niss, segSocialPassword } = metaFields
 
 	try {
 		await socialSecuriyGoMainPage(driver)

@@ -19,14 +19,10 @@ import { ScenarioTreeExecution } from "./scenario-tree-execution.task";
 
 @Injectable()
 export class DynamicTask implements Task {
-	private logger = new Logger(DynamicTask.name)
 	constructor(
-		private readonly configService: ConfigService,
-		private readonly userService: UserService,
 		private readonly seleniumService: SeleniumService,
 		private readonly telegramService: TelegramService,
 		private readonly questionService: QuestionService,
-		private readonly taskService: TaskService,
 		private readonly executionScenarioService: ExecutionScenarioService,
 		private readonly executionCommandService: ExecutionCommandService,
 	) {}

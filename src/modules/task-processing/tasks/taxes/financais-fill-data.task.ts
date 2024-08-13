@@ -14,23 +14,21 @@ import { goFaturaVerdePage, retrieveFaturaVerdeIncome } from "../../selenium-sce
 import { DownloadFinancaisFaturaTable, DownloadFinancaisFaturaTableCSituaca, DownloadFinancaisFaturaTableTipoRecibo } from "../../selenium-scenarios/financais/download-financais";
 import { NotificaitonService } from "src/modules/notification/notification.service";
 import { User } from "src/entities/user.entity";
+import { UserAnswerService } from "src/modules/user-answer/user-answer.service";
 
 @Injectable()
 export class FinancaisFillData implements Task {
 	constructor(
 		private readonly userService: UserService,
 		private readonly seleniumService: SeleniumService,
-		private readonly telegramService: TelegramService,
 		private readonly notificaitonService: NotificaitonService,
 		private readonly questionService: QuestionService,
-		private readonly i18n: I18nService
+		private readonly userAnswerService: UserAnswerService,
 	) {}
   async run(task: TaskProcessingPayload): Promise<void> {
 	const user = task.user;
 	const metaFields = task.metaFields
 	await this.seleniumService.execute(async (driver) => this.runInSelenium(driver, user, metaFields))
-
-	// await this.telegramService.sendMessage(user.telegramId, 'Finished with login to Seg Social!')
   }
 
   async runInSelenium(driver: WebDriver, user: User, metaFields: Record<string, any>): Promise<void> {
@@ -93,7 +91,7 @@ export class FinancaisFillData implements Task {
 			return acc
 		}, [])
 
-		await this.questionService.saveAnswersBulkByFieldSystemName(user.id, answers)
+		await this.userAnswerService.saveAnswersBulkByFieldSystemName(user.id, answers)
 	} catch (e) {
 		await this.notificaitonService.sendNotification(user, "Something went wrong with your declaration")
 		throw e

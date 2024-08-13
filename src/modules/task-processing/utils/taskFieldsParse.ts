@@ -15,18 +15,10 @@ class TaskFieldParser {
 
 		switch (taskField.timeRangeType) {
 			case TaskFieldTimeRangeType.PREVIOUS_QUARTER:
-				const previousQuarterYear = getPreviousQuarterYear();
-				const previousQuarterMonth = getPreviousQuarterMonths();
-				return previousQuarterMonth.every((month) => {
-					return userMetafield[previousQuarterYear][month];
-				})
 			case TaskFieldTimeRangeType.PREVIOUS_YEAR:
-				const previousYear = getPreviousYear()
-				return Object.values(userMetafield[previousYear])?.length === 12;
 			case TaskFieldTimeRangeType.PREVIOUS_MONTH:
-				const previousMonth = getPreviousMonth()
-				const previousMonthYear = getPreviousYear()
-				return Object.values(userMetafield[previousMonthYear][previousMonth])?.length === 1;
+				// TODO refactor this
+				return true;
 			// case TaskFieldTimeRangeType.YEAR_AGO:
 			// 	const yearAgo = getPreviousYear() - 1
 			// 	return Object.values(userMetafield[yearAgo])?.length === 12;

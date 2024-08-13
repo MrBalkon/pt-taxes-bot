@@ -9,14 +9,7 @@ import {
 	PrimaryGeneratedColumn,
 } from 'typeorm';
 import { UserField } from './user-field.entity';
-import { QuestionCondition } from './question-condition.entity';
-
-export enum QuestionType {
-	TEXT="text",
-	FLOAT="float",
-	ARRAY="array",
-	OPTIONS="options",
-}
+import { FieldCondition } from './field-condition.entity';
 
 export enum QuestionPeriodTime {
 	PREVIOUS_QUARTER_MONTHS="previous_quarter_months",
@@ -50,7 +43,4 @@ export class Question {
 
 	@CreateDateColumn({ name: 'created_at' })
 	createdAt: Date;
-
-	@OneToMany(() => QuestionCondition, condition => condition.question)
-	conditions: QuestionCondition[];
 }

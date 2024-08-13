@@ -8,8 +8,8 @@ export class SeleniumService {
 		private readonly configService: ConfigService,
 	) {}
 
-	async execute<T>(callback: (driver: WebDriver) => Promise<T>) {
-		const driver = await this.prepareDriver()
+	async execute<T>(callback: (driver: WebDriver) => Promise<T>, existingDriver?: WebDriver): Promise<T> {
+		const driver = await this.prepareDriver(existingDriver)
 		try {
 			return await callback(driver)
 		} finally {
@@ -17,7 +17,11 @@ export class SeleniumService {
 		}
 	}
 
-	private async prepareDriver() {
+	private async prepareDriver(existingDriver?: WebDriver) {
+		if (existingDriver) {
+			return existingDriver
+		}
+
 		const chromCapabilities = Capabilities.chrome()
 		chromCapabilities.set('chromeOptions', {
 			'args': ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage:']

@@ -1,23 +1,20 @@
 import { Action, Ctx, Hears, Scene, SceneEnter } from 'nestjs-telegraf';
 import { SceneContext } from 'telegraf/typings/scenes';
-import { Update } from 'telegraf/typings/core/types/typegram';
 import { Injectable } from '@nestjs/common';
 import { I18nService } from 'nestjs-i18n';
-import { ActionContract } from 'src/decorators/action.decorator';
 import { UserService } from 'src/modules/user/user.service';
 import { FormError } from './form.errors';
 import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/task-processing-queue.service';
 import { TaskProcessingJobName } from 'src/modules/task-processing-queue/task-processing.types';
 import { QuestionService } from 'src/modules/question/question.service';
 import { FormQuestion } from './form.types';
-import { QuestionPeriodTime, QuestionType } from 'src/entities/question.entity';
-import { getMonthNameByNumber, getPreviousQuarterMonths, getPreviousQuarterMonthsNames, getPreviousQuarterYear } from 'src/utils/date';
-import { SubscriptionService } from 'src/modules/subscription/subscription.service';
+import { Question } from 'src/entities/question.entity';
+import { UserRequestDataService } from 'src/modules/user-request-data/user-request-data.service';
+import { FieldValueType } from 'src/entities/user-field.entity';
 
 export interface SceneState {
-	currentFieldId?: number;
-	currentChildrenIndex?: number;
-	childrenAnswerArray?: string[];
+	currentQuestionIndex?: number;
+	questions: Question[];
 }
 
 @Injectable()
@@ -28,7 +25,7 @@ export class FormScene {
 		private readonly userService: UserService,
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
 		private readonly questionsService: QuestionService,
-		private readonly subscriptionService: SubscriptionService,
+		private readonly userRequestDataService: UserRequestDataService,
 	) { }
 	@SceneEnter()
 	async enter(@Ctx() ctx: SceneContext) {
@@ -36,7 +33,7 @@ export class FormScene {
 			reply_markup: {
 				inline_keyboard: [
 					[{ text: "Start poll", callback_data: 'formScene.startPoll' }],
-					// [{ text: "Cancel", callback_data: 'formScene.cancelPoll' }],
+					[{ text: "Cancel", callback_data: 'formScene.cancelPoll' }],
 				],
 			},
 			parse_mode: 'HTML'
@@ -47,41 +44,49 @@ export class FormScene {
 	async onAnswerTax(
 		@Ctx() ctx: SceneContext
 	) {
-		const question = await this.getNextQuestion(ctx.from.id)
-		await this.sendQuestion(ctx, question)
+		const questions = await this.userRequestDataService.getUserMissingQuestions(ctx.from.id)
+
+		if (!questions.length) {
+			await ctx.reply("You have already answered all the questions")
+			ctx.scene.enter('homeScene');
+			return
+		}
+		this.updateCtxState(ctx, 'questions', questions)
+		await this.sendQuestion(ctx, questions[0], 0)
 	}
 
 	@Action('formScene.cancelPoll')
 	async onAnswerCancel(
 		@Ctx() ctx: SceneContext
 	) {
-		// await this.endPoll(ctx);
+		this.cleanCtxState(ctx)
+		ctx.scene.enter('homeScene');
 	}
 
 	@Action(/formSceneQuestion:(.*)/)
 	@Hears(/(.*)/)
 	async hears(@Ctx() ctx: SceneContext) {
-		if (!this.getCtxState(ctx)?.currentFieldId) {
+		if (this.getCtxState(ctx)?.currentQuestionIndex === undefined) {
 			// ctx.scene.enter('homeScene');
 			return
 		}
 
 		const user = await this.userService.getUserByTelegramId(String(ctx.from.id))
-		const askedQuestion = await this.questionsService.getQuestionByUserIdAndFieldId(user.id, (ctx.scene.state as SceneState).currentFieldId)
-		this.expandQuestion(askedQuestion)
+		const askedQuestion = this.getCtxState(ctx).questions[this.getCtxStateValue(ctx, 'currentQuestionIndex')]
 
 		try {
 			const answer = this.extractAnswer(askedQuestion, ctx)
 
 			await this.saveAnswer(ctx, user.id, askedQuestion, answer)
 
-			const nextQuestion = await this.getNextQuestion(ctx.from.id)
+			const nextQuestionIndex = this.getCtxStateValue(ctx, 'currentQuestionIndex') + 1
+			const nextQuestion = this.getCtxState(ctx).questions[nextQuestionIndex]
 			if (!nextQuestion) {
 				await this.endPoll(ctx);
 				return
 			}
 
-			await this.sendQuestion(ctx, nextQuestion);
+			await this.sendQuestion(ctx, nextQuestion, nextQuestionIndex);
 		} catch (e) {
 			if (e instanceof FormError) {
 				await ctx.reply(e.message)
@@ -104,17 +109,8 @@ export class FormScene {
 		return this.questionsService.saveAnswer(userId, question, answer)
 	}
 
-	private async getNextQuestion(telegramId: number) {
-		const user = await this.userService.getUserByTelegramId(String(telegramId))
-		const question = (await this.questionsService.getPriorityQuestion(user.id) as FormQuestion)
-
-		this.expandQuestion(question)
-
-		return question;
-	}
-
 	private async endPoll(ctx: SceneContext) {
-		delete (ctx.scene.state as SceneState).currentFieldId;
+		this.cleanCtxState(ctx)
 		await ctx.reply("You have successfully completed the poll")
 		await this.taskProcessingQueueService.addJobByTelegramId<null>(ctx.from.id, {
 			type: TaskProcessingJobName.TASK_MANAGER,
@@ -123,35 +119,26 @@ export class FormScene {
 		ctx.scene.enter('homeScene');
 	}
 
-	private async sendQuestion(ctx: SceneContext, question: FormQuestion) {
+	private cleanCtxState(ctx: SceneContext) {
+		delete (ctx.scene.state as SceneState).currentQuestionIndex;
+		delete (ctx.scene.state as SceneState).questions;
+	}
+
+	private async sendQuestion(ctx: SceneContext, question: FormQuestion, questionIndex: number) {
 		if (!question) {
 			// TODO handle end of questions
 			return
 		}
 
-		// ctx.state
+		this.updateCtxState(ctx, 'currentQuestionIndex', questionIndex)
 
-		this.updateCtxState(ctx, 'currentFieldId', question.fieldId)
-
-		if (question.children) {
-			if (this.getCtxState(ctx).currentChildrenIndex === undefined) {
-				this.updateCtxState(ctx, 'currentChildrenIndex', 0)
-				return this.sendQuestion(ctx, question.children[0])
-			}
-			const nextChildIndex = this.getCtxStateValue(ctx, 'currentChildrenIndex') + 1
-			if (nextChildIndex < question.children.length) {
-				this.updateCtxState(ctx, 'currentChildrenIndex', nextChildIndex)
-				return this.sendQuestion(ctx, question.children[nextChildIndex])
-			}
-			return
-		}
 		const questionText = this.prepareQuestionText(question)
-		switch (question.type) {
-			case QuestionType.TEXT:
+		switch (question.field.valueType) {
+			case FieldValueType.TEXT:
 				await ctx.reply(questionText, { parse_mode: 'HTML' });
 				break;
-			case QuestionType.OPTIONS:
-				const options = question.options.map(option => ([{ text: option.text, callback_data: `formSceneQuestion:${option.value}` }]))
+			case FieldValueType.OPTIONS:
+				const options = question.field.options.map(option => ([{ text: option.text, callback_data: `formSceneQuestion:${option.value}` }]))
 				await ctx.reply(questionText, {
 					reply_markup: {
 						inline_keyboard: options,
@@ -165,43 +152,29 @@ export class FormScene {
 		}
 	}
 
-	private expandQuestion(question: FormQuestion) {
-		if (question?.periodTime == QuestionPeriodTime.PREVIOUS_QUARTER_MONTHS) {
-			const previousQuarterMonths = getPreviousQuarterMonthsNames()
-			const questions = previousQuarterMonths.map(month => {
-				return {
-					...question,
-					question: question.question + ` (${month})`,
-				}
-			})
-			question.children = questions
-		}
-
-	}
-
 	private prepareQuestionText(question: FormQuestion) {
 		return `${question.question}${question?.description ? "\n" + question?.description : ""}`
 	}
 
 	private extractAnswer(askedQuestion: FormQuestion, ctx: SceneContext) {
-		switch (askedQuestion.type) {
-			case QuestionType.TEXT:
+		switch (askedQuestion.field.valueType) {
+			case FieldValueType.TEXT:
 				const text = (ctx.message as any).text
 				if (!text) {
 					throw new FormError("Please send a text message")
 				}
 				return text
-			case QuestionType.OPTIONS:
+			case FieldValueType.OPTIONS:
 				if (!ctx.callbackQuery) {
 					throw new FormError("Please choose one of the options")
 				}
 				const value = (ctx.callbackQuery as any).data.split(":")[1]
-				const option = askedQuestion.options.find(option => option.value === value)?.value
+				const option = askedQuestion.field.options.find(option => option.value === value)?.value
 				if (!option) {
 					throw new FormError("Please choose one of the options")
 				}
 				return value
-			case QuestionType.FLOAT:
+			case FieldValueType.FLOAT:
 				const numberValue = Number((ctx.message as any).text)
 				if (isNaN(numberValue)) {
 					throw new FormError("Please send a number")
@@ -217,7 +190,7 @@ export class FormScene {
 	}
 
 	private updateCtxState(ctx: SceneContext, key: string, value: any) {
-		(ctx.scene.state as SceneState) = {
+		(ctx.scene.state as any) = {
 			...ctx.scene.state,
 			[key]: value
 		}

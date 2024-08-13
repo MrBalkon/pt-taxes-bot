@@ -1,4 +1,4 @@
-import { QuestionPeriodTime, QuestionType } from "src/entities/question.entity";
+import { QuestionPeriodTime } from "src/entities/question.entity";
 import { FieldOption } from "src/entities/user-field.entity";
 
 export interface FindQuestionResult {
@@ -6,7 +6,6 @@ export interface FindQuestionResult {
 	description: string;
 	fieldId: number;
 	options?: FieldOption[];
-	type: QuestionType
 	periodTime?: QuestionPeriodTime | null
 }
 

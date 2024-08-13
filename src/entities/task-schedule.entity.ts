@@ -8,7 +8,7 @@ import {
 	OneToOne,
 	PrimaryGeneratedColumn,
 } from 'typeorm';
-import { QuestionCondition } from './question-condition.entity';
+import { FieldCondition } from './field-condition.entity';
 import { Task } from './task.entity';
 import { User } from './user.entity';
 

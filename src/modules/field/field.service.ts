@@ -5,7 +5,8 @@ import { Repository } from 'typeorm';
 
 @Injectable()
 export class FieldService implements OnModuleInit {
-	private readonly userFieldsMap: Record<string, UserField> = {};
+	private readonly userFieldIdsMap: Record<string, UserField> = {};
+	private readonly userFieldNamesMap: Record<string, UserField> = {};
 	constructor(
 		@InjectRepository(UserField)
 		private readonly userFieldRepository: Repository<UserField>
@@ -14,12 +15,16 @@ export class FieldService implements OnModuleInit {
 	async onModuleInit() {
 		const userFields = await this.userFieldRepository.find();
 		userFields.forEach((field) => {
-			this.userFieldsMap[field.id] = field;
+			this.userFieldIdsMap[field.id] = field;
+			this.userFieldNamesMap[field.systemName] = field;
 		});
 	}
 
 	getUserFieldById(id: number) {
-		return this.userFieldsMap[id];
+		return this.userFieldIdsMap[id];
 	}
 
+	getUserFieldByName(name: string) {
+		return this.userFieldNamesMap[name];
+	}
 }

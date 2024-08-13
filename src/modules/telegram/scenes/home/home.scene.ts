@@ -36,7 +36,7 @@ export class HomeScene {
    async enter(@Ctx() ctx: SceneContext) {
         const user = await this.userService.getUserByTelegramId(String(ctx.from.id));
 
-        // const metaFields = await this.userRequestDataService.getUserMissingQuestions(user.id);
+        const metaFields = await this.userRequestDataService.getUserMissingQuestions(user.id);
    }
 
    @Hears("📦 Subscriptions")

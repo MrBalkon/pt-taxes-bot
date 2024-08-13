@@ -15,6 +15,7 @@ import { UserAnswer } from './user-answer.entity';
 import { Question } from './question.entity';
 import { TaskOutputField } from './task-fields-output.entity';
 import { TaskField } from './task-field.entity';
+import { FieldCondition } from './field-condition.entity';
 
 export enum FieldLifeSpanType {
 	PERMANENT = 'permanent',
@@ -74,4 +75,10 @@ export class UserField {
 
 	@OneToMany(() => TaskOutputField, tof => tof.field)
 	taskOutputFields: TaskOutputField[];
+
+	@OneToMany(() => FieldCondition, fc => fc.sourceField)
+	conditions: FieldCondition[];
+
+	@OneToMany(() => FieldCondition, fc => fc.compareField)
+	dependantConditions: FieldCondition[];
 }

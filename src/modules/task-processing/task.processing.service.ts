@@ -67,9 +67,7 @@ export class TaskProcessingService {
 		if (!dbTask.taskFields?.length || !queueTask.userId) {
 			return {};
 		}
-
-		const fieldIds = dbTask.taskFields.map((taskField) => taskField.fieldId);
-		const metaFields = await this.answersService.getUserMetaFieldsByIds(queueTask.userId, fieldIds)
+		const metaFields = await this.answersService.getUserAllMetaFieldsSystemNameByTaskIds(queueTask.userId, [dbTask.id])
 
 		// validate if all fields are present
 		const missingFields = dbTask.taskFields.filter((taskField) => {

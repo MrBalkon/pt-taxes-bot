@@ -1,5 +1,5 @@
-import { FindQuestionResult } from "src/repositories/queries/getPriorityQuestionQuery";
+import { Question } from "src/entities/question.entity";
 
-export interface FormQuestion extends FindQuestionResult {
+export interface FormQuestion extends Question {
 	children?: FormQuestion[];
 }

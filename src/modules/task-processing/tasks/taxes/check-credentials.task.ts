@@ -55,8 +55,8 @@ export class CheckCredentialsTask implements Task {
 			}
 
 			if (incorrectFields.length) {
-				const fieldSystemNames = incorrectFields.map(field => field.fieldSystemName)
-				const fieldNames = incorrectFields.map(field => field.fieldName)
+				const fieldSystemNames = incorrectFields.map(field => field.field.systemName)
+				const fieldNames = incorrectFields.map(field => field.field.fieldName)
 				const text = `You've put wrong credentials for the following fields: ${fieldNames.join(', ')}`
 				throw new WrongCredentialsError(text, fieldSystemNames)
 			}
