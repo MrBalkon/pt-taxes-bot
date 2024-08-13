@@ -11,6 +11,7 @@ import { TaskProcessingModule } from '../task-processing/task-processing.module'
 import { TASK_PROCESSING_QUEUE_NAME } from '../task-processing-queue/task-processing-queue.constants';
 import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
 import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
+import { UserAnswerModule } from '../user-answer/user-answer.module';
 
 @Module({
 	imports: [
@@ -18,11 +19,11 @@ import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
 		TaskProcessingQueueModule,
 		ConfigModule,
 		UserModule,
-		QuestionModule,
 		TaskModule,
 		TaskSheduleModule,
 		OperationModule,
 		NotificationModule,
+		UserAnswerModule,
 		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
 	],
 	controllers: [],

@@ -68,10 +68,6 @@ export class QuestionService {
 		return this.answerRepository.deleteAnswer(userId, fieldsSystemName);
 	}
 
-	async deleteAnswerBulk(userId: number, fieldsSystemNames: string[]) {
-		return this.answerRepository.deleteAnswerBulk(userId, fieldsSystemNames);
-	}
-
 	async saveAnswerByFieldSystemName(userId: number, fieldSystemName: string, data: DeepPartial<UserAnswer>) {
 		return this.answerRepository.createOrUpdateAnswerByFieldSystemName(userId, fieldSystemName, data);
 	}

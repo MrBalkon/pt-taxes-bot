@@ -1415,10 +1415,10 @@
   resolved "https://registry.yarnpkg.com/@types/range-parser/-/range-parser-1.2.7.tgz#50ae4353eaaddc04044279812f52c8c65857dbcb"
   integrity sha512-hKormJbkJqzQGhziax5PItDUTMAM9uE2XXQmM37dyd4hVM+5aVl7oVxMVUiVQn2oCQFN/LKCZdvSM0pFRqbSmQ==
 
-"@types/selenium-webdriver@^4.1.24":
-  version "4.1.24"
-  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.24.tgz#f19f4c73fa176ef6076805cf433a0c991bab9cd7"
-  integrity sha512-oR5MVATv+P2dmhceZJPDm99MmOC9yAK8YpIgJbHEFQ/MbSPC1lA6Ohw441WNUcQ6B1fMAOMu0u59fRKKj9AGGg==
+"@types/selenium-webdriver@4.1.25":
+  version "4.1.25"
+  resolved "https://registry.yarnpkg.com/@types/selenium-webdriver/-/selenium-webdriver-4.1.25.tgz#9f04cbe716529f74b3d86a445c000aedec7813a6"
+  integrity sha512-Jnlg7h7WDq4k8N2p/zp1ax6qizvU9Pn37I/HR/KX8k5TIU1wfUAuBy8CA6x8drAqa9PY3kYykmmyNHU4tX91LQ==
   dependencies:
     "@types/node" "*"
     "@types/ws" "*"

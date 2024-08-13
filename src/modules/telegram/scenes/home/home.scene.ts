@@ -13,7 +13,6 @@ import { TaskProcessingQueueService } from 'src/modules/task-processing-queue/ta
 import { Markup } from 'telegraf';
 import { SubscriptionService } from 'src/modules/subscription/subscription.service';
 import { DateTime } from 'luxon';
-import { PaymentService } from 'src/modules/payment/payment.service';
 import { PayementsView } from '../../components/payments';
 import { UserAnswerService } from 'src/modules/user-answer/user-answer.service';
 import { UserRequestDataService } from 'src/modules/user-request-data/user-request-data.service';
@@ -29,15 +28,10 @@ export class HomeScene {
         private readonly tasksService: TaskService,
         private readonly taskProcessingQueueService: TaskProcessingQueueService,
         private readonly subscriptionService: SubscriptionService,
-        private readonly paymentService: PaymentService,
         private readonly userRequestDataService: UserRequestDataService
 	) {}
    @SceneEnter()
-   async enter(@Ctx() ctx: SceneContext) {
-        const user = await this.userService.getUserByTelegramId(String(ctx.from.id));
-
-        const metaFields = await this.userRequestDataService.getUserMissingQuestions(user.id);
-   }
+   async enter(@Ctx() ctx: SceneContext) {}
 
    @Hears("📦 Subscriptions")
     async onServicesAction(
@@ -168,13 +162,14 @@ export class HomeScene {
         @Ctx() context: SceneContext
     ) {
         const user = await this.userService.getUserByTelegramId(String(context.from.id));
-        const payments = await this.paymentService.getPaymentsByUserId(user.id);
+
+        const payments = await this.userRequestDataService.getUserAnswersByFieldSystemName(user.id, 'taxPayements');
 
         const propsPayments = payments.map((payment) => {
             return {
                 description: payment.description,
                 amount: payment.amount,
-                dueDate: DateTime.fromJSDate(payment.dueDate).toFormat('yyyy-MM-dd'),
+                dueDate: DateTime.fromMillis(payment.dueDate).toFormat('yyyy-MM-dd'),
                 link: payment.link
             }
         })

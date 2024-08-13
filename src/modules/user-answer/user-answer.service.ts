@@ -95,4 +95,15 @@ export class UserAnswerService {
 			answersToCreate,
 		};
 	}
+
+	async getUserAnswersByFieldSystemName(userId: number, fieldSystemName: string) {
+		const field = this.userFieldService.getUserFieldByName(fieldSystemName);
+		const answers = await this.answerRepository.getAnswersByUserIdAndFieldIds(userId, [field.id]);
+
+		return answers.map((answer) => answer.fieldValue);
+	}
+
+	async deleteAnswerBulk(userId: number, fieldsSystemNames: string[]) {
+		return this.answerRepository.deleteAnswerBulk(userId, fieldsSystemNames);
+	}
 }

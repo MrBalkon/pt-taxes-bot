@@ -28,14 +28,28 @@ export class UserAnswer {
 	@Column('jsonb', {
 		name: 'field_value',
 		nullable: true,
-		transformer: new EncryptionTransformer({
-			key: process.env.DB_ENCRYPT_KEY,
-			algorithm: 'aes-256-cbc',
-			ivLength: 16,
-			iv: process.env.DB_ENCRYPT_IV,
+		transformer: [
+			{
+				to(value: object): string {
+				  return JSON.stringify(value);
+				},
+				from(value: string): string {
+				  try {
+					return JSON.parse(value);
+				  } catch {
+					return value;
+				  }
+				},
+			},
+			new EncryptionTransformer({
+				key: process.env.DB_ENCRYPT_KEY,
+				algorithm: 'aes-256-cbc',
+				ivLength: 16,
+				iv: process.env.DB_ENCRYPT_IV,
 		  })
+		]
 	})
-	fieldValue: string;
+	fieldValue: any;
 
 	@Column('int', { name: 'year', nullable: true })
 	year: number;

@@ -120,6 +120,11 @@ export class EnvSchemaDto {
 	@IsString()
 	SELENIUM_HUB_URL: string;
 
+	@IsDefined()
+	@IsNotEmpty()
+	@IsString()
+	SELENIUM_DOWNLOAD_PATH: string;
+
 	@IsSensitive()
 	@ValidateIf((_, value) => {
 		return !!value;

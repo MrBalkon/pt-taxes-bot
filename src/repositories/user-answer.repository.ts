@@ -119,8 +119,8 @@ export class UserAnswerRepository extends Repository<UserAnswer> {
 	async deleteAnswerBulk(userId: number, fieldsSystemNames: string[]) {
 		const answers = await this.defaultSelector()
 		  .where('answer.userId = :userId', { userId })
-		  .andWhere('field.system_name IN (:...fieldsSystemNames)', { fieldsSystemNames })
-		  .execute();
+		  .andWhere('field.systemName IN (:...fieldsSystemNames)', { fieldsSystemNames })
+		  .getMany();
 
 		if (!answers.length) {
 			return;

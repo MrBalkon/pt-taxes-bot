@@ -14,7 +14,6 @@ import { FeatureAccess } from './feature-access.entity';
 import { TaskShedule } from './task-schedule.entity';
 import { Operation } from './operation.entity';
 import { UserSubscription } from './user-subscription.entity';
-import { Payment } from './payment.entity';
 
 export enum UserRole {
 	ADMIN = 'admin',
@@ -53,7 +52,4 @@ export class User {
 
 	@OneToMany(() => UserSubscription, subscription => subscription.user)
 	subscriptions: UserSubscription[];
-
-	@OneToMany(() => Payment, p => p.user)
-	payments: Payment[];
 }

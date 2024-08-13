@@ -27,4 +27,8 @@ export class UserRequestDataService {
 
 		return questions
 	}
+
+	async getUserAnswersByFieldSystemName(userId: number, fieldSystemName: string) {
+		return this.userAnswerService.getUserAnswersByFieldSystemName(userId, fieldSystemName)
+	}
 }

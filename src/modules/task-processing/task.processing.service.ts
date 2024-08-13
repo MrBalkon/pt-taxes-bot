@@ -19,6 +19,7 @@ import { taskFieldParser } from './utils/taskFieldsParse';
 import { SocialSecurityCheckPayments } from './tasks/taxes/social-security-check-payments.task';
 import { UserAnswerService } from '../user-answer/user-answer.service';
 import { TaskMetaField } from '../task/task.types';
+import { IVAFillDeclarationTask } from './tasks/taxes/iva-fill-declaration.task';
 
 @Injectable()
 export class TaskProcessingService {
@@ -33,6 +34,7 @@ export class TaskProcessingService {
 		private readonly taskmanagerservice: TaskManagerService,
 		private readonly userrequestdata: UserRequestData,
 		private readonly socialsecuritycheckpayments: SocialSecurityCheckPayments,
+		private readonly ivafilldeclarationtask: IVAFillDeclarationTask,
 		private readonly dynamicTask: DynamicTask,
 		private readonly taskService: TaskService,
 		private readonly answersService: UserAnswerService

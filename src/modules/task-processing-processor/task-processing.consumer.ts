@@ -27,6 +27,7 @@ import { DateTime } from 'luxon';
 import { TaskSheduleService } from '../task-schedule/task-schedule.service';
 import { retry } from 'rxjs';
 import { pay } from 'telegraf/typings/button';
+import { UserAnswerService } from '../user-answer/user-answer.service';
 
 @Processor(TASK_PROCESSING_QUEUE_NAME)
 export class TaskProcessingQueueConsumer {
@@ -35,7 +36,7 @@ export class TaskProcessingQueueConsumer {
 		@Inject(TaskProcessingService) private taskProcessingService: TaskProcessingService,
 		private readonly operationService: OperationService,
 		private readonly taskProcessingQueueService: TaskProcessingQueueService,
-		private readonly questionService: QuestionService,
+		private readonly userAnswerService: UserAnswerService,
 		private readonly notificaitonService: NotificaitonService,
 		private readonly userService: UserService,
 		private readonly taskService: TaskService,
@@ -140,7 +141,7 @@ export class TaskProcessingQueueConsumer {
 		}
 		if (e instanceof WrongCredentialsError) {
 			if (e?.fields?.length) {
-				await this.questionService.deleteAnswerBulk(payload.userId, e.fields);
+				await this.userAnswerService.deleteAnswerBulk(payload.userId, e.fields);
 			}
 			if (payload?.user) {
 				await this.notificaitonService.sendNotification(payload?.user, e?.message, {
