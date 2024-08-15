@@ -1,4 +1,3 @@
-import { TaskProcessingError } from 'src/modules/task-processing-queue/task-processing-queue.error';
 import { goPage } from '../../default.scenarios';
 import { WebDriver, until, By } from 'selenium-webdriver';
 
@@ -9,7 +8,7 @@ const goRegisterDeclarationPage = goPage(
 
 const goConsultarTrimestralDeclarationPage = goPage(
   'Consultar Declaração Trimestral',
-  'https://app.seg-social.pt/ptss/qlf/trabalhadores-independentes/consultar_declaracao_trimestral?frawmenu=1&dswid=-1',
+  'https://app.seg-social.pt/ptss/qlf/trabalhadores-independentes/consultar-declaracao',
 );
 
 export const fillDeclarationWaitAndPressNext = async (driver: WebDriver) => {
@@ -48,22 +47,6 @@ export const checkIfDeclarationIsFilled = async (
 ) => {
   await goConsultarTrimestralDeclarationPage(driver);
 
-  const yearSelect = await driver.findElement(
-    By.id('declaracaoForm:qlfTiConsultaDeclaracaoTrimestralRendimentoAnual'),
-  );
-  // find li item in dropdown with data.previousQuarterYear value
-  // It's custom select
-  await yearSelect.click();
-
-  // find li item in dropdown with data.previousQuarterYear value
-  const xpath = `//*[@id="declaracaoForm:qlfTiConsultaDeclaracaoTrimestralRendimentoAnual_panel"]//li[contains(text(), '${data.previousQuarterYear}')]`;
-  const yearSelectItem = await driver.wait(
-    until.elementLocated(By.xpath(xpath)),
-    20000,
-  );
-
-  await yearSelectItem.click();
-
   const tableRows = await driver.findElements(
     By.xpath(
       '//*[@id="declaracaoForm:declaracacoesTreeTable"]//tbody/tr/td[1]',
@@ -89,9 +72,6 @@ export const socialSecurityFillTrimestralDeclaration = async (
   driver: WebDriver,
   data: SocialSecurityDeclarationData,
 ) => {
-  if (await checkIfDeclarationIsFilled(driver, data)) {
-    return;
-  }
 
   const trimesterIncome1 = '5000';
   const trimesterIncome2 = '5000';

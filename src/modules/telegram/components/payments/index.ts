@@ -18,7 +18,9 @@ export const PayementsView = TelegramView<PaymentViewProps>({
 			{{#each payments}}
 				📝 {{description}}
 				💵 Amount: <b>{{amount}}</b> €
-				🗓️ Pay until: {{dueDate}}
+				{{#if dueDate}}
+					🗓️ Pay until: {{dueDate}}
+				{{/if}}
 				{{#if link}}
 					🔗 <a href="{{link}}"><b>Pay here</b></a>
 				{{/if}}

@@ -25,8 +25,11 @@ export class TelegramService implements NotificationServiceType {
     notificationBody?: NotificationExtra,
   ): Promise<void> {
     const extra = this.getExtra(user, notificationBody);
-    // if (notificationBody.action === NotificationAction.REQUEST_DATA) {
-    // 	await this.bot.telegram.sendChatAction(user.telegramId, 'typing');
+    // if (notificationBody.action === NotificationAction.REQUEST_FIELD) {
+    //   const fields = (notificationBody.data as any).fields;
+    //   const action = `requestFieldsAction${fields.join(',')}`;
+    //   await this.bot.telegram.sendChatAction(user.telegramId, 'typing');
+    //   return;
     // }
     await this.bot.telegram.sendMessage(user.telegramId, message, extra);
   }
@@ -77,8 +80,45 @@ export class TelegramService implements NotificationServiceType {
           },
           parse_mode: 'HTML',
         };
+      case NotificationAction.REQUEST_OPTIONS_FIELD_SUBMITION:
+        if (!notificationBody?.data) {
+          throw new Error('No data provided for REQUEST_FIELDS action');
+        }
+        return {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Submit',
+                  callback_data: `requestFieldsAction${notificationBody?.data.fields.join(',')}`,
+                },
+              ],
+            ],
+          },
+          parse_mode: 'HTML',
+        };
+      case NotificationAction.CALL_TASK:
+        if (!notificationBody?.data) {
+          throw new Error('No data provided for CALL_TASK action');
+        }
+
+        return {
+          reply_markup: {
+            inline_keyboard: [
+              [
+                {
+                  text: 'Submit',
+                  callback_data: `runTaskAction.${notificationBody?.data.type}.data.${JSON.stringify(notificationBody?.data.data)}`,
+                },
+              ],
+            ],
+          },
+          parse_mode: 'HTML',
+        };
       default:
-        return null;
+        return {
+          parse_mode: 'HTML',
+        };
     }
   }
 }

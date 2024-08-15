@@ -42,8 +42,11 @@ export class FormScene {
 
   @Action('formScene.startPoll')
   async onAnswerTax(@Ctx() ctx: SceneContext) {
+    const user = await this.userService.getUserByTelegramId(
+      String(ctx.from.id),
+    );
     const questions = await this.userRequestDataService.getUserMissingQuestions(
-      ctx.from.id,
+      user.id,
     );
 
     if (!questions.length) {

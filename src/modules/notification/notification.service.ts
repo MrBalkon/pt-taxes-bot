@@ -1,8 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { TelegramService } from '../telegram-config/telegram.service';
 import { User } from 'src/entities/user.entity';
-import { NotificationAction, NotificationExtra } from './notification.types';
-import { ExtraReplyMessage } from 'telegraf/typings/telegram-types';
+import { NotificationExtra } from './notification.types';
 
 @Injectable()
 export class NotificaitonService {

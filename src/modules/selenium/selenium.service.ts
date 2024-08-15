@@ -14,6 +14,7 @@ export class SeleniumService {
     try {
       return await callback(driver);
     } finally {
+      await driver.deleteDownloadableFiles();
       await driver.quit();
     }
   }
@@ -27,6 +28,12 @@ export class SeleniumService {
     chromCapabilities.set('chromeOptions', {
       args: ['--no-sandbox', '--disable-gpu', '--disable-dev-shm-usage:'],
     });
+    chromCapabilities.set('se:downloadsEnabled', true);
+    // set download directory
+    chromCapabilities.set(
+      'download.default_directory',
+      this.configService.get('SELENIUM_DOWNLOAD_PATH'),
+    );
     const seleniumServer = this.configService.get('SELENIUM_HUB_URL');
     return new Builder()
       .usingServer(seleniumServer)

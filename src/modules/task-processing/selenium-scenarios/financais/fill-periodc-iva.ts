@@ -1,5 +1,9 @@
 import { WebDriver, until, Actions } from 'selenium-webdriver';
-import { goPage } from '../default.scenarios';
+import { getLastDownloadableFileContent, goPage } from '../default.scenarios';
+import command from 'selenium-webdriver/lib/command';
+import * as jszip from 'jszip';
+import { TaskProcessingError } from 'src/modules/task-processing-queue/task-processing-queue.error';
+import { parsePeriodicIvaDeclaration } from './utils/parsePeriodicIvaDeclaration';
 
 export const goConsultarPeriodicIVA = goPage(
   'Consultar Periódico IVA',
@@ -55,32 +59,33 @@ export const goFillDeclarationPage = goPage(
 export interface FillPeriodIVAInput {
   quarter: number;
   // year: number
+  hasApprovedSubmit?: boolean;
 }
 
-// <div role="document" class="modal-content modal-content-primary-alt"><div class="modal-header"><h4 class="modal-title modal-header-title"><button type="button" aria-label="Close" class="close"><span aria-hidden="true">×</span></button><!----><lf-modal-header><p>Assistente de Pré-Preenchimento</p></lf-modal-header></h4></div><!----><div class="modal-body"><lf-modal-body><!----><div><p> Para efetuar o preenchimento da sua declaração de forma simples e rápida, pode optar pelo pré-preenchimento dos campos das transmissões de bens e prestações de serviços com imposto liquidado. </p><p> Caso não pretenda estes campos preenchidos deve fechar este 'Assistente' através do botão 'Fechar'. </p></div><lf-form path="prePreenchimentoWizard" class="lf-value"><form novalidate="" name="/prePreenchimentoWizard" class="ng-untouched ng-pristine ng-valid"><div class="row content-header"><div class="top-main-container"><div class="table-main-title"><h4 class="main-header-tabno align-center"></h4><h4 class="main-header-title"></h4><div class="side-help help-btn-shortcut"><!----></div></div></div></div><div class="form-wrapper"><div class="content-divider"><lf-panel code="1"><div class="panel"><div class="panel-header"><h5 class="panel-code pull-left">1</h5><!----><h5 class="panel-title"><lf-panel-header><p>Sujeito Passivo</p></lf-panel-header></h5><!----></div><div class="panel-body"><lf-panel-body><div class="row"><div class="col-sm-5"><lf-nif path="nif" class="lf-value lf-focusable-value"><div class="form-group form-group-sm"><lf-help-label><label class="input-title" for="undefined"><!----> Número de Identificação Fiscal <!----></label><!----><!----></lf-help-label><!----><!----><div tabindex="-1" class="input-group input-group-sm"><!----><input type="text" mask="000000000" autocomplete="off" class="form-control input-sm" name="/prePreenchimentoWizard/nif" maxlength="9"></div><!----><!----><!----><!----></div><!----><!----><!----><!----></lf-nif><!----></div><div class="col-sm-4"><lf-select path="localizacaoSede" class="lf-value lf-focusable-value"><div class="form-group form-group-sm"><lf-help-label><label class="input-title" for="undefined"><!----> Localização da Sede <!----></label><!----><!----></lf-help-label><!----><!----><div tabindex="-1" class="input-group input-group-sm"><!----><fieldset tabindex="-1"><ng-select bindlabel="label" bindvalue="value" appendto="body" class="ng-select ng-select-single ng-select-searchable ng-select-clearable ng-untouched ng-pristine ng-valid"><div class="ng-select-container ng-has-value"><div class="ng-value-container"><div class="ng-placeholder"></div><div class="ng-value"><!----><span aria-hidden="true" class="ng-value-icon left">×</span><span class="ng-value-label">Continente</span><!----></div><!----><!----><!----><!----><div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"><input aria-autocomplete="list" type="text" autocorrect="off" autocapitalize="off" autocomplete="a2f2468eee6d"></div></div><!----><span class="ng-clear-wrapper" title="Clear all"><span aria-hidden="true" class="ng-clear">×</span></span><!----><span class="ng-arrow-wrapper"><span class="ng-arrow"></span></span></div><!----></ng-select></fieldset></div><!----><!----><!----><!----></div><!----><!----><!----><!----></lf-select><!----></div></div></lf-panel-body></div><!----></div><!----><!----></lf-panel><lf-panel code="2"><div class="panel"><div class="panel-header"><h5 class="panel-code pull-left">2</h5><!----><h5 class="panel-title"><lf-panel-header><p>Período</p></lf-panel-header></h5><!----></div><div class="panel-body"><lf-panel-body><div class="row"><div class="col-sm-4"><lf-select path="anoDeclaracao" class="lf-value lf-focusable-value"><div class="form-group form-group-sm"><lf-help-label><label class="input-title" for="undefined"><!----> Ano <!----></label><!----><!----></lf-help-label><!----><!----><div tabindex="-1" class="input-group input-group-sm"><!----><fieldset tabindex="-1"><ng-select bindlabel="label" bindvalue="value" appendto="body" class="ng-select ng-select-single ng-select-searchable ng-select-clearable ng-untouched ng-pristine ng-valid"><div class="ng-select-container ng-has-value"><div class="ng-value-container"><div class="ng-placeholder"></div><div class="ng-value"><!----><span aria-hidden="true" class="ng-value-icon left">×</span><span class="ng-value-label">2024</span><!----></div><!----><!----><!----><!----><div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"><input aria-autocomplete="list" type="text" autocorrect="off" autocapitalize="off" autocomplete="acdb788b9569"></div></div><!----><span class="ng-clear-wrapper" title="Clear all"><span aria-hidden="true" class="ng-clear">×</span></span><!----><span class="ng-arrow-wrapper"><span class="ng-arrow"></span></span></div><!----></ng-select></fieldset></div><!----><!----><!----><!----></div><!----><!----><!----><!----></lf-select><!----></div><div class="col-sm-5"><lf-select path="periodoDeclaracao" class="lf-value lf-focusable-value"><div class="form-group form-group-sm"><lf-help-label><label class="input-title" for="undefined"><!----> Período declarativo <!----></label><!----><!----></lf-help-label><!----><!----><div tabindex="-1" class="input-group input-group-sm"><!----><fieldset tabindex="-1"><ng-select bindlabel="label" bindvalue="value" appendto="body" class="ng-select ng-select-single ng-select-searchable ng-select-clearable ng-pristine ng-valid ng-select-bottom ng-touched"><div class="ng-select-container ng-has-value"><div class="ng-value-container"><div class="ng-placeholder"></div><div class="ng-value"><!----><span aria-hidden="true" class="ng-value-icon left">×</span><span class="ng-value-label">2º. Trimestre</span><!----></div><!----><!----><!----><!----><div role="combobox" aria-haspopup="listbox" class="ng-input" aria-expanded="false"><input aria-autocomplete="list" type="text" autocorrect="off" autocapitalize="off" autocomplete="a98f7016c555"></div></div><!----><span class="ng-clear-wrapper" title="Clear all"><span aria-hidden="true" class="ng-clear">×</span></span><!----><span class="ng-arrow-wrapper"><span class="ng-arrow"></span></span></div><!----></ng-select></fieldset></div><!----><!----><!----><!----></div><!----><!----><!----><!----></lf-select><!----></div></div></lf-panel-body></div><!----></div><!----><!----></lf-panel><!----></div><!----></div></form><!----><lf-modal><div tabindex="-1" role="dialog" aria-hidden="true" class="modal fade"><div class="modal-dialog"><div role="document" class="modal-content modal-content-primary-alt"><div class="modal-header"><h4 class="modal-title modal-header-title"><!----><lf-modal-header> Adicionar undefined </lf-modal-header></h4></div><!----><div class="modal-body"><lf-modal-body><lf-alert><div role="alert" class="alert alert-danger"><button type="button" aria-label="closeTitleText" class="close" title="Fechar"><span aria-hidden="true">×</span></button><!----><ul><li lfvalidationissue="" class="validation-error"><p>O titulo do formulário encontra-se duplicado.</p>
-// </li><!----></ul></div><!----><!----><!----></lf-alert><!----></lf-modal-body></div><div class="modal-footer"><lf-modal-footer><lf-button><button class="btn btn-default btn-md" type="button"><!----><!----><span class="btn-text"><lf-i18n key="cancelText">Cancelar</lf-i18n></span></button><!----><!----></lf-button><lf-button><button class="btn btn-md btn-primary" type="button"><!----><!----><span class="btn-text"><lf-i18n key="addText">Adicionar</lf-i18n></span></button><!----><!----></lf-button></lf-modal-footer></div><!----></div></div></div><!----><!----></lf-modal><!----><!----><!----></lf-form></lf-modal-body></div><div class="modal-footer"><lf-modal-footer><lf-button size="sm"><button class="btn btn-secondary btn-sm" type="button"><!----><!----><span class="btn-text">Fechar </span></button><!----><!----></lf-button><lf-button size="sm"><button class="btn btn-primary btn-sm" type="button"><!----><!----><span class="btn-text">Pré-Preencher </span></button><!----><!----></lf-button></lf-modal-footer></div><!----></div>
-export const fillPeriodicIVA = async (
+export const handleAutomaticIVA = async (driver: WebDriver) => {
+  try {
+    // Handle automatic IVA modal
+    const modalText = await driver.wait(
+      until.elementLocated({
+        xpath: "//p[contains(text(), 'Deseja utilizar esta funcionalidade?')]",
+      }),
+      10000,
+    );
+
+    // find button with text Fechar in parent of modal text with role=document
+    const closeButton = await modalText.findElement({
+      xpath:
+        "ancestor::div[@role='document']//button/span[contains(text(), 'Fechar')]",
+    });
+
+    await closeButton.click();
+  } catch (e) {}
+};
+
+export const handlePrefillModal = async (
   driver: WebDriver,
   data: FillPeriodIVAInput,
 ) => {
-  await driver.sleep(2000);
-
-  // Handle automatic IVA modal
-  const modalText = await driver.wait(
-    until.elementLocated({
-      xpath: "//p[contains(text(), 'Deseja utilizar esta funcionalidade?')]",
-    }),
-    10000,
-  );
-
-  // find button with text Fechar in parent of modal text with role=document
-  const closeButton = await modalText.findElement({
-    xpath:
-      "ancestor::div[@role='document']//button/span[contains(text(), 'Fechar')]",
-  });
-
-  await closeButton.click();
-
   // find modal woith text Assistente de Pré-Preenchimento
   const preFillModalText = await driver.wait(
     until.elementLocated({
@@ -91,25 +96,27 @@ export const fillPeriodicIVA = async (
 
   // find parent modal with role=document
   const preFillModal = await preFillModalText.findElement({
-    xpath: "ancestor::div[@role='document']",
+    xpath: "ancestor::div[@role='dialog']",
   });
 
   // find periodo declarativo select
-  const periodoDeclarativoSelect = await preFillModal.findElement({
-    xpath: "//lf-select[@path='periodoDeclaracao']//input",
+  const periodoDeclarativoSelect = await driver.findElement({
+    xpath:
+      "//p[contains(text(), 'Assistente de Pré-Preenchimento')]//ancestor::div[@role='dialog']//lf-select[@path='periodoDeclaracao']//ng-select//span[contains(@class, 'ng-arrow-wrapper')]",
   });
 
   // wait for select to be clickable
   await driver.wait(until.elementIsVisible(periodoDeclarativoSelect), 10000);
 
-  // click on select
-  // await periodoDeclarativoSelect.click().perform()
-  await driver.actions().click(periodoDeclarativoSelect).perform();
+  await periodoDeclarativoSelect.click();
 
   // select Xº. Trimestre, where x = data.quarter
-  const quarterOption = await driver.findElement({
-    xpath: `//div[contains(text(), '${data.quarter}º. Trimestre')]/..`,
-  });
+  const quarterOption = await driver.wait(
+    until.elementLocated({
+      xpath: `//div[contains(text(), '${data.quarter}º. Trimestre')]/..`,
+    }),
+    10000,
+  );
 
   await quarterOption.click();
 
@@ -125,6 +132,58 @@ export const fillPeriodicIVA = async (
   );
 
   await preFillButton.click();
+};
 
-  console.log('lol');
+export const prefillPeriodicIVA = async (
+  driver: WebDriver,
+  data: FillPeriodIVAInput,
+) => {
+  await driver.sleep(2000);
+
+  await handleAutomaticIVA(driver);
+
+  await handlePrefillModal(driver, data);
+};
+
+export const getIvaXml = async (driver: WebDriver) => {
+  // find button with span and text = Guardar
+  const downloadButton = await driver.wait(
+    until.elementLocated({
+      xpath: "//button/span[contains(text(), 'Guardar')]",
+    }),
+    10000,
+  );
+
+  await downloadButton.click();
+
+  const ivaXml = await getLastDownloadableFileContent(driver);
+
+  return parsePeriodicIvaDeclaration(ivaXml);
+};
+
+export const validateIvaDeclaration = async (driver: WebDriver) => {
+  const validateButton = await driver.wait(
+    until.elementLocated({
+      xpath: "//button/span[contains(text(), 'Validar')]",
+    }),
+    10000,
+  );
+
+  await validateButton.click();
+
+  // find div with role = alert inside tag lf-validation-panel
+  const validationAlert = await driver.wait(
+    until.elementLocated({
+      xpath: "//lf-validation-panel//div[@role='alert']",
+    }),
+    10000,
+  );
+
+  const alertClasses = await validationAlert.getAttribute('class');
+
+  if (alertClasses.includes('success')) {
+    return true;
+  }
+
+  throw new TaskProcessingError('Validation failed');
 };

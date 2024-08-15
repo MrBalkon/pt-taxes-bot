@@ -55,5 +55,14 @@ export const TelegramView = <T>(globalProps: CreateViewProps<T>) => {
 
       await telegram.sendMessage(chatId, text, extra);
     },
+    getContent: (props: T) => {
+      const text = template(props);
+
+      const extra = globalProps.extraGetter
+        ? globalProps.extraGetter(props)
+        : {};
+
+      return { text, extra };
+    },
   };
 };

@@ -1,49 +1,38 @@
 
 Todo:
   Active:
-    ☐ Replace question conditions source question to field
-    ☐ Separate and maek cleaner asnwers / questions / fields modules
-    ☐ Replace payments table with fields
-    ☐ handle request user data from task manager (Rewrite asking questions based on output fields)
-    ☐ Shedule missed tasks after subscription created
+    ☐ Run main tasks after subscription created
     ☐ Make DB for faturas classification
-    ☐ Add user tax registered payments
     ☐ Notify myself about errors in operations every day
-    ☐ Shedule public task for testing if gov site is up
-    ☐ fill data about IVA/IRS Enquadramento
-    ☐ Add global meta fields into separate table
+    ☐ Request user data based on tasks
     Social Security calculation:
-      ☐ Check service availability
-      ☐ Fill declaration
-      ☐ Retrieve payment
+      ☐ Fill declaration (wait for next quarter) @started(24-08-15 21:14)
+      ☐ Handle payment copies case
     Financais:
-      ☐ Check service availability
       ☐ IVA calculation
-        ☐ Fill declaration
-        ☐ Retrieve payment
+        ☐ Fill declaration (wait for next quarter) @started(24-08-15 21:14)
         ☐ Quarter Faturas processing
-      ☐ IRS calculation
-        ☐ Fill declaration
-        ☐ Retrieve payment
-        ☐ Yarly Faturas processing
-        ☐ IRS previous year declaration parsing
       ☐ Category B
         ☐ Fill fatura-reciebos
     ☐ Add Database seeding via migraiton
     ☐ Add different service modes
     ☐ Add public/system visibility to tasks
-    ☐ Handle start poll on no questions
   Later:
+    Financais:
+      ☐ fill data about IVA/IRS Enquadramento
+      ☐ IRS calculation
+        ☐ Fill declaration
+        ☐ Retrieve payment
+        ☐ Yarly Faturas processing
+        ☐ IRS previous year declaration parsing
+    ☐ Add global meta fields into separate table
     ☐ Rewrite existing views to handlebars
-    ☐ Add support for downloaded files?
-    ☐ Add support for parsing downloaded files?
     ☐ Add test for get priority question
     ☐ Add validation for user input and fixate (add editable field)
     ☐ Make cleaner texts
     ☐ Fix Redis connection ro Redis on prod
     ☐ Deploy service
     ☐ Handle non arm on prod
-    ☐ Add monitoring system
     ☐ Add Handling sensitive data in operation errors
     ☐ Handle options questions answer (edit telegram message)
   Features:
@@ -55,14 +44,29 @@ Todo:
     ☐ Post system (reuse one-shot cron)
 
   REALLY LATER:
-    ☐ Replace custom code tasks with dynamic
+    ☐ Shedule public task for testing if gov site is up
+    ☐ Add monitoring system
     ☐ Add AI
     ☐ Add UI
   Probably never:
     ☐ Handle array in scenario
+    ☐ Replace custom code tasks with dynamic
     ☐ think about conditional question for income as a compare
 
 Archive:
+  ✔ Replace question conditions source question to field @done(24-08-15 22:32) @project(Todo.Active)
+  ✔ Add user tax registered payments @done(24-08-15 22:32) @project(Todo.Active)
+  ✔ Retrieve payment @done(24-08-15 22:23) @project(Todo.Active.Financais)
+  ✔ Handle start poll on no questions @done(24-08-15 22:32) @project(Todo.Active)
+  ✔ Add support for downloaded files? @done(24-08-15 21:15) @project(Todo.Later)
+  ✔ Add support for parsing downloaded files? @done(24-08-15 21:15) @project(Todo.Later)
+  ✔ Separate and maek cleaner asnwers / questions / fields modules @done(24-08-15 20:26) @project(Todo.Active)
+  ✔ Replace payments table with fields @done(24-08-15 20:26) @project(Todo.Active)
+  ✔ handle request user data from task manager (Rewrite asking questions based on output fields) @done(24-08-15 20:26) @project(Todo.Active)
+  ✘ Shedule missed tasks after subscription created @cancelled(24-08-15 20:43) @project(Todo.Active)
+  ✔ Check service availability @done(24-08-15 20:35) @project(Todo.Active.Social Security calculation)
+  ✔ Retrieve payment @done(24-08-15 20:35) @project(Todo.Active.Social Security calculation)
+  ✔ Check service availability @done(24-08-15 20:35) @project(Todo.Active.Financais)
   ✔ use handlebars for messages (or other templating engine) @done(24-08-10 02:07) @project(Todo.Active)
   ✘ Add constraint on permanent fields @cancelled(24-08-05 23:09) @project(Todo.Later)
   ✔ Add parent_operation_id for split tasks @done(24-08-05 23:09) @project(Todo.Later)

@@ -19,6 +19,14 @@ export class UserAnswerService {
     return this.userAnswerSerializer.serilizeFields(answers, 'fieldId');
   }
 
+  async getUserAnswersByFieldsIds(userId: number, fieldIds: number[]) {
+    const answers = await this.answerRepository.getAnswersByUserIdAndFieldIds(
+      userId,
+      fieldIds,
+    );
+    return this.userAnswerSerializer.serilizeFields(answers, 'fieldId');
+  }
+
   async getUserAnswersPathsByFieldsIds(userId: number, fieldIds: number[]) {
     const answers = await this.answerRepository.getAnswersByUserIdAndFieldIds(
       userId,
@@ -91,13 +99,16 @@ export class UserAnswerService {
     userId: number,
     fieldSystemName: string,
     fieldValues: FieldValueType[],
+    filter?: (item: FieldValueType) => boolean,
   ) {
     const field = this.userFieldService.getUserFieldByName(fieldSystemName);
-    const existingAnswers =
+    const existingAnswersResponse =
       await this.answerRepository.getAnswersByUserIdAndFieldIds(userId, [
         field.id,
       ]);
-
+    const existingAnswers = existingAnswersResponse.filter((answer) =>
+      filter ? filter(answer.fieldValue) : true,
+    );
     const data = fieldValues.map((item) => {
       return {
         fieldValue: item,

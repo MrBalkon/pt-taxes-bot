@@ -5,13 +5,17 @@ export enum NotificationAction {
   REQUEST_DATA = 'REQUEST_DATA',
   VIEW_PAYMENTS = 'VIEW_PAYMENTS',
   PAYMENTS_CREATED = 'PAYMENTS_CREATED',
+  REQUEST_FIELDS = 'REQUEST_FIELDS',
+  REQUEST_FIELD = 'REQUEST_FIELD',
+  REQUEST_OPTIONS_FIELD_SUBMITION = 'REQUEST_OPTIONS_FIELD_SUBMITION',
+  CALL_TASK = 'CALL_TASK',
 }
 
 export interface NotificationRequestDataData {
   fields: string[];
 }
 
-export interface NotificationExtra<T = undefined> {
+export interface NotificationExtra<T = any> {
   action?: NotificationAction;
   data?: T;
 }

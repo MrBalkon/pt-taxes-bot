@@ -20,16 +20,21 @@ export class UserRequestDataService {
     );
     const outputFields =
       await this.taskFieldsService.getOutputFieldsByUserAndTaskId(task.id);
+    const fieldIds = Object.keys(outputFields).map((fieldId) =>
+      parseInt(fieldId),
+    );
     const userMetaFields =
-      await this.userAnswerService.getUserAllMetaFieldsByTaskIds(userId, [
-        task.id,
-      ]);
+      await this.userAnswerService.getUserAnswersByFieldsIds(userId, fieldIds);
 
     const missingFields = Object.keys(outputFields)
       .filter((fieldId) => {
         return !userMetaFields[fieldId];
       })
       .map((fieldId) => parseInt(fieldId));
+
+    if (!missingFields.length) {
+      return [];
+    }
 
     const questions =
       await this.questionService.getQuestionsByFieldIds(missingFields);

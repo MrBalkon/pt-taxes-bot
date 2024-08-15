@@ -56,6 +56,7 @@ export class SocialSecurityCheckPayments implements Task {
         userId: task.user.id,
         taskId: task.systemTaskId,
         link: PAYMENT_LINK,
+        type: 'segSocialPayment',
       };
     });
 
@@ -64,12 +65,23 @@ export class SocialSecurityCheckPayments implements Task {
         task.user.id,
         'taxPayements',
         dbPayments,
+        (item) => item.type === 'segSocialPayment',
       );
 
     if (answersToCreate.length) {
       await this.notificationService.sendNotification(
         task.user,
-        `You've got new payments from Segurança Social! ${answersToCreate.length}`,
+        `You've got new payments from Segurança Social! (${answersToCreate.length})`,
+        {
+          action: NotificationAction.VIEW_PAYMENTS,
+        },
+      );
+    }
+
+    if (answersToDelete.length) {
+      await this.notificationService.sendNotification(
+        task.user,
+        `Some of your payments from Segurança Social have been paid! (${answersToDelete.length})`,
         {
           action: NotificationAction.VIEW_PAYMENTS,
         },

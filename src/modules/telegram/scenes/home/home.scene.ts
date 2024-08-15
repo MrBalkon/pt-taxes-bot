@@ -190,7 +190,9 @@ export class HomeScene {
       return {
         description: payment.description,
         amount: payment.amount,
-        dueDate: DateTime.fromMillis(payment.dueDate).toFormat('yyyy-MM-dd'),
+        dueDate: payment.dueDate
+          ? DateTime.fromMillis(payment.dueDate).toFormat('yyyy-MM-dd')
+          : null,
         link: payment.link,
       };
     });
@@ -216,5 +218,25 @@ export class HomeScene {
   @Action('fillDataAction')
   async onAnswerfillData(@Ctx() context: SceneContext) {
     context.scene.enter('formScene');
+  }
+
+  // parse the action and data from the notification body
+  // runTaskAction.${notificationBody?.data.type}.data.${notificationBody?.data.data}
+  @Action(/runTaskAction\.(.*)/)
+  async onRunTaskAction(@Ctx() context: SceneContext) {
+    // remove markup from initial message via editing
+    await context.editMessageReplyMarkup(null);
+
+    const data = (context as any).match[1].split('.data.');
+    const taskType = data[0];
+    const taskData = JSON.parse(data[1]);
+
+    await this.taskProcessingQueueService.addJobByTelegramId<null>(
+      context.from.id,
+      {
+        type: taskType,
+        data: taskData,
+      },
+    );
   }
 }
