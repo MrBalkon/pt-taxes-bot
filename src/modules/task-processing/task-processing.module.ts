@@ -1,30 +1,42 @@
-import { Module } from '@nestjs/common';
-import { TaskProcessingQueueService } from './services/task-processing.queue';
-import { TASK_PROCESSING_QUEUE_NAME } from './task-processing.constants';
-import { BullModule } from '@nestjs/bull';
-import { TaskProcessingService } from './services/task.processing.service';
-import { TaskProcessingQueueConsumer } from './services/task-processing.consumer';
-import { SocialSecurityTask } from './tasks/social-security.task';
+import { Module, forwardRef } from '@nestjs/common';
+import { TaskProcessingService } from './task.processing.service';
 import { ConfigModule } from '../config/config.module';
 import { UserModule } from '../user/user.module';
 import { SeleniumModule } from '../selenium/selenium.module';
-import { TelegramNotifyTask } from './tasks/telegram-notify.task';
 import { TelegamConfigModule } from '../telegram-config/telegram-config.module';
 import { InjectDynamicProviders } from 'nestjs-dynamic-providers';
 import { QuestionModule } from '../question/question.module';
+import { TaskModule } from '../task/task.module';
+import { OperationModule } from '../operation/operation.module';
+import { ExecutionScenarioModule } from '../execution-scenario/execution-scenario.module';
+import { ExecutionCommandModule } from '../execution-command/execution-command.module';
+import { NotificationModule } from '../notification/notification.module';
+import { SubscriptionModule } from '../subscription/subscription.module';
+import { FieldModule } from '../field/field.module';
+import { TaskProcessingQueueModule } from '../task-processing-queue/task-processing-queue.module';
+import { TaskSheduleModule } from '../task-schedule/task-schedule.module';
+import { UserAnswerModule } from '../user-answer/user-answer.module';
 
 @InjectDynamicProviders('dist/**/*.task.js')
 @Module({
-	imports: [
-		ConfigModule,
-		UserModule,
-		SeleniumModule,
-		TelegamConfigModule,
-		QuestionModule,
-		BullModule.registerQueue({ name: TASK_PROCESSING_QUEUE_NAME }),
-	],
-	controllers: [],
-	providers: [TaskProcessingQueueService, TaskProcessingQueueConsumer, TaskProcessingService],
-	exports: [TaskProcessingQueueService, TaskProcessingService],
+  imports: [
+    ConfigModule,
+    UserModule,
+    SeleniumModule,
+    TelegamConfigModule,
+    QuestionModule,
+    TaskModule,
+    OperationModule,
+    ExecutionCommandModule,
+    ExecutionScenarioModule,
+    NotificationModule,
+    SubscriptionModule,
+    FieldModule,
+    UserAnswerModule,
+    forwardRef(() => TaskProcessingQueueModule),
+  ],
+  controllers: [],
+  providers: [TaskProcessingService],
+  exports: [TaskProcessingService],
 })
-export class TaskProcessingModule {};
+export class TaskProcessingModule {}

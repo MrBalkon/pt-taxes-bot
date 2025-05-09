@@ -14,7 +14,7 @@ import Redis from 'ioredis';
         const port = config.get('REDIS_PORT');
         return {
           redis: {
-			name: 'default',
+            name: 'default',
             host,
             port,
             // username: config.get('REDIS_USERNAME'),
@@ -31,14 +31,14 @@ import Redis from 'ioredis';
             //   },
             // },
           },
-        //   createClient: (_type, opts) => {
-        //     return new Redis.Cluster([{ host, port }], {
-        //       scaleReads: 'all',
-        //       enableAutoPipelining: false,
-        //       showFriendlyErrorStack: true,
-        //       redisOptions: opts,
-        //     });
-        //   },
+          //   createClient: (_type, opts) => {
+          //     return new Redis.Cluster([{ host, port }], {
+          //       scaleReads: 'all',
+          //       enableAutoPipelining: false,
+          //       showFriendlyErrorStack: true,
+          //       redisOptions: opts,
+          //     });
+          //   },
         };
       },
     }),

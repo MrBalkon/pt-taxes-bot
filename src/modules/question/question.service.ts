@@ -1,56 +1,94 @@
 import { Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
-import { Question } from 'src/entities/question.entity';
+import { QuestionPeriodTime } from 'src/entities/question.entity';
 import { UserAnswer } from 'src/entities/user-answer.entity';
+import { FindQuestionResult } from 'src/repositories/queries/getPriorityQuestionQuery';
 import { QuestionRepository } from 'src/repositories/question.repository';
 import { UserAnswerRepository } from 'src/repositories/user-answer.repository';
-import { Repository } from 'typeorm';
+import {
+  getPreviousQuarter,
+  getPreviousQuarterMonths,
+  getPreviousQuarterYear,
+} from 'src/utils/date';
+import { DeepPartial } from 'typeorm';
+import { UserFieldRepository } from 'src/repositories/user-field.repository';
 
 @Injectable()
 export class QuestionService {
-	constructor(
-		private readonly questionRepository: QuestionRepository,
-		private readonly answerRepository: UserAnswerRepository,
-	) {}
+  constructor(
+    private readonly questionRepository: QuestionRepository,
+    private readonly answerRepository: UserAnswerRepository,
+    private readonly userFieldRepository: UserFieldRepository,
+  ) {}
 
-	async getQuestions(userId: number) {
-		return this.questionRepository.getQuestions(userId);
-	}
+  async saveAnswer(
+    userId: number,
+    question: FindQuestionResult,
+    answer: string | string[],
+  ) {
+    const answers = [];
 
-	async getQuestionByUserIdAndFieldId(userId: number, fieldId: number) {
-		return this.questionRepository.getQuestionByUserIdAndFieldId(userId, fieldId);
-	}
+    if (!question.periodTime) {
+      // check if answer is string
+      if (typeof answer !== 'string') {
+        throw new Error('Answer should be a string');
+      }
+      answers.push({
+        userId,
+        fieldId: question.fieldId,
+        fieldValue: answer,
+      });
+    }
 
-	async getPriorityQuestion(userId: number) {
-		return this.questionRepository.getPriorityQuestion(userId);
-	}
+    if (question.periodTime === QuestionPeriodTime.PREVIOUS_QUARTER_MONTHS) {
+      if (!Array.isArray(answer)) {
+        throw new Error('Answer should be an array');
+      }
+      const previousQuarterMonths = getPreviousQuarterMonths();
+      const previousQuarterYear = getPreviousQuarterYear();
 
-	async getQuestionsCount(userId: number) {
-		return this.questionRepository.getQuestionsCount(userId);
-	}
+      previousQuarterMonths.forEach((previousQuarterMonth, index) => {
+        answers.push({
+          userId,
+          fieldId: question.fieldId,
+          fieldValue: answer[index],
+          month: previousQuarterMonth,
+          year: previousQuarterYear,
+        });
+      });
+    }
 
-	async saveAnswer(userId: number, fieldId: number, answer: string) {
-		return this.answerRepository.createAnswer({
-			userId,
-			fieldId,
-			fieldValue: answer,
-		});
-	}
+    if (question.periodTime === QuestionPeriodTime.PREVIOUS_QUARTER) {
+      const previousQuarter = getPreviousQuarter();
+      const previousQuarterYear = getPreviousQuarterYear();
+      answers.push({
+        userId,
+        fieldId: question.fieldId,
+        fieldValue: answer,
+        month: previousQuarter,
+        year: previousQuarterYear,
+      });
+    }
 
-	async getUserMetaFields(userId: number, systemName: string) {
-		const answers = await this.answerRepository.getAnswersByUserIdAndTaskId(userId, systemName);
+    return this.answerRepository.createAnswerBulk(answers);
+  }
 
-		return answers.reduce((acc, answer) => {
-			acc[answer.fieldSystemName] = answer.fieldValue;
-			return acc;
-		}, {});
-	}
+  async deleteAnswer(userId: number, fieldsSystemName: string) {
+    return this.answerRepository.deleteAnswer(userId, fieldsSystemName);
+  }
 
-	async setAnswerError(userId: number, fieldsSystemName: number, error: string) {
-		return this.answerRepository.setAnswerError(userId, fieldsSystemName, error);
-	}
+  async saveAnswerByFieldSystemName(
+    userId: number,
+    fieldSystemName: string,
+    data: DeepPartial<UserAnswer>,
+  ) {
+    return this.answerRepository.createOrUpdateAnswerByFieldSystemName(
+      userId,
+      fieldSystemName,
+      data,
+    );
+  }
 
-	async deleteAnswer(userId: number, fieldsSystemName: string) {
-		return this.answerRepository.deleteAnswer(userId, fieldsSystemName);
-	}
+  async getQuestionsByFieldIds(fieldIds: number[]) {
+    return this.questionRepository.getQuestionsByFieldIds(fieldIds);
+  }
 }

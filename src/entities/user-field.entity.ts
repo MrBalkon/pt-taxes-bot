@@ -1,68 +1,88 @@
 import {
-	Column,
-	CreateDateColumn,
-	Entity,
-	JoinTable,
-	ManyToMany,
-	OneToMany,
-	PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  Entity,
+  JoinColumn,
+  JoinTable,
+  ManyToMany,
+  ManyToOne,
+  OneToMany,
+  PrimaryGeneratedColumn,
 } from 'typeorm';
 import { Feature } from './feature.entity';
 import { Task } from './task.entity';
 import { UserAnswer } from './user-answer.entity';
+import { Question } from './question.entity';
+import { TaskOutputField } from './task-fields-output.entity';
+import { TaskField } from './task-field.entity';
+import { FieldCondition } from './field-condition.entity';
 
 export enum FieldLifeSpanType {
-	PERMANENT = 'permanent',
-	PERIODIC = 'periodic',
+  PERMANENT = 'permanent',
+  MONTHLY = 'monthly',
+  QUARTERLY = 'quarterly',
+  YEARLY = 'yearly',
 }
 
 export enum FieldValueType {
-	TEXT="text",
-	FLOAT="FLOAT",
-	OPTIONS="options",
+  TEXT = 'text',
+  ARRAY = 'array',
+  FLOAT = 'FLOAT',
+  OPTIONS = 'options',
 }
 
 export interface FieldOption {
-	text: string;
-	value: string;
+  text: string;
+  value: string;
 }
 
 @Entity('user-fields')
 export class UserField {
-	@PrimaryGeneratedColumn()
-	id: number;
+  @PrimaryGeneratedColumn()
+  id: number;
 
-	@Column('varchar', { name: 'field_name' })
-	fieldName: string;
+  @Column('varchar', { name: 'field_name' })
+  fieldName: string;
 
-	@Column('varchar', { name: 'system_name' })
-	systemName: string;
+  @Column('varchar', { name: 'system_name' })
+  systemName: string;
 
-	@Column('varchar', { name: 'field_life_span_type' })
-	fieldLifeSpanType: FieldLifeSpanType
+  @Column('enum', {
+    name: 'field_life_span_type',
+    enum: FieldLifeSpanType,
+    default: FieldLifeSpanType.PERMANENT,
+  })
+  fieldLifeSpanType: FieldLifeSpanType;
 
-	@Column('varchar', { name: 'fields_value_type' })
-	valueType: FieldValueType
+  @Column('varchar', { name: 'fields_value_type' })
+  valueType: FieldValueType;
 
-	@Column({
-        type: 'jsonb',
-        array: false,
-        default: () => "'[]'",
-        nullable: false,
-    })
-    options!: Array<FieldOption>;
+  @Column({
+    type: 'jsonb',
+    array: false,
+    default: () => "'[]'",
+    nullable: false,
+  })
+  options!: Array<FieldOption>;
 
-	@CreateDateColumn({ name: 'created_at' })
-	createdAt: Date;
+  @CreateDateColumn({ name: 'created_at' })
+  createdAt: Date;
 
-	@OneToMany(() => UserAnswer, userAnswer => userAnswer.field)
-	answers: UserAnswer[];
+  @OneToMany(() => UserAnswer, (userAnswer) => userAnswer.field)
+  answers: UserAnswer[];
 
-	@ManyToMany(() => Task, "taskFields")
-	@JoinTable({
-	  name: "tasks_fields",
-	  joinColumn: { name: "field_id" },
-	  inverseJoinColumn: { name: "task_id" }
-	})
-	taskFields: Task[];
+  @OneToMany(() => TaskField, (tf) => tf.field)
+  taskFields: TaskField[];
+
+  @OneToMany(() => Question, (question) => question.field)
+  questions: Question[];
+
+  @OneToMany(() => TaskOutputField, (tof) => tof.field)
+  taskOutputFields: TaskOutputField[];
+
+  @OneToMany(() => FieldCondition, (fc) => fc.sourceField)
+  conditions: FieldCondition[];
+
+  @OneToMany(() => FieldCondition, (fc) => fc.compareField)
+  dependantConditions: FieldCondition[];
 }
